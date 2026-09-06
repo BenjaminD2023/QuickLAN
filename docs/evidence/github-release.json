@@ -1,0 +1,73 @@
+{
+  "repository": "https://github.com/BenjaminD2023/QuickLAN",
+  "release_url": "https://github.com/BenjaminD2023/QuickLAN/releases/tag/untagged-7aab635385392620aa62",
+  "release_id": 383579730,
+  "tag": "v0.1.0-engineering.1",
+  "draft": true,
+  "prerelease": true,
+  "application_commit": "f7dc384d04288ddfc62250d0680f2220c3231cea",
+  "documentation_commit": "9f385ad",
+  "all_uploaded_assets_match_local_sha256": true,
+  "assets": [
+    {
+      "name": "BUILD-aarch64-apple-darwin.json",
+      "size": 8522,
+      "digest": "sha256:a2f7f6176f2d12a7465fd35844d2b1f1bcc093bea2aff9e96aab7282179a0446",
+      "state": "uploaded"
+    },
+    {
+      "name": "BUILD-x86_64-apple-darwin.json",
+      "size": 8517,
+      "digest": "sha256:730f97ddffeea6db7f72d4027fb2cc85c49e50da05dd1c0a1304c380718a9e31",
+      "state": "uploaded"
+    },
+    {
+      "name": "BUILD-x86_64-pc-windows-msvc.json",
+      "size": 1190,
+      "digest": "sha256:7e3e73ca60e152d7fc5f5c1bba9fa79030e5ac2a6843fb7a37f2dc81c9946f9f",
+      "state": "uploaded"
+    },
+    {
+      "name": "QuickLAN-0.1.0-notices.zip",
+      "size": 303536,
+      "digest": "sha256:ce7bc35e55ca08be6dbe29d72b5b5c9fbd857918a1a3415bf6c3a52b9edfff8c",
+      "state": "uploaded"
+    },
+    {
+      "name": "QuickLAN-0.1.0-verification.zip",
+      "size": 12778,
+      "digest": "sha256:c4d9f67e68cc243e405bc232e37559455acf773cdca0264d101b51cf60f1264c",
+      "state": "uploaded"
+    },
+    {
+      "name": "QuickLAN_0.1.0_aarch64.dmg",
+      "size": 2766875,
+      "digest": "sha256:18460992807c747a83d3d199a9521380df6f373e34216c8c4662da13c7a35981",
+      "state": "uploaded"
+    },
+    {
+      "name": "QuickLAN_0.1.0_x64-setup.exe",
+      "size": 2233093,
+      "digest": "sha256:b83bdf77a857cddd048cddb75b573798fe9e95f964fcc3aaba8137354fdd31fe",
+      "state": "uploaded"
+    },
+    {
+      "name": "QuickLAN_0.1.0_x64.dmg",
+      "size": 2913963,
+      "digest": "sha256:0aa1090406b3fa32e17f329ca7a6a79fe47c74538ee3ef1627918b77da29f8a1",
+      "state": "uploaded"
+    },
+    {
+      "name": "SHA256SUMS",
+      "size": 763,
+      "digest": "sha256:d80dec15c9b08e24946a0ce1c43fc142d4a3355886c9a2ea1edf152bd522ef36",
+      "state": "uploaded"
+    }
+  ],
+  "limitations": [
+    "Draft visible to maintainers, not a public functional VPN release",
+    "No protected helper or production core launch",
+    "Unsigned/not notarized",
+    "No physical Windows/macOS cross-device evidence"
+  ]
+}
