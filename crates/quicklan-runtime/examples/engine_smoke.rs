@@ -135,5 +135,83 @@ fn main() {
     drop(listener);
     wait(&mut child);
     assert_eq!(before, routes(), "routes changed after controller loss");
+    #[cfg(any(target_os = "macos", windows))]
+    desktop_launcher(&path);
     println!("Native IPC, real virtual interface, stop, controller-loss cleanup and route restoration passed.");
+}
+
+/// Exercise the exact launch/supervision implementation called by Tauri as well
+/// as the direct helper checks above. Hosted CI cannot verify an ordinary user's
+/// permission dialog, but must still execute AppleScript / ShellExecute and the
+/// executable substitution defenses rather than bypassing that code entirely.
+#[cfg(any(target_os = "macos", windows))]
+fn desktop_launcher(path: &std::path::Path) {
+    use quicklan_core::runtime::{NetworkRuntime, RuntimeEvent};
+    use sha2::{Digest, Sha256};
+    fn request() -> HelperRequest {
+        HelperRequest::Start {
+            protocol: 1,
+            session_id: random_hex(16).unwrap(),
+            network: Network {
+                id: random_hex(16).unwrap(),
+                label: "CI desktop runtime".into(),
+                subnet: "10.73.42.0/24".into(),
+                policy: Policy::Manual,
+                bootstrap: vec![],
+            },
+            credential: Secret::generate().unwrap(),
+            nickname: "CI desktop device".into(),
+        }
+    }
+    fn await_event(runtime: &mut quicklan_runtime::DesktopRuntime, stopped: bool) {
+        let deadline = Instant::now() + Duration::from_secs(90);
+        while Instant::now() < deadline {
+            for event in runtime.poll() {
+                match event {
+                    RuntimeEvent::Failed(error) => panic!("Desktop runtime failed: {error:?}"),
+                    RuntimeEvent::Stopped if stopped => return,
+                    RuntimeEvent::State {
+                        virtual_ip: Some(ip),
+                        ..
+                    } if !stopped => {
+                        assert!(ip.starts_with("10.73.42."));
+                        return;
+                    }
+                    _ => (),
+                }
+            }
+            std::thread::sleep(Duration::from_millis(50));
+        }
+        let _ = runtime.stop();
+        panic!("Desktop runtime did not reach its expected state");
+    }
+    let digest = format!("{:x}", Sha256::digest(std::fs::read(path).unwrap()));
+    let mut runtime = quicklan_runtime::DesktopRuntime::new(path.to_path_buf(), digest);
+    assert!(runtime.available());
+    let before = routes();
+    for attempt in 0..2 {
+        runtime.start(request()).unwrap();
+        assert!(
+            runtime.start(request()).is_err(),
+            "duplicate engine accepted"
+        );
+        await_event(&mut runtime, false);
+        assert_ne!(before, routes(), "desktop runtime did not create its route");
+        assert!(runtime.stop().unwrap());
+        await_event(&mut runtime, true);
+        assert_eq!(before, routes(), "desktop runtime left a route behind");
+        println!(
+            "Actual desktop launcher connect/stop cycle {} passed",
+            attempt + 1
+        );
+        // Stopped is sent immediately before the worker returns.
+        while runtime.stop().unwrap() {
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    }
+    runtime.start(request()).unwrap();
+    runtime.stop().unwrap();
+    await_event(&mut runtime, true);
+    assert_eq!(before, routes(), "startup cancellation changed routes");
+    println!("Actual desktop launcher cancellation and route preservation passed");
 }

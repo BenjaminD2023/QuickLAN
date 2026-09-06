@@ -1,5 +1,43 @@
 # Test matrix
 
+## Current 0.2.0 native implementation
+
+The original 0.1.0 matrix is retained below as historical evidence, not current
+feature status. The following checks execute QuickLAN's new engine, not a stock
+core feasibility substitute. The user has no second physical device.
+
+| Check | Local | Native/isolated CI | Limit |
+|---|---|---|---|
+| Domain, invitations, redaction, lifecycle, route and real TCP probe | Pass: 24 integration + 4 unit tests | Pass on native runners | One separate OS-vault test is opt-in |
+| Unix kernel PID IPC and substitution-denying elevation script | Pass: 3 IPC + 2 runtime tests | Pass, actual production IPC | Interactive OS permission denial is not manually verified |
+| Actual TUN/utun/Wintun, normal stop and controller-loss cleanup | No local sudo | Pass Windows x64 and both Macs in 34038650582; revised Macs pass 34041033461 | Not physical-device payload evidence |
+| Direct TCP and UDP underlay, bidirectional virtual-IP TCP/UDP, wrong secret, restart and cleanup | No local sudo | Pass in 34041033461 | Linux namespaces with no public route |
+| Forced relay over TCP and UDP underlay | No local sudo | Pass in 34041033461 | Two endpoint stacks plus a nonmember relay; IP forwarding disabled |
+| Direct-only both directions through path loss | Packet guard unit passed | Pass in 34041033461: direct payload succeeds, then cannot flow with only relay control alive | Does not exhaust every routing race/topology |
+| Mounted DMG helper digest, production-only mode, bundle integrity, real adapter/cleanup | CI only | ARM and Intel pass in 34041033461 | Ad-hoc integrity, not Developer ID/notarization |
+| Installed Windows helper and DLL, adapter, native window, close/uninstall | CI only | Final corrected build pending | Earlier installed preview/window tests are separate evidence |
+| UI local hosting, consent, create/join/settings, error, themes, diagnostics and live peer/probe | Five workflows pass; latest policy-control regression passes | Included in native workflow | Explicit labeled browser simulation, not native VPN acceptance |
+| Selected engine vulnerabilities and notices | Zero vulnerability findings; five maintenance warnings; no missing license texts | Current audit workflow includes exact engine lock | Not an independent audit/legal review |
+| Exact corresponding-source offline build | Export/build script running | Not a reproducible-build claim | Includes vendor source; toolchain/protoc are prerequisites |
+| Physical Windows/Mac pairs, ordinary-user permission, minimum OS, NAT/IPv6/sleep/Wi-Fi/MTU/VPN changes | Unavailable/not verified | Not established by these runs | Follow the executable procedure below |
+
+Current evidence: [run 34041033461](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34041033461),
+[direct TCP](evidence/engine-integration-tcp.json), [direct UDP](evidence/engine-integration-udp.json),
+[relay TCP](evidence/engine-integration-tcp-relay.json), [relay UDP](evidence/engine-integration-udp-relay.json).
+The Windows packet-parser build regression in that run is being corrected and is
+not counted as a passing Windows package. Native CI tests do not establish
+physical cross-platform interoperability or universal internet traversal.
+
+Reproduce using `.github/workflows/networking.yml` on disposable runners. Build
+production engine, stage it, build `quicklan-runtime` example `engine_smoke`, and
+run that driver elevated with CI=true. The Linux payload lab additionally builds
+engine bins/examples with `--features lab` and runs `scripts/engine-integration.py`
+for TCP/UDP, with and without `--relay-lab`. Lab binaries are refused by packaging.
+Do not set CI=true to run destructive namespace tests on an everyday workstation.
+
+## Historical 0.1.0 engineering preview
+
+
 Recorded 2026-09-06. **Not a beta release.** “Implemented” describes code, “local” describes execution here, “manual” describes direct inspection, and “CI” requires an actual hosted run. Native CI and isolated Linux TUN feasibility CI passed; see linked records below. No test in this ledger proves connectivity between separate physical Windows/macOS devices.
 
 Local environment: Apple Silicon, macOS 26.4.1, Rust 1.96.0, Node 22.22.3, npm 10.9.8, Python 3.9, Xcode. Elevated execution unavailable (`sudo -n` requires a password). No second physical device, signing identity or controlled remote NAT/relay infrastructure supplied. Native hosted runners now provide Windows Server 2022 and macOS 15 ARM64/Intel build environments.
@@ -44,13 +82,13 @@ Local environment: Apple Silicon, macOS 26.4.1, Rust 1.96.0, Node 22.22.3, npm 1
 
 ## Executable lab and platform procedure
 
-Run the README checks in a disposable checkout. Core lab fixtures contain only ephemeral peer metadata; credentials and raw configs stay in private temporary directories and are removed. To exercise host applications, implement and validate the protected helper first—do not elevate the stock RPC endpoint.
+Run the README checks in a disposable checkout. Core lab fixtures contain only ephemeral peer metadata; credentials and raw configs stay in private temporary directories and are removed. For current host-application tests, install a complete native 0.2.0 package; do not elevate the stock RPC endpoint.
 
 On each macOS test device, capture before/after state to private files with `netstat -rn`, `scutil --dns`, `ifconfig`, and `route -n get default`. On Windows use PowerShell `Get-NetRoute`, `Get-DnsClientServerAddress`, `Get-NetAdapter`, and `Get-NetFirewallRule`. Record only sanitized diffs. Verify ordinary HTTPS still works. Treat all unrelated changes as failures, including after termination/uninstall.
 
-After the service gate is cleared, assign agreed overlay addresses through QuickLAN. On each machine start the Python service probe in `scripts/service-probe.py` bound to its real assigned overlay address. Run its client mode from the other machine with both TCP and UDP, then reverse roles. A successful localhost lab is not a substitute. Do not automatically open firewall ports; explicitly permit only the chosen test port and overlay scope on consenting test machines.
+Connect the same saved network in QuickLAN and read each actual assigned overlay address. On each machine start the Python service probe in `scripts/service-probe.py` bound to its real assigned overlay address. Run its client mode from the other machine with both TCP and UDP, then reverse roles. A successful localhost lab is not a substitute. Do not automatically open firewall ports; explicitly permit only the chosen test port and overlay scope on consenting test machines.
 
-The probe itself passed a localhost TCP/UDP echo check using its explicit `--loopback-lab` flag (`evidence/service-probe.json`). That verifies the diagnostic utility only. Example real-overlay commands after helper validation: `python3 scripts/service-probe.py server --address ACTUAL_OVERLAY_IP --seconds 60` on the host, and `python3 scripts/service-probe.py client --address ACTUAL_OVERLAY_IP` on the other peer. Replace the address with the real assigned address; the script does not create one.
+The probe itself passed a localhost TCP/UDP echo check using its explicit `--loopback-lab` flag (`evidence/service-probe.json`). That verifies the diagnostic utility only. Example real-overlay commands using the native helper: `python3 scripts/service-probe.py server --address ACTUAL_OVERLAY_IP --seconds 60` on the host, and `python3 scripts/service-probe.py client --address ACTUAL_OVERLAY_IP` on the other peer. Replace the address with the real assigned address; the script does not create one.
 
 Repeat over separate physical networks with ordinary NAT, blocked UDP and reachable IPv6. For each topology exercise wrong secrets, separate groups, coordinated subnet collision, forced relay, bootstrap disappearance, migration, sleep/wake and interface switch. For direct-only, capture at both endpoints and the controlled relay, assert no application payload traverses any intermediate peer during establishment, failure and reconnect. Keep allowed discovery control traffic distinct.
 

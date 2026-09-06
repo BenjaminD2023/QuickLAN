@@ -9,6 +9,9 @@ rust-version.workspace = true
 quicklan-core = { path = "../quicklan-core" }
 quicklan-ipc = { path = "../quicklan-ipc" }
 
+[dev-dependencies]
+sha2 = "=0.10.9"
+
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"
 
