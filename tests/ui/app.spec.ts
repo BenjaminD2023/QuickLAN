@@ -172,7 +172,7 @@ test("choose a local host endpoint and preserve it in saved connection settings"
     "My computer",
   );
   await page
-    .getByLabel("Connection policy", { exact: true })
+    .getByRole("combobox", { name: "Connection policy", exact: true })
     .selectOption("direct_only");
   await expect(
     page.getByRole("button", { name: "Save", exact: true }),
