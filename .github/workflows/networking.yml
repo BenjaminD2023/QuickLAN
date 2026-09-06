@@ -54,3 +54,17 @@ jobs:
           path: src-tauri/resources/engine/
           retention-days: 7
           if-no-files-found: error
+      - name: Build isolated integration transport
+        if: runner.os == 'Linux'
+        run: cargo build --manifest-path engine/Cargo.toml --release --features lab --locked
+      - name: Real QuickLAN TCP and UDP networking
+        if: runner.os == 'Linux'
+        run: |
+          sudo --preserve-env=CI python3 scripts/engine-integration.py --engine engine/target/release/quicklan-engine --transport tcp
+          sudo --preserve-env=CI python3 scripts/engine-integration.py --engine engine/target/release/quicklan-engine --transport udp
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: runner.os == 'Linux'
+        with:
+          name: quicklan-engine-payload-evidence
+          path: docs/evidence/engine-integration-*.json
+          if-no-files-found: error

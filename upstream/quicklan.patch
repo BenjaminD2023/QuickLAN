@@ -71,6 +71,26 @@
                  let (output_tx, output_rx) = oneshot::channel();
                  self.check_for_static_ip(output_tx);
                  output_rx.await.unwrap()?;
+@@ -1078,11 +1087,14 @@
+             .reload_rules(AclRuleBuilder::build(&self.global_ctx)?.as_ref());
+ 
+         // run after tun device created, so listener can bind to tun device, which may be required by win 10
+-        self.ip_proxy = Some(IpProxy::new(
+-            self.get_global_ctx(),
+-            self.get_peer_manager(),
+-        )?);
+-        self.run_ip_proxy().await?;
++        #[cfg(not(feature = "quicklan"))]
++        {
++            self.ip_proxy = Some(IpProxy::new(
++                self.get_global_ctx(),
++                self.get_peer_manager(),
++            )?);
++            self.run_ip_proxy().await?;
++        }
+ 
+         self.udp_hole_puncher.lock().await.run().await?;
+         self.tcp_hole_puncher.lock().await.run().await?;
 --- a/easytier/src/peers/peer_manager.rs
 +++ b/easytier/src/peers/peer_manager.rs
 @@ -911,7 +911,7 @@
@@ -251,3 +271,16 @@
              self.start_windows_udp_broadcast_relay(ipv4_addr);
          }
  
+--- a/easytier/src/common/global_ctx.rs
++++ b/easytier/src/common/global_ctx.rs
+@@ -287,7 +287,10 @@
+ 
+         let (event_bus, _) = tokio::sync::broadcast::channel(16);
+ 
++        #[cfg(not(feature = "quicklan"))]
+         let stun_info_collector = StunInfoCollector::new_with_default_servers();
++        #[cfg(feature = "quicklan")]
++        let stun_info_collector = StunInfoCollector::new(vec![], vec![], vec![]);
+ 
+         if let Some(stun_servers) = config_fs.get_stun_servers() {
+             stun_info_collector.set_stun_servers(stun_servers);

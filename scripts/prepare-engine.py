@@ -58,6 +58,7 @@ with tempfile.TemporaryDirectory(prefix='quicklan-source-', dir=cache) as tmp:
     # Isolate git apply from the enclosing QuickLAN worktree. Without this,
     # Git can silently skip paths because the source lives in a subdirectory.
     subprocess.run(['git', 'init', '-q'], cwd=generated, check=True)
+    subprocess.run(['git', 'config', 'core.autocrlf', 'false'], cwd=generated, check=True)
     subprocess.run(['git', 'apply', '--check', str(ROOT / 'upstream/quicklan.patch')], cwd=generated, check=True)
     subprocess.run(['git', 'apply', str(ROOT / 'upstream/quicklan.patch')], cwd=generated, check=True)
     output = cache / 'quicklan-easytier'

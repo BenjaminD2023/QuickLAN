@@ -79,6 +79,9 @@ pub fn connect(endpoint: &str, expected_parent_pid: u32) -> io::Result<LocalStre
     Ok(stream)
 }
 fn configure(stream: &LocalStream) -> io::Result<()> {
+    // macOS inherits O_NONBLOCK from the listening socket; Linux does not.
+    // Framing uses bounded blocking reads on both platforms.
+    stream.set_nonblocking(false)?;
     stream.set_read_timeout(Some(crate::IO_TIMEOUT))?;
     stream.set_write_timeout(Some(crate::IO_TIMEOUT))
 }
@@ -131,6 +134,23 @@ pub fn peer_pid(stream: &LocalStream) -> io::Result<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::{Read, Write};
+    #[test]
+    fn accepted_stream_waits_for_delayed_frame_bytes() {
+        let listener = LocalListener::bind().unwrap();
+        let endpoint = listener.endpoint();
+        let pid = std::process::id();
+        let client = std::thread::spawn(move || {
+            let mut stream = connect(&endpoint, pid).unwrap();
+            std::thread::sleep(Duration::from_millis(100));
+            stream.write_all(b"frame").unwrap();
+        });
+        let mut server = listener.accept(pid, Duration::from_secs(2)).unwrap();
+        let mut bytes = [0; 5];
+        server.read_exact(&mut bytes).unwrap();
+        assert_eq!(&bytes, b"frame");
+        client.join().unwrap();
+    }
     #[test]
     fn authenticates_os_pid_and_removes_owned_endpoint() {
         let listener = LocalListener::bind().unwrap();
