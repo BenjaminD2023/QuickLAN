@@ -135,7 +135,7 @@ export function CreateDialog({
                 />
               </label>
             )}
-            {policy === "assisted" && (
+            {policy !== "manual" && (
               <>
                 <p className="field-hint">{t("noBuiltins")}</p>
                 <label className="checkbox">
@@ -145,7 +145,11 @@ export function CreateDialog({
                     onChange={(e) => setConsent(e.target.checked)}
                     required
                   />
-                  {t("assistedConsent")}
+                  {t(
+                    policy === "direct_only"
+                      ? "directConsent"
+                      : "assistedConsent",
+                  )}
                 </label>
               </>
             )}
@@ -226,7 +230,13 @@ export function JoinDialog({
             <div>
               <dt>{t("policy")}</dt>
               <dd>
-                {t(preview.network.policy === "manual" ? "manual" : "assisted")}
+                {t(
+                  preview.network.policy === "manual"
+                    ? "manual"
+                    : preview.network.policy === "direct_only"
+                      ? "directOnly"
+                      : "assisted",
+                )}
               </dd>
             </div>
             {preview.network.bootstrap.map((n) => (
@@ -252,7 +262,7 @@ export function JoinDialog({
             />
             {t("trust")}
           </label>
-          {preview.network.policy === "assisted" && (
+          {preview.network.policy !== "manual" && (
             <label className="checkbox">
               <input
                 type="checkbox"
@@ -260,14 +270,18 @@ export function JoinDialog({
                 required
                 onChange={(e) => setConsent(e.target.checked)}
               />
-              {t("assistedConsent")}
+              {t(
+                preview.network.policy === "direct_only"
+                  ? "directConsent"
+                  : "assistedConsent",
+              )}
             </label>
           )}
           <ModalFooter
             {...props}
             submit={t("saveNetwork")}
             disabled={
-              !trusted || (preview.network.policy === "assisted" && !consent)
+              !trusted || (preview.network.policy !== "manual" && !consent)
             }
           />
         </form>
@@ -468,7 +482,7 @@ export function SettingsDialog({
           {t("addNode")}
         </button>
         <p className="field-hint">{t("endpointHelp")}</p>
-        {policy === "assisted" && (
+        {policy !== "manual" && (
           <label className="checkbox">
             <input
               type="checkbox"
@@ -483,7 +497,7 @@ export function SettingsDialog({
         <ModalFooter
           {...props}
           submit={t("save")}
-          disabled={policy === "assisted" && (!consent || nodes.length === 0)}
+          disabled={policy !== "manual" && (!consent || nodes.length === 0)}
         />
       </form>
     </Modal>

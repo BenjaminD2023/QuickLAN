@@ -265,12 +265,14 @@ function Application({
               onError={showError}
             />
           ) : page === "about" ? (
-            <AboutPage />
+            <AboutPage available={view.helper.connection_enabled} />
           ) : (
             <HelpPage />
           )}
         </div>
-        <footer className="app-footer">{t("engineering")}</footer>
+        <footer className="app-footer">
+          {t(view.helper.connection_enabled ? "nativeFooter" : "engineering")}
+        </footer>
       </main>
       {toast && (
         <div className="toast" role="status">

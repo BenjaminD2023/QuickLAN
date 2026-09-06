@@ -20,6 +20,7 @@ use std::{net::Ipv4Addr, time::Duration};
 pub struct NetworkSession {
     instance: Instance,
     subnet: String,
+    direct_only: bool,
 }
 impl NetworkSession {
     pub async fn start(
@@ -72,6 +73,7 @@ impl NetworkSession {
         let mut session = Self {
             instance,
             subnet: network.subnet.clone(),
+            direct_only: network.policy == quicklan_core::model::Policy::DirectOnly,
         };
         match tokio::time::timeout(Duration::from_secs(30), session.instance.run()).await {
             Ok(Ok(())) => {
@@ -192,7 +194,7 @@ impl NetworkSession {
             };
             let path = if direct {
                 PeerPath::Direct
-            } else if relay_live {
+            } else if relay_live && !self.direct_only {
                 PeerPath::Relayed
             } else {
                 PeerPath::Unreachable
@@ -222,5 +224,39 @@ impl NetworkSession {
     }
     pub async fn stop(&mut self) {
         let _ = tokio::time::timeout(Duration::from_secs(5), self.instance.clear_resources()).await;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn packet_scope_rejects_foreign_addresses_broadcast_ipv6_and_truncation() {
+        use easytier::quicklan_policy::allow_ipv4;
+        let proposal = Some("10.73.42.0/24".parse().unwrap());
+        let local = Some("10.73.42.1/24".parse().unwrap());
+        let mut packet = [0u8; 28];
+        packet[0] = 0x45;
+        packet[3] = 28;
+        packet[12..16].copy_from_slice(&[10, 73, 42, 2]);
+        packet[16..20].copy_from_slice(&[10, 73, 42, 1]);
+        assert!(allow_ipv4(&packet, proposal, local, true));
+        assert!(!allow_ipv4(&packet, proposal, local, false));
+        for len in 0..packet.len() {
+            assert!(!allow_ipv4(&packet[..len], proposal, local, true));
+        }
+        for source in [
+            [8, 8, 8, 8],
+            [10, 73, 43, 2],
+            [10, 73, 42, 0],
+            [10, 73, 42, 255],
+        ] {
+            packet[12..16].copy_from_slice(&source);
+            assert!(!allow_ipv4(&packet, proposal, local, true));
+        }
+        packet[12..16].copy_from_slice(&[10, 73, 42, 2]);
+        packet[0] = 0x65;
+        assert!(!allow_ipv4(&packet, proposal, local, true));
+        packet[0] = 0x4f;
+        assert!(!allow_ipv4(&packet, proposal, local, true));
     }
 }

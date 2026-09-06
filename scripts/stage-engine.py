@@ -22,6 +22,8 @@ output = ROOT / 'src-tauri/resources/engine'
 output.mkdir(parents=True, exist_ok=True)
 shutil.copyfile(binary, output/name)
 (output/name).chmod(0o755)
+shutil.copyfile(ROOT/'engine/LICENSE', output/'QuickLAN-Engine-GPL-3.0.txt')
+shutil.copyfile(ROOT/'licenses/EasyTier-LGPL-3.0.txt', output/'EasyTier-LGPL-3.0.txt')
 if windows:
     from pe_imports import imports
     required_dlls = imports(binary.read_bytes())

@@ -1,14 +1,45 @@
 --- a/easytier/Cargo.toml
 +++ b/easytier/Cargo.toml
-@@ -348,6 +348,8 @@
+@@ -235,8 +235,8 @@
+ ] }
+ 
+ # for dns connector
+-hickory-resolver = "0.25.2"
+-hickory-proto = "0.25.2"
++hickory-resolver = { version = "0.25.2", optional = true }
++hickory-proto = { version = "0.25.2", optional = true }
+ 
+ # for magic dns
+ hickory-client = { version = "0.25.2", optional = true }
+@@ -348,7 +348,11 @@
  
  
  [features]
 +# QuickLAN: fixed subnet and restricted packet paths. See upstream/quicklan.patch.
 +quicklan = []
++legacy-dns = ["dep:hickory-resolver", "dep:hickory-proto"]
  default = [
++    "legacy-dns",
      "wireguard",
      "websocket",
+     "smoltcp",
+@@ -361,6 +365,7 @@
+     "zstd",
+ ]
+ full = [
++    "legacy-dns",
+     "websocket",
+     "wireguard",
+     "aes-gcm",
+@@ -400,7 +405,7 @@
+     "jemalloc-sys/stats",
+ ]
+ tracing = ["tokio/tracing", "dep:console-subscriber"]
+-magic-dns = ["dep:hickory-client", "dep:hickory-server"]
++magic-dns = ["legacy-dns", "dep:hickory-client", "dep:hickory-server"]
+ faketcp = ["dep:flume"]
+ zstd = ["dep:zstd"]
+ # For Network Extension on macOS
 --- a/easytier/src/lib.rs
 +++ b/easytier/src/lib.rs
 @@ -5,6 +5,8 @@
@@ -336,3 +367,69 @@
                  match std::panic::catch_unwind(pnet::datalink::interfaces) {
                      Ok(ifaces) => ifaces,
                      Err(_) => {
+--- a/easytier/src/common/mod.rs
++++ b/easytier/src/common/mod.rs
+@@ -11,6 +11,10 @@
+ pub mod compressor;
+ pub mod config;
+ pub mod constants;
++#[cfg(not(feature = "quicklan"))]
++pub mod dns;
++#[cfg(feature = "quicklan")]
++#[path = "quicklan_dns.rs"]
+ pub mod dns;
+ pub mod env_parser;
+ pub mod error;
+--- /dev/null
++++ b/easytier/src/common/quicklan_dns.rs
+@@ -0,0 +1,20 @@
++// SPDX-License-Identifier: LGPL-3.0-only
++//! System DNS only. No implicit resolver operators or DNS-record tunnels.
++use std::net::{IpAddr, SocketAddr};
++use super::error::Error;
++pub async fn resolve_txt_record(_: &str) -> Result<String, Error> {
++    Err(Error::InvalidUrl("DNS record discovery is disabled".into()))
++}
++pub async fn socket_addrs(url: &url::Url, default_port: impl Fn() -> Option<u16>) -> Result<Vec<SocketAddr>, Error> {
++    let host = url.host().ok_or_else(|| Error::InvalidUrl("Missing host".into()))?;
++    let port = url.port().or_else(default_port).ok_or_else(|| Error::InvalidUrl("Missing port".into()))?;
++    match host {
++        url::Host::Ipv4(ip) => Ok(vec![SocketAddr::new(IpAddr::V4(ip), port)]),
++        url::Host::Ipv6(ip) => Ok(vec![SocketAddr::new(IpAddr::V6(ip), port)]),
++        url::Host::Domain(host) => {
++            let found = tokio::time::timeout(std::time::Duration::from_secs(5), tokio::net::lookup_host((host, port)))
++                .await.map_err(|_| Error::InvalidUrl("System DNS timed out".into()))??;
++            Ok(found.take(32).collect())
++        }
++    }
++}
+--- a/easytier/src/connector/mod.rs
++++ b/easytier/src/connector/mod.rs
+@@ -2,7 +2,6 @@
+ 
+ use crate::{
+     common::{dns::socket_addrs, error::Error, global_ctx::ArcGlobalCtx, idn},
+-    connector::dns_connector::DnsTunnelConnector,
+     proto::common::PeerFeatureFlag,
+     tunnel::{
+         self, IpScheme, IpVersion, TunnelConnector, TunnelError, TunnelScheme,
+@@ -18,6 +17,9 @@
+ pub mod tcp_hole_punch;
+ pub mod udp_hole_punch;
+ 
++#[cfg(not(feature = "quicklan"))]
++use dns_connector::DnsTunnelConnector;
++#[cfg(not(feature = "quicklan"))]
+ pub mod dns_connector;
+ pub mod http_connector;
+ 
+@@ -284,6 +286,9 @@
+             HttpTunnelConnector::new(url, global_ctx.clone()).boxed()
+         }
+         TunnelScheme::Ring => RingTunnelConnector::new(url).boxed(),
++        #[cfg(feature = "quicklan")]
++        TunnelScheme::Txt | TunnelScheme::Srv => return Err(Error::InvalidUrl("Unsupported transport".into())),
++        #[cfg(not(feature = "quicklan"))]
+         TunnelScheme::Txt | TunnelScheme::Srv => {
+             if url.host_str().is_none() {
+                 return Err(Error::InvalidUrl(format!(

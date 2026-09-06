@@ -1,5 +1,13 @@
 import { createContext, useContext } from "react";
 export const en = {
+  nativeFooter: "QuickLAN · One active network per device",
+  helperReady: "Networking engine available",
+  helperReadyBody:
+    "Connect from your saved network. The operating system will ask for permission to create its virtual adapter.",
+  peerName: "Device name",
+  peerPath: "Connection path",
+  directConsent:
+    "I accept the listed nodes for discovery and connection setup. Application traffic must use a direct connection and will stop if none is available.",
   checkService: "Check application port",
   serviceHint:
     "Enter the TCP port your friend’s app uses. This opens one connection without sending data. UDP-only games need an in-game connection test.",
@@ -156,7 +164,7 @@ export const en = {
   gameFour:
     "Keep the firewall enabled. If necessary, allow only that application or port for overlay peers.",
   gameGap:
-    "These steps require the completed networking helper. This engineering build cannot yet make a game connection.",
+    "If the virtual IP changes after reconnecting, copy the new address and restart any application bound to the old address.",
   troubleshooting: "If a connection fails",
   troubleBody:
     "A peer connection does not prove the game port is open. Check the host application, the chosen port and its scoped firewall rule. An offline bootstrap or restrictive network may prevent peers from connecting at all.",
@@ -181,6 +189,13 @@ export const en = {
 export type TextKey = keyof typeof en;
 const zh: Record<TextKey, string> = {
   ...en,
+  nativeFooter: "QuickLAN · 每台设备同时连接一个网络",
+  helperReady: "组网引擎可用",
+  helperReadyBody: "从已保存网络发起连接。操作系统将请求创建虚拟网卡的权限。",
+  peerName: "设备名称",
+  peerPath: "连接路径",
+  directConsent:
+    "我同意使用列出的节点进行发现和连接建立。应用流量只能直连，没有直连路径时将停止传输。",
   checkService: "检查应用端口",
   serviceHint:
     "输入朋友应用使用的 TCP 端口。只建立一次连接，不发送数据。仅使用 UDP 的游戏需要在游戏内测试。",
@@ -311,7 +326,8 @@ const zh: Record<TextKey, string> = {
   gameTwo: "双方连接同一个 QuickLAN 网络，复制主机的虚拟 IP。",
   gameThree: "在游戏直连界面输入该 IP 和游戏文档注明的端口。",
   gameFour: "保持防火墙启用；如需放行，仅允许特定应用或端口及组网成员。",
-  gameGap: "以上步骤需要完成系统组网服务。本工程版本尚无法连接游戏。",
+  gameGap:
+    "若重新连接后虚拟 IP 发生变化，请复制新地址，并重启绑定旧地址的应用。",
   troubleshooting: "连接失败时",
   troubleBody:
     "设备已连接不代表游戏端口开放。请检查服务、端口和限定范围的防火墙规则。节点离线或网络限制也可能导致连接失败。",

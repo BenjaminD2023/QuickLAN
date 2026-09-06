@@ -24,3 +24,7 @@ network-interface = "=2.0.5"
 strip = true
 lto = "thin"
 codegen-units = 8
+
+[[example]]
+name = "relay_lab"
+required-features = ["lab"]

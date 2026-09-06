@@ -149,7 +149,7 @@ impl<S: Store> App<S> {
         bootstrap: Vec<Bootstrap>,
         assistance_accepted: bool,
     ) -> Result<Network> {
-        if policy == Policy::Assisted && !assistance_accepted {
+        if policy != Policy::Manual && !assistance_accepted {
             return Err(Error::AssistanceConsentRequired);
         }
         let network = Network {
@@ -201,7 +201,7 @@ impl<S: Store> App<S> {
         if self.lifecycle.is_active(id) {
             return Err(Error::Busy);
         }
-        if policy == Policy::Assisted && !assistance_accepted {
+        if policy != Policy::Manual && !assistance_accepted {
             return Err(Error::AssistanceConsentRequired);
         }
         let mut updated = self.saved.clone();
@@ -260,7 +260,7 @@ impl<S: Store> App<S> {
         if stored != ticket {
             return Err(Error::InvalidInvitation);
         }
-        if invitation.network.policy == Policy::Assisted && !assistance_accepted {
+        if invitation.network.policy != Policy::Manual && !assistance_accepted {
             return Err(Error::AssistanceConsentRequired);
         }
         let network = invitation.network.clone();

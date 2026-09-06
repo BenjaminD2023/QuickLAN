@@ -46,7 +46,7 @@ export function PeerDialog({
         <>
           <dl className="facts">
             <div>
-              <dt>{t("nickname")}</dt>
+              <dt>{t("peerName")}</dt>
               <dd>{peer.nickname}</dd>
             </div>
             <div>
@@ -54,7 +54,7 @@ export function PeerDialog({
               <dd>{peer.virtual_ip ?? t("unavailable")}</dd>
             </div>
             <div>
-              <dt>{t("policy")}</dt>
+              <dt>{t("peerPath")}</dt>
               <dd>{t(peer.path)}</dd>
             </div>
             <div>

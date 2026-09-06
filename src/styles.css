@@ -1139,6 +1139,16 @@ code {
   margin-bottom: 12px;
 }
 
-.service-probe { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
-.service-probe label { display: grid; gap: .5rem; margin: 1rem 0; }
-.service-probe p[role="status"] { min-height: 2.5em; }
+.service-probe {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.service-probe label {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.service-probe p[role="status"] {
+  min-height: 2.5em;
+}

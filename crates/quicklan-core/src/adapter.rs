@@ -194,6 +194,7 @@ pub fn candidate_config(
     let mut flags = toml::map::Map::new();
     for (key, value) in [
         ("enable_encryption", true),
+        ("p2p_only", network.policy == Policy::DirectOnly),
         ("enable_ipv6", false),
         ("disable_upnp", true),
         ("disable_relay_data", true),

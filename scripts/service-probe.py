@@ -63,6 +63,9 @@ else:
         for kind in [socket.SOCK_STREAM, socket.SOCK_DGRAM]:
             s = stack.enter_context(socket.socket(socket.AF_INET, kind))
             s.settimeout(0.5)
+            # The acceptance test restarts its own listener on reconnect. Allow
+            # reuse after a previous TCP connection enters TIME_WAIT.
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind(endpoint)  # Binding failures terminate before reporting readiness.
             if kind == socket.SOCK_STREAM:
                 s.listen(4)

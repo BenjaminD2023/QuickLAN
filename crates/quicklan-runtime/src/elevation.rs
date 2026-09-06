@@ -62,7 +62,7 @@ umask 077
 stage=$(/usr/bin/mktemp -d /private/var/tmp/quicklan-engine.XXXXXXXX)
 trap '/bin/rm -rf -- "$stage"' EXIT
 /bin/cp -- {} "$stage/quicklan-engine"
-actual=$(/usr/bin/shasum -a 256 "$stage/quicklan-engine")
+actual=$(/usr/bin/env -i PATH=/usr/bin:/bin:/usr/sbin:/sbin /usr/bin/shasum -a 256 "$stage/quicklan-engine")
 case "$actual" in '{}  '*) ;; *) exit 2 ;; esac
 /bin/chmod 500 "$stage/quicklan-engine"
 (

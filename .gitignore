@@ -16,3 +16,5 @@ __pycache__/
 src-tauri/resources/engine/quicklan-engine*
 src-tauri/resources/engine/wintun.dll
 src-tauri/resources/engine/Wintun-Binary-LICENSE.txt
+src-tauri/resources/engine/QuickLAN-Engine-GPL-3.0.txt
+src-tauri/resources/engine/EasyTier-LGPL-3.0.txt

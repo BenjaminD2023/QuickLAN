@@ -101,9 +101,6 @@ impl Network {
         }
         validate_label(&self.label)?;
         validate_subnet(&self.subnet)?;
-        if self.policy == Policy::DirectOnly {
-            return Err(Error::UnsupportedPolicy);
-        }
         if self.bootstrap.len() > 4 {
             return Err(Error::InvalidEndpoint);
         }

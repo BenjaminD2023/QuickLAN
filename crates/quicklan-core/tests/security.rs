@@ -243,10 +243,16 @@ fn replaced_credentials_leave_old_network_intact() {
     assert!(app.network(&n.id).is_ok());
 }
 #[test]
-fn direct_only_cannot_be_enabled_through_request() {
+fn direct_only_sets_the_core_data_path_enforcement_flag() {
     let mut n = network();
     n.policy = Policy::DirectOnly;
-    assert_eq!(n.validate(), Err(Error::UnsupportedPolicy));
+    n.validate().unwrap();
+    let config =
+        quicklan_core::adapter::candidate_config(&n, &Secret::generate().unwrap(), "My device")
+            .unwrap();
+    let value: toml::Value = toml::from_str(&config).unwrap();
+    assert_eq!(value["flags"]["p2p_only"].as_bool(), Some(true));
+    assert_eq!(value["flags"]["disable_relay_data"].as_bool(), Some(true));
 }
 #[test]
 fn stale_results_cannot_resurrect_a_disconnected_engine() {

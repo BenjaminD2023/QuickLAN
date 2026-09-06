@@ -137,13 +137,20 @@ export function DiagnosticsPage({
           <RefreshCw />
         </button>
       </header>
-      <Notice title={t("helperTitle")}>{t("helperBody")}</Notice>
+      <Notice
+        kind={view.helper.connection_enabled ? "info" : "warning"}
+        title={t(
+          view.helper.connection_enabled ? "helperReady" : "helperTitle",
+        )}
+      >
+        {t(view.helper.connection_enabled ? "helperReadyBody" : "helperBody")}
+      </Notice>
       <h2 className="section-title">{t("releaseChecks")}</h2>
       <ul className="checklist">
         {view.helper.release_gaps.length ? (
           view.helper.release_gaps.map((g) => <li key={g}>{g}</li>)
         ) : (
-          <li>{t("aboutGap")}</li>
+          <li>{t("nativeFooter")}</li>
         )}
       </ul>
       <p>{t("diagnosticsHint")}</p>
@@ -161,7 +168,7 @@ export function DiagnosticsPage({
     </section>
   );
 }
-export function AboutPage() {
+export function AboutPage({ available }: { available: boolean }) {
   const t = useText();
   return (
     <section className="utility-page about-page">
@@ -172,7 +179,12 @@ export function AboutPage() {
       </p>
       <h2>{t("aboutTitle")}</h2>
       <p>{t("aboutBody")}</p>
-      <Notice title={t("engineering")}>{t("aboutGap")}</Notice>
+      <Notice
+        kind={available ? "info" : "warning"}
+        title={t(available ? "helperReady" : "engineering")}
+      >
+        {t(available ? "helperReadyBody" : "aboutGap")}
+      </Notice>
       <p>{t("aboutEvidence")}</p>
       <div className="license-copy">
         <h2>{t("about")}</h2>
