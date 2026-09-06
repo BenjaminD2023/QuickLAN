@@ -59,7 +59,7 @@ def ns(index, argv, **kwargs):
 def start(index, argv):
     child = subprocess.Popen(['ip', 'netns', 'exec', names[index]] + argv,
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        env=env, start_new_session=True)
+        env=env, cwd=env['HOME'], start_new_session=True)
     children.append(child)
     return child
 
@@ -83,6 +83,7 @@ try:
     with tempfile.TemporaryDirectory(prefix='quicklan-tun-', dir='/tmp') as temporary:
         directory = pathlib.Path(temporary)
         directory.chmod(0o700)
+        env['HOME'] = str(directory)
         with zipfile.ZipFile(archive) as zipped:
             for name in ['easytier-core', 'easytier-cli']:
                 data = zipped.read('easytier-linux-x86_64/' + name)
@@ -160,7 +161,7 @@ enable_udp_broadcast_relay = false
             except subprocess.TimeoutExpired:
                 pass  # Rejected/retried RPC must never yield a successful response.
             start(i, ['/usr/bin/python3', str(ROOT/'scripts/service-probe.py'), 'server',
-                '--address', f'10.73.42.{i+1}', '--seconds', '120'])
+                '--address', f'10.73.42.{i+1}', '--seconds', '300'])
         checks += ['Distinct kernel TUN interfaces with real virtual IPv4 addresses',
             'No public/default route in either namespace', 'IPv4 management requests denied in both namespaces']
         def exchange(i):
