@@ -10,7 +10,7 @@
 - [x] Resolve vulnerability-class findings in the selected engine graph; preserve all dependency license text/provenance.
 - [x] Pass corrected Windows installed-payload checks and full desktop launcher acceptance on all three architectures.
 - [x] Verify corresponding-source export builds offline and prepare original notices plus the explicit Wintun linking permission.
-- [ ] Finish GitHub release asset verification and publish the 0.2.0 native preview.
+- [x] Verify all ten GitHub release asset checksums and publish the [0.2.0 native preview](https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.0-preview.1).
 
 Physical device pairs, ordinary-user permission dialogs, minimum OS versions,
 NAT/IPv6/sleep/Wi-Fi/MTU/VPN-change coverage and publisher signing remain explicitly

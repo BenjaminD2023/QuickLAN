@@ -1,5 +1,9 @@
 # Native preview releases
 
+Published: [QuickLAN 0.2.0 native networking preview](https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.0-preview.1).
+All ten published asset sizes and SHA-256 digests match the verified local payloads;
+see [publication evidence](evidence/github-release-020.json).
+
 Source: https://github.com/BenjaminD2023/QuickLAN. Version 0.2.0 packages include
 the production networking helper; 0.1.0 engineering draft binaries remain
 historical and cannot connect. Use a prerelease channel until ordinary-user,
