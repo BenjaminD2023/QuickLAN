@@ -1,0 +1,29 @@
+name: Isolated OS virtual-IP feasibility
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  tun:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        transport: [tcp, udp]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Fetch checksum-pinned core for the isolated lab
+        run: python3 scripts/fetch-core.py --target linux-x86_64
+      - name: Exercise real virtual-IP traffic without external connectivity
+        run: sudo --preserve-env=CI python3 scripts/tun-feasibility.py --transport ${{ matrix.transport }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: quicklan-tun-feasibility-${{ matrix.transport }}
+          path: |
+            docs/evidence/tun-feasibility-${{ matrix.transport }}.json
+            docs/evidence/artifact-linux-x86_64.json
+          if-no-files-found: error
+          retention-days: 7
