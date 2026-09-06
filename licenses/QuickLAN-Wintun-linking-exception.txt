@@ -1,0 +1,22 @@
+QuickLAN Wintun linking permission
+Additional permission under GNU GPL version 3 section 7
+Copyright 2026 QuickLAN contributors
+
+For the QuickLAN-copyrighted code in the separate quicklan-engine program
+(including the 0.2.0 release), the copyright holders grant this additional
+permission: you may link or combine that code with the unmodified, official
+Wintun DLL described in upstream/wintun.lock.json, using only the published
+wintun.h API, and convey the resulting combination. This permission also applies
+to modified versions of that QuickLAN code, unless its recipients remove this
+additional permission as allowed by GNU GPL version 3 section 7.
+
+You must comply with the GNU GPL for the QuickLAN code, including its applicable
+source-distribution requirements, and with Wintun's separate binary license for
+the Wintun DLL. This permission does not change Wintun's license, authorize any
+modification of the DLL, grant trademark rights, or relicense third-party code.
+Modified EasyTier retains its original LGPL-3.0 terms, including its Combined
+Work and corresponding-source requirements. All other dependency licenses and
+notices remain applicable.
+
+This additional permission is supplied with the release's companion notices and
+corresponding source. The complete base GNU GPL version 3 text is in engine/LICENSE.

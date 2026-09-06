@@ -8,8 +8,9 @@
 - [x] Pass actual virtual-IP TCP/UDP, wrong credentials, stop/restart, forced relay and direct-only path-loss checks on isolated kernel stacks.
 - [x] Pass native adapter/IPC/cleanup on Windows and both Macs; verify mounted Mac DMG helper resources.
 - [x] Resolve vulnerability-class findings in the selected engine graph; preserve all dependency license text/provenance.
-- [ ] Finish corrected Windows installed-payload verification and final exact-commit release checks.
-- [ ] Verify corresponding-source export builds offline; upload tested 0.2.0 installers/source/notices to GitHub Releases.
+- [x] Pass corrected Windows installed-payload checks and full desktop launcher acceptance on all three architectures.
+- [x] Verify corresponding-source export builds offline and prepare original notices plus the explicit Wintun linking permission.
+- [ ] Finish GitHub release asset verification and publish the 0.2.0 native preview.
 
 Physical device pairs, ordinary-user permission dialogs, minimum OS versions,
 NAT/IPv6/sleep/Wi-Fi/MTU/VPN-change coverage and publisher signing remain explicitly

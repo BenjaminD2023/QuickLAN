@@ -1,0 +1,99 @@
+{
+  "recorded_utc": "2026-09-06T16:23:12.093952+00:00",
+  "code_commit": "b80cfd5a9260e2ca71d87616115ef43873cd874c",
+  "workflow_url": "https://github.com/BenjaminD2023/QuickLAN/actions/runs/34042764316",
+  "workflow_conclusion": "success",
+  "platforms": {
+    "macos-arm64": {
+      "build_commit": "b80cfd5a9260e2ca71d87616115ef43873cd874c",
+      "checkout_dirty": false,
+      "smoke": {
+        "dmg_sha256": "60530e2dcf6b4eebc93997fe84fcd9dd5c017dd03046fde4bdcfde22840210eb",
+        "helper_sha256": "85e026a189fddcd416c4a0289ef63af207c8da481ff6eda1dad784ea9d4123f2",
+        "checks": [
+          "DMG verified and mounted read-only",
+          "Embedded helper digest and production mode verified",
+          "Bundle signature integrity verified",
+          "Packaged native helper creates and cleans up real adapter"
+        ],
+        "limitations": [
+          "Ad-hoc signature integrity is not Apple Developer ID signing or notarization",
+          "Does not automate interactive macOS elevation approval or physical cross-device traffic"
+        ]
+      }
+    },
+    "macos-x64": {
+      "build_commit": "b80cfd5a9260e2ca71d87616115ef43873cd874c",
+      "checkout_dirty": false,
+      "smoke": {
+        "dmg_sha256": "38b9369ac1bd4f9f275dea9d7c2efe3089159aacec6aa49b6ae6da53e9574f79",
+        "helper_sha256": "eba0aa1836889e9be6393787f44f0bf869a2239cfc73cc681d48b0ade99ff7e4",
+        "checks": [
+          "DMG verified and mounted read-only",
+          "Embedded helper digest and production mode verified",
+          "Bundle signature integrity verified",
+          "Packaged native helper creates and cleans up real adapter"
+        ],
+        "limitations": [
+          "Ad-hoc signature integrity is not Apple Developer ID signing or notarization",
+          "Does not automate interactive macOS elevation approval or physical cross-device traffic"
+        ]
+      }
+    },
+    "windows": {
+      "build_commit": "b80cfd5a9260e2ca71d87616115ef43873cd874c",
+      "checkout_dirty": true,
+      "smoke": {
+        "platform": "Windows x64 GitHub-hosted runner",
+        "installed": true,
+        "native_window_opened": true,
+        "graceful_exit": true,
+        "uninstalled": true,
+        "route_and_dns_unchanged": true,
+        "native_engine_verified": true,
+        "limitations": [
+          "Hosted runner does not verify interactive UAC or ordinary-user privileges",
+          "Window presence does not prove every native IPC workflow",
+          "No cross-device connectivity evidence"
+        ]
+      }
+    }
+  },
+  "actual_desktop_launcher_checks": {
+    "macos-arm64": [
+      "Actual desktop launcher connect/stop cycle 1 passed",
+      "Actual desktop launcher connect/stop cycle 2 passed",
+      "Actual desktop launcher cancellation and route preservation passed",
+      "Actual desktop launcher connect/stop cycle 1 passed",
+      "Actual desktop launcher connect/stop cycle 2 passed",
+      "Actual desktop launcher cancellation and route preservation passed"
+    ],
+    "macos-x64": [
+      "Actual desktop launcher connect/stop cycle 1 passed",
+      "Actual desktop launcher connect/stop cycle 2 passed",
+      "Actual desktop launcher cancellation and route preservation passed",
+      "Actual desktop launcher connect/stop cycle 1 passed",
+      "Actual desktop launcher connect/stop cycle 2 passed",
+      "Actual desktop launcher cancellation and route preservation passed"
+    ],
+    "windows": [
+      "Actual desktop launcher connect/stop cycle 1 passed",
+      "Actual desktop launcher connect/stop cycle 2 passed",
+      "Actual desktop launcher cancellation and route preservation passed",
+      "Actual desktop launcher connect/stop cycle 1 passed",
+      "Actual desktop launcher connect/stop cycle 2 passed",
+      "Actual desktop launcher cancellation and route preservation passed"
+    ]
+  },
+  "local_browser_workflows_passed": 5,
+  "engine_vulnerability_findings": 0,
+  "engine_maintenance_warnings": 5,
+  "source_build": "Locked offline engine release build passed; final archive also includes license/documentation updates.",
+  "limits": [
+    "No second physical device; Windows/Mac pairs and internet NAT remain unverified",
+    "Hosted elevation acceptance does not test an ordinary user\u2019s permission dialog",
+    "Local native UI inspection blocked by locked Mac",
+    "Windows metadata retains its dirty flag; pinned hashes reproduce with CRLF checkout",
+    "Ad-hoc macOS integrity only; unsigned Windows; no notarization or independent audit"
+  ]
+}

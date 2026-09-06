@@ -1,7 +1,8 @@
 # Corresponding source and notices
 
 QuickLAN's desktop/domain/IPC/runtime are Apache-2.0. The separate networking
-engine is GPL-3.0-only and links modified EasyTier 2.6.4 under its original
+engine is GPL-3.0-only with the specific Wintun linking permission in
+`QuickLAN-Wintun-linking-exception.txt`, and links modified EasyTier 2.6.4 under its original
 LGPL-3.0 license. `engine/LICENSE`, `GPL-3.0.txt` and `EasyTier-LGPL-3.0.txt`
 retain the complete texts. `upstream/quicklan.patch` identifies modifications.
 

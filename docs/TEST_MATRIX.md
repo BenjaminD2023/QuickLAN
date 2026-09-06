@@ -15,17 +15,21 @@ core feasibility substitute. The user has no second physical device.
 | Forced relay over TCP and UDP underlay | No local sudo | Pass in 34041033461 | Two endpoint stacks plus a nonmember relay; IP forwarding disabled |
 | Direct-only both directions through path loss | Packet guard unit passed | Pass in 34041033461: direct payload succeeds, then cannot flow with only relay control alive | Does not exhaust every routing race/topology |
 | Mounted DMG helper digest, production-only mode, bundle integrity, real adapter/cleanup | CI only | ARM and Intel pass in 34041033461 | Ad-hoc integrity, not Developer ID/notarization |
-| Installed Windows helper and DLL, adapter, native window, close/uninstall | CI only | Final corrected build pending | Earlier installed preview/window tests are separate evidence |
+| Installed Windows helper and DLL, adapter, native window, close/uninstall | CI only | Pass in 34042764316: installed helper, full launcher, adapter, window, close/uninstall | Earlier installed preview/window tests are separate evidence |
 | UI local hosting, consent, create/join/settings, error, themes, diagnostics and live peer/probe | Five workflows pass; latest policy-control regression passes | Included in native workflow | Explicit labeled browser simulation, not native VPN acceptance |
 | Selected engine vulnerabilities and notices | Zero vulnerability findings; five maintenance warnings; no missing license texts | Current audit workflow includes exact engine lock | Not an independent audit/legal review |
-| Exact corresponding-source offline build | Export/build script running | Not a reproducible-build claim | Includes vendor source; toolchain/protoc are prerequisites |
+| Exact corresponding-source offline build | Locked offline release builds pass; exact code is b80cfd5 | Not a reproducible-build claim | Includes vendor source; toolchain/protoc are prerequisites |
 | Physical Windows/Mac pairs, ordinary-user permission, minimum OS, NAT/IPv6/sleep/Wi-Fi/MTU/VPN changes | Unavailable/not verified | Not established by these runs | Follow the executable procedure below |
 
-Current evidence: [run 34041033461](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34041033461),
+Earlier implementation evidence: [run 34041033461](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34041033461),
 [direct TCP](evidence/engine-integration-tcp.json), [direct UDP](evidence/engine-integration-udp.json),
 [relay TCP](evidence/engine-integration-tcp-relay.json), [relay UDP](evidence/engine-integration-udp-relay.json).
-The Windows packet-parser build regression in that run is being corrected and is
-not counted as a passing Windows package. Native CI tests do not establish
+The Windows packet-parser regression in that historical run was corrected.
+[Final run 34042764316](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34042764316)
+passes all four jobs at code commit b80cfd5a9260e2ca71d87616115ef43873cd874c.
+This run also exercises the actual desktop AppleScript/ShellExecute launcher,
+two connect/stop cycles, duplicate-start refusal and startup cancellation on
+Windows and both Macs, including packaged/installed helper resources. Native CI tests do not establish
 physical cross-platform interoperability or universal internet traversal.
 
 Reproduce using `.github/workflows/networking.yml` on disposable runners. Build
@@ -93,3 +97,19 @@ The probe itself passed a localhost TCP/UDP echo check using its explicit `--loo
 Repeat over separate physical networks with ordinary NAT, blocked UDP and reachable IPv6. For each topology exercise wrong secrets, separate groups, coordinated subnet collision, forced relay, bootstrap disappearance, migration, sleep/wake and interface switch. For direct-only, capture at both endpoints and the controlled relay, assert no application payload traverses any intermediate peer during establishment, failure and reconnect. Keep allowed discovery control traffic distinct.
 
 Refuse privilege, remove/corrupt the helper, alter the pinned core, crash each process, restart repeatedly, and attempt a second connection concurrently. Verify truthful states, no duplicate engine, no stale routes and safe teardown. Install/repair/upgrade/uninstall on all three native architectures before beta. Publish only sanitized test reports and measured benchmark conditions.
+
+## Final release record
+
+The 0.2.0 native preview binaries were built from commit
+b80cfd5a9260e2ca71d87616115ef43873cd874c. Subsequent documentation and explicit
+Wintun linking-permission additions do not change compiled source. The matching
+corresponding-source archive is compiled offline and includes these notices.
+Final machine-readable records are `evidence/native-020.json` and the verification
+archive attached to the GitHub release.
+
+Windows BUILD metadata reports a dirty checkout. All its pinned input hashes
+are reproducible from a clean checkout with Windows CRLF conversion; the dirty
+flag is preserved, not rewritten as clean or advertised as signed provenance.
+Mac build metadata reports clean checkouts. No reproducible-binary claim is made.
+The newly built local Mac app passed signature-integrity checks, but current
+native UI inspection was blocked because the UI tool reported the Mac locked.

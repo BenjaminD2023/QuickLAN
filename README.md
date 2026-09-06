@@ -14,7 +14,7 @@ Private virtual networks with friends. Create a network, share an invitation, an
 4. Copy the invitation and share it privately. Friends preview it, save the network, then connect. Copy the host's **virtual** IP into the game's direct-connect screen.
 5. Use peer details to check an explicitly selected TCP application port. Keep firewalls enabled and allow only the intended application/port when needed.
 
-An invitation alone cannot find arbitrary remote computers behind NAT. No public discovery/relay service is built in. Local interface choices can include VPN/container addresses; choose an address reachable by your friends. Changing routers or local addresses may require editing connection settings and sharing a fresh invitation. [Troubleshooting](docs/TROUBLESHOOTING.md) explains setup and failure states.
+An invitation alone cannot find arbitrary remote computers behind NAT. No public discovery/relay service is built in. Local interface choices can include VPN/container addresses; choose an address reachable by your friends. Changing routers or local addresses may require editing connection settings and sharing a fresh invitation. [Troubleshooting](docs/TROUBLESHOOTING.md) explains setup and failure states. [Optional node setup](docs/NODE_SETUP.md) covers existing host hardware and operator responsibilities.
 
 ## Develop and package
 
@@ -51,4 +51,4 @@ One active network per device. No automatic connection, background tray networki
 
 ## License
 
-Original desktop/domain/IPC/runtime code: Apache-2.0. The separate `quicklan-engine` program: GPL-3.0-only. Modified EasyTier retains LGPL-3.0. Wintun's official binary has its own redistribution license. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES), `licenses/`, and the corresponding-source archive supplied with each networking binary release. No independent security audit is claimed.
+Original desktop/domain/IPC/runtime code: Apache-2.0. The separate `quicklan-engine` program: GPL-3.0-only with an explicit Wintun linking permission. Modified EasyTier retains LGPL-3.0. Wintun's official binary has its own redistribution license. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES), `licenses/`, and the corresponding-source archive supplied with each networking binary release. No independent security audit is claimed.
