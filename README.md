@@ -4,13 +4,15 @@ A desktop utility for private networks with friends, built with Tauri, Rust and 
 
 **Engineering preview, not a working system VPN or public beta.** Saved networks, OS-protected credentials, invitation preview/import/copy, replacement credentials, preferences and sanitized diagnostics work. The desktop refuses to connect until authenticated helper installation and core policy enforcement are implemented and tested. It never substitutes simulated connections.
 
-Real EasyTier 2.6.4 processes have exchanged bidirectional TCP and UDP payloads using virtual-address userspace forwarding on one Apple Silicon Mac. This does **not** establish operating-system virtual-IP connectivity, NAT traversal, Windows compatibility or multi-device functionality. See [test evidence](docs/TEST_MATRIX.md) and [upstream findings](docs/UPSTREAM_CAPABILITIES.md).
+Real EasyTier 2.6.4 processes passed bidirectional TCP/UDP tests through real Linux TUN interfaces in two isolated kernel network stacks, including abrupt stop, restart and cleanup. Native CI built Windows x64 and both Mac architectures; Windows installation, launch, credential storage and uninstall passed. These are feasibility and preview checks, **not** proof of QuickLAN desktop VPN connectivity or cross-device NAT traversal. See [test evidence](docs/TEST_MATRIX.md) and [upstream findings](docs/UPSTREAM_CAPABILITIES.md).
 
 ![QuickLAN interface, explicitly labeled UI test simulation](docs/evidence/ui-empty.png)
 
+Source: [BenjaminD2023/QuickLAN](https://github.com/BenjaminD2023/QuickLAN). Installer assets are staged in a **draft engineering release**, accessible to repository maintainers through [Releases](https://github.com/BenjaminD2023/QuickLAN/releases). See the [feature checklist](docs/FEATURES.md) for implemented and missing functionality.
+
 ## Develop
 
-Verified locally: macOS 26.4.1 ARM64, Xcode, Rust 1.96.0, Node 22.22.3, npm 10.9.8, Python 3.9. Install the native [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your platform. Candidate targets are Windows 11 x64 and macOS 13+ on Apple Silicon and Intel; only the local environment above has been exercised.
+Verified locally: macOS 26.4.1 ARM64, Xcode, Rust 1.96.0, Node 22.22.3, npm 10.9.8, Python 3.9. Install the native [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your platform. Candidate targets are Windows 11 x64 and macOS 13+ on Apple Silicon and Intel; native CI also exercised macOS 15 ARM64/Intel builds and a Windows Server 2022 x64 runner. Windows 11 and minimum-version end-user compatibility remain unverified.
 
 ```sh
 npm ci
@@ -68,4 +70,4 @@ Virtual IP access is the compatibility target, not universal LAN-game discovery.
 
 ## License
 
-Original QuickLAN code: Apache-2.0. EasyTier v2.6.4: LGPL-3.0; it has not been relicensed. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES), `licenses/` and the dependency inventory. Public redistribution remains gated on resolving the recorded missing dependency notices and corresponding-source requirements. No independent security audit is claimed.
+Original QuickLAN code: Apache-2.0. EasyTier v2.6.4: LGPL-3.0; it has not been relicensed. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES), `licenses/` and the dependency inventory. Installer companion notices include the Microsoft WebView2 SDK license and exact covered MPL source. The inventory includes non-target dependencies with outstanding notices; no EasyTier executable is distributed. No independent security audit is claimed.

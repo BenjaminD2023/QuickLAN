@@ -8,4 +8,4 @@ Changes to invitations, storage, helpers, route validation or diagnostics must i
 
 Run UI tests after functional UI changes and inspect the native application after IPC changes. Record platform and topology limitations in TEST_MATRIX.md. Windows CI compilation is not proof of interactive UAC or installation behavior.
 
-Public repository hosting and maintainer contact are not configured yet. Once published, submit a focused pull request with the included template. Original contributions are under Apache-2.0; retain third-party licenses and provenance. Do not copy upstream code into the wrapper without handling its applicable license.
+Submit a focused pull request to https://github.com/BenjaminD2023/QuickLAN using the included template. Use GitHub private vulnerability reporting for security issues. Original contributions are under Apache-2.0; retain third-party licenses and provenance. Do not copy upstream code into the wrapper without handling its applicable license.

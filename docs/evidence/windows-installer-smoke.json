@@ -1,0 +1,14 @@
+{
+  "platform": "Windows x64 GitHub-hosted runner",
+  "installed": true,
+  "native_window_opened": true,
+  "graceful_exit": true,
+  "uninstalled": true,
+  "route_and_dns_unchanged": true,
+  "limitations": [
+    "Engineering preview only; no system VPN",
+    "Hosted runner does not verify interactive UAC or ordinary-user privileges",
+    "Window presence does not prove every native IPC workflow",
+    "No cross-device connectivity evidence"
+  ]
+}

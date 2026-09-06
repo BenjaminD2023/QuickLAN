@@ -1,0 +1,20 @@
+{
+  "core": "easytier-core 2.6.4-8428a89d",
+  "transport": "tcp",
+  "topology": "Two isolated Linux kernel network stacks, veth-only underlay, real TUN devices",
+  "checks_passed": [
+    "Distinct kernel TUN interfaces with real virtual IPv4 addresses",
+    "No public/default route in either namespace",
+    "IPv4 management requests denied in both namespaces",
+    "OS virtual-IP TCP and UDP exact payload echo: 0 -> 1 -> 0",
+    "OS virtual-IP TCP and UDP exact payload echo: 1 -> 0 -> 1",
+    "Abrupt remote core stop removes TUN; restart restores bidirectional TCP/UDP",
+    "Owned processes/interfaces/namespaces removed; host routes and DNS unchanged"
+  ],
+  "limitations": [
+    "Feasibility lab, not QuickLAN desktop/helper integration",
+    "Not Windows/macOS cross-device evidence",
+    "Not NAT traversal, forced relay or strict direct-only policy proof",
+    "No production privilege or management-authentication claim"
+  ]
+}

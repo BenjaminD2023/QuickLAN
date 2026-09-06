@@ -1,0 +1,38 @@
+{
+  "run": "https://github.com/BenjaminD2023/QuickLAN/actions/runs/34031905272",
+  "conclusion": "success",
+  "targets": [
+    {
+      "target": "aarch64-apple-darwin",
+      "commit": "f7dc384d04288ddfc62250d0680f2220c3231cea",
+      "working_tree_dirty": true,
+      "downloaded_installer_hash_verified": true
+    },
+    {
+      "target": "x86_64-apple-darwin",
+      "commit": "f7dc384d04288ddfc62250d0680f2220c3231cea",
+      "working_tree_dirty": true,
+      "downloaded_installer_hash_verified": true
+    },
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "commit": "f7dc384d04288ddfc62250d0680f2220c3231cea",
+      "working_tree_dirty": true,
+      "downloaded_installer_hash_verified": true
+    }
+  ],
+  "checks": [
+    "Rust tests, formatting and Clippy",
+    "Frontend type, lint, build and tests",
+    "Three browser UI workflows per native target",
+    "Windows real Credential Manager roundtrip",
+    "Windows NSIS install, native window, graceful close, uninstall, route/DNS preservation",
+    "Both macOS DMG checksums verified locally using hdiutil"
+  ],
+  "limitations": [
+    "No signed provenance: preserve original dirty-tree metadata; UI tests regenerate tracked evidence screenshots.",
+    "Windows Server hosted runner is not Windows 11 ordinary-user acceptance testing.",
+    "macOS Intel compilation and packaging passed; Intel GUI execution remains unverified.",
+    "No protected helper or desktop system VPN."
+  ]
+}

@@ -1,6 +1,6 @@
 # Engineering builds and public release gates
 
-Nothing has been published. No Git remote, GitHub project, hosting account, Apple Developer identity, Windows signing certificate, hosted runner quota or public node capacity has been configured by this work. The local repository is suitable for review; it is not a public beta.
+Source is public at https://github.com/BenjaminD2023/QuickLAN. The first DMG/EXE assets are staged as a draft engineering release, not a working VPN beta. Native CI run [34031905272](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34031905272) passed for all three architectures. Private vulnerability reporting is enabled. No Apple Developer identity, Windows signing certificate, privileged networking service or public node capacity has been configured.
 
 ## Local engineering bundle
 
@@ -16,7 +16,7 @@ python3 scripts/build-manifest.py --bundle-root artifacts --target aarch64-apple
 
 ## Native CI
 
-`.github/workflows/ci.yml` declares Windows x64, Apple Silicon and Intel Mac builds, tests and engineering bundles. It uses immutable action revisions, read-only tokens, no persisted checkout credentials, no signing secrets, no `pull_request_target`, short artifact retention and bounded jobs. It has **not run** on GitHub. Fix native failures before recording a CI pass.
+`.github/workflows/ci.yml` declares Windows x64, Apple Silicon and Intel Mac builds, tests and engineering bundles. It uses immutable action revisions, read-only tokens, no persisted checkout credentials, no signing secrets, no `pull_request_target`, short artifact retention and bounded jobs. The linked run passed all jobs. Windows additionally passed real credential storage and NSIS install/launch/close/uninstall with unchanged routes and DNS. Both downloaded DMGs passed local `hdiutil verify`; all installer hashes match their original CI manifests. Original metadata reports a dirty checkout; UI tests regenerate tracked screenshots. This is not signed provenance or a reproducible-build claim.
 
 As checked 2026-09-06, GitHub documents `macos-15` as Apple Silicon, `macos-15-intel` as Intel and `windows-2022` as x64. See [runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners). Public repositories can use standard hosted runners without runner-minute charges under GitHub's current offering; concurrency, storage, retention, usage limits and eligibility still apply. This user's plan/quota is unverified. Private jobs and larger runners may cost money. Check [limits](https://docs.github.com/en/actions/reference/limits) before enabling workflows. A runner's administrative privileges or disabled Windows UAC do not prove installed-user consent behavior.
 
@@ -52,16 +52,15 @@ Resolve all critical gates in TEST_MATRIX.md, including:
 
 Regenerate inventories with `cargo metadata --locked --format-version 1 --manifest-path src-tauri/Cargo.toml > .cache/native-metadata.json`, `python3 scripts/generate-notices.py`, and `npm sbom --omit=dev --sbom-format cyclonedx`. Run current advisory and secret scans; resolve findings, do not silently ignore them. Scan both wrapper locks and the precise core source lock. Scan outputs are not an independent audit.
 
-## Publication after review
+## Current release assets
 
-Choose the intended owner explicitly and verify the path and reviewed file list. Do not publish caches, test credentials, signing files or unrelated workspace content. This command is documentation only and has not been executed:
+The draft `v0.1.0-engineering.1` targets application build commit `f7dc384d04288ddfc62250d0680f2220c3231cea`. Later source commits add verification and release documentation without changing the compiled app. Downloaded native artifacts are retained under `artifacts/ci/` locally, with the release set under `artifacts/release/`.
 
-```sh
-cd /Users/benjamin/QuickLAN
-git status --short
-git ls-files
-gh auth status
-gh repo create OWNER/QuickLAN --public --source=. --remote=origin --push
-```
+- Apple Silicon: `QuickLAN_0.1.0_aarch64.dmg`
+- Intel Mac: `QuickLAN_0.1.0_x64.dmg`
+- Windows x64: `QuickLAN_0.1.0_x64-setup.exe`
+- `SHA256SUMS`, original per-target build metadata, test evidence and `QuickLAN-0.1.0-notices.zip` accompany the installers.
 
-Replace `OWNER` with the confirmed account/organization. Enable private vulnerability reporting and required branch/environment protections. Label any initial source publication an engineering preview; do not upload a public beta until gates are met. Repository hosting is for source/downloads and must not become a networking dependency. No hosted nodes or recurring services have been purchased or deployed.
+Keep the notices archive with redistributed installers. It adds the Microsoft WebView2 SDK license and notices to the notices already embedded in the preview. The exact x64 static loader bytes were matched against Microsoft's SDK 1.0.3650.58 package. Rust bindings' MIT license does not replace that SDK license. Covered MPL source is included. EasyTier is not bundled.
+
+This draft is available to repository maintainers, not an advertised public beta. Do not promote it to a functioning network release until the gates above are complete. Neither platform's installers are publisher-signed; macOS is not notarized. Do not disable OS protections to install it. No hosted nodes or recurring services have been purchased or deployed.

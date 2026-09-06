@@ -1,6 +1,6 @@
 # QuickLAN engineering handoff
 
-Repository: `/Users/benjamin/QuickLAN`. All application branding uses **QuickLAN**. This is a new local Git repository on `main`, with focused commits. No remote has been added, nothing has been published, and no service, driver, public node or paid infrastructure has been installed or deployed.
+Repository: `/Users/benjamin/QuickLAN`. All application branding uses **QuickLAN**. Source is published at https://github.com/BenjaminD2023/QuickLAN on `main`. Native DMG/EXE assets are staged in the draft `v0.1.0-engineering.1` release. No privileged service, driver, public node or paid infrastructure has been installed or deployed. See FEATURES.md and evidence/native-ci.json for the updated status.
 
 ## Implemented and exercised
 
@@ -21,7 +21,7 @@ Validation: 23 Rust tests plus the separately executed native Keychain test, fiv
 - Checksums: `/Users/benjamin/QuickLAN/artifacts/SHA256SUMS`
 - Unsigned build metadata: `/Users/benjamin/QuickLAN/artifacts/BUILD.json`
 
-The ARM64 executable has only its linker's ad-hoc signature: no Developer ID, sealed bundle resources or notarization. These are local engineering artifacts. No Windows installer or Intel Mac application was built locally. Native CI configurations exist for all three targets but have not run on hosted runners. The package includes notices and the covered MPL source archive; it does not bundle or elevate a stock EasyTier executable.
+The ARM64 executable has only its linker's ad-hoc signature: no Developer ID, sealed bundle resources or notarization. These are local engineering artifacts. No Windows installer or Intel Mac application was built locally. Native CI has now passed on all three targets, producing two DMGs and a Windows EXE. Windows install/launch/close/uninstall and Credential Manager checks passed; see evidence/windows-installer-smoke.json. The package includes notices and the covered MPL source archive; it does not bundle or elevate a stock EasyTier executable.
 
 ## Exact development commands
 

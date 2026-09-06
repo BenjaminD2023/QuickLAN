@@ -1,8 +1,8 @@
 # Test matrix
 
-Recorded 2026-09-06. **Not a beta release.** “Implemented” describes code, “local” describes execution here, “manual” describes direct inspection, and “CI” requires an actual hosted run. No hosted CI runs have occurred. No test in this ledger proves multi-machine TUN connectivity.
+Recorded 2026-09-06. **Not a beta release.** “Implemented” describes code, “local” describes execution here, “manual” describes direct inspection, and “CI” requires an actual hosted run. Native CI and isolated Linux TUN feasibility CI passed; see linked records below. No test in this ledger proves connectivity between separate physical Windows/macOS devices.
 
-Local environment: Apple Silicon, macOS 26.4.1, Rust 1.96.0, Node 22.22.3, npm 10.9.8, Python 3.9, Xcode. Elevated execution unavailable (`sudo -n` requires a password). No Windows machine, second Mac, Intel execution environment, signing identity or controlled remote NAT/relay infrastructure supplied.
+Local environment: Apple Silicon, macOS 26.4.1, Rust 1.96.0, Node 22.22.3, npm 10.9.8, Python 3.9, Xcode. Elevated execution unavailable (`sudo -n` requires a password). No second physical device, signing identity or controlled remote NAT/relay infrastructure supplied. Native hosted runners now provide Windows Server 2022 and macOS 15 ARM64/Intel build environments.
 
 | Feature / gate | Implemented | Locally tested | CI tested | Manually verified | Evidence / limitation |
 |---|---|---|---|---|---|
@@ -10,31 +10,37 @@ Local environment: Apple Silicon, macOS 26.4.1, Rust 1.96.0, Node 22.22.3, npm 1
 | Intel Mac and Windows x64 core archive integrity | Yes | Pass, hashes only | No | Not executed | `evidence/artifact-{macos-x86_64,windows-x86_64}.json` |
 | Actual TCP and UDP payloads, both directions | Lab only | Pass, TCP and UDP underlays | No | Results inspected | `python3 scripts/core-integration.py [--transport udp]`, `evidence/core-integration-{tcp,udp}.json`; userspace port-forwarded virtual addresses, localhost-confined four-process lab |
 | Correct secret, wrong secret, separate-network isolation, restart | Lab only | Pass | No | Recorded output inspected | Same integration records; no physical devices or TUN |
-| Invitation round trip, versions, size, fields, endpoints, consent | Yes | Pass | No | UI preview inspected | `cargo test --all-features --locked`; 23 tests pass, including 512-case property runs for each fuzz target |
-| Secret redaction and diagnostic projection | Yes | Pass | No | UI preview inspected | Rust tests plus five frontend trust-boundary tests; no raw core output retained |
+| Invitation round trip, versions, size, fields, endpoints, consent | Yes | Pass | Pass | UI preview inspected | `cargo test --all-features --locked`; 23 tests pass, including 512-case property runs for each fuzz target |
+| Secret redaction and diagnostic projection | Yes | Pass | Pass | UI preview inspected | Rust tests plus five frontend trust-boundary tests; no raw core output retained |
 | OS metadata permissions, atomic replacement, symlink rejection | macOS implementation | Pass | No | Not crash-injected | Rust tests; future schemas rejected. Cross-store crash recovery remains incomplete |
 | Actual OS credential write/read/delete | Yes | Pass on native Mac | No | OS-backed test executed | `cargo test --all-features --locked --test security native_credential_round_trip -- --ignored`; one passed; isolated random entry deleted |
-| Windows credential storage | Uses native Keyring backend | Not verified | No | No | Needs native Credential Manager protection/ACL/recovery tests |
-| Lifecycle serialization and stale-generation rejection | Domain implementation | Pass | No | No live engine integration | Rust tests, single native mutex; no production engine process exists |
-| Safe subnet, overlap and forbidden learned-route validators | Domain implementation | Pass | No | No OS enforcement | Saved-network collisions tested; live route enumeration and core data-plane rejection missing |
-| Missing helper / disabled policy failure | Yes, denies connection | Pass | No | UI inspected | Rust tests; no fake permission prompt or repair success |
+| Windows credential storage | Native Keyring backend | No physical Windows device | Pass, actual roundtrip | CI result inspected | Native Credential Manager write/read/delete passed; additional ACL/recovery tests remain |
+| Lifecycle serialization and stale-generation rejection | Domain implementation | Pass | Pass | No live engine integration | Rust tests, single native mutex; no production engine process exists |
+| Safe subnet, overlap and forbidden learned-route validators | Domain implementation | Pass | Pass | No OS enforcement | Saved-network collisions tested; live route enumeration and core data-plane rejection missing |
+| Missing helper / disabled policy failure | Yes, denies connection | Pass | Pass | UI inspected | Rust tests; no fake permission prompt or repair success |
 | Helper peer authentication and bounded privileged IPC | Schema only | Malformed command rejection | No | No | OS service, peer credentials/signature binding, installer and protected core IPC **not implemented** |
-| Create/import/invite/settings/forget UI | Yes | 3 Playwright workflow tests pass | No | In-app browser inspected | `npm run test:e2e`; explicit labeled test adapter; does not validate native IPC |
-| Keyboard, focus, dark theme, narrow layout | Yes | Pass | No | Screenshots inspected | `evidence/ui-*.png`, `docs/DESIGN_QA.md`; no browser overflow at 390px |
-| Production cannot use UI test adapter | Yes | Pass | No | Production bundle scanned | `npm run build && npm test`; test hook and banner absent from generated JS |
-| Frontend type/lint/build and Rust domain Clippy | Yes | Pass | No | No | README commands, `-D warnings` |
-| Desktop ARM64 compile / bundle | Yes | Pass, optimized app bundle | No | Native create/copy/error/relaunch/rename/forget and theme verified | `evidence/native-desktop.json`; compilation alone is not end-user compatibility |
-| macOS Intel / Windows installer builds | CI configured | Not verified | No | No | `.github/workflows/ci.yml`; not run on hosted runners |
-| npm / wrapper Rust vulnerability checks | Yes | Executed | No | Advisories reviewed | `evidence/*audit.json`, `docs/SECURITY_REVIEW.md`; distinguish warnings from vulnerability count |
-| SBOM and dependency notices | Generated | Inventory checked | No | Incomplete legal review | `evidence/dependencies.cdx.json`, `evidence/license-inventory.json`, `licenses/`; missing texts gate public redistribution |
+| Create/import/invite/settings/forget UI | Yes | 3 Playwright workflow tests pass | Pass | In-app browser inspected | `npm run test:e2e`; explicit labeled test adapter; does not validate native IPC |
+| Keyboard, focus, dark theme, narrow layout | Yes | Pass | Pass | Screenshots inspected | `evidence/ui-*.png`, `docs/DESIGN_QA.md`; no browser overflow at 390px |
+| Production cannot use UI test adapter | Yes | Pass | Pass | Production bundle scanned | `npm run build && npm test`; test hook and banner absent from generated JS |
+| Frontend type/lint/build and Rust domain Clippy | Yes | Pass | Pass | No | README commands, `-D warnings` |
+| Desktop ARM64 compile / bundle | Yes | Pass, optimized app bundle | Pass | Native create/copy/error/relaunch/rename/forget and theme verified | `evidence/native-desktop.json`; compilation alone is not end-user compatibility |
+| macOS Intel / Windows installer builds | Yes | Both downloaded DMGs verified | Pass on all three targets | Windows native window smoke | `evidence/native-ci.json`, `evidence/windows-installer-smoke.json`; no signing or ordinary-user consent claim |
+| npm / wrapper Rust vulnerability checks | Yes | Executed | Pass | Advisories reviewed | `evidence/*audit.json`, `docs/SECURITY_REVIEW.md`; distinguish warnings from vulnerability count |
+| SBOM and dependency notices | Generated | Inventory checked | No | Incomplete legal review | `evidence/dependencies.cdx.json`, `evidence/license-inventory.json`, `licenses/`; remaining missing texts are outside the three launch target normal graphs; platform SDK notices accompany installers |
 | OS virtual-IP TCP/UDP between ordinary devices | No | Not verified | No | No | Required macOS/macOS, Windows/Windows and mixed OS pairs on real physical networks |
 | Direct-only, forced relay, migration, outage, reconnect paths | Direct-only disabled | Not verified | No | No | Packet-level proof required at endpoints and controlled relay, both directions |
 | No-public assistance | Disabled | Stock violation observed | No | Source inspected | Separate implicit TCP STUN remains; lab OS confinement is not a production solution |
 | NAT traversal, blocked UDP, IPv6, MTU, VPN overlap | No end-to-end integration | Not verified | No | No | Controlled topology matrix required |
 | Sleep/wake, Wi-Fi change, abrupt helper death | No end-to-end integration | Not verified | No | No | Must verify route ownership and cleanup after crashes |
-| Installation, elevation refusal, repair, upgrade, uninstall | Preview package only | Not verified | No | No | Requires native machines and privileged tests; Windows hosted runners' disabled UAC cannot prove consent behavior |
-| Route/DNS/firewall/internet preservation | No mutations made by preview | Lab creates none | No | No privileged run | Snapshot-and-diff procedure below is required for helper integration |
+| Installation, elevation refusal, repair, upgrade, uninstall | Preview package only | ARM app inspected | Windows install/launch/close/uninstall pass | CI record inspected | Elevation, repair, upgrade and helper paths remain missing; hosted runner cannot prove ordinary-user consent |
+| Route/DNS/firewall/internet preservation | Preview has no networking mutations | Mac userspace lab creates no routes | Windows route/DNS unchanged; Linux namespace cleanup passes | Records inspected | Firewall/internet and installed helper acceptance still required |
 | Startup, idle memory/CPU, throughput, loss and latency benchmarks | No | Not measured | No | No | Lab wall-clock duration is not a benchmark |
+
+## Hosted verification records
+
+- [Native build/test run 34031905272](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34031905272): all four jobs passed. App build commit `f7dc384d04288ddfc62250d0680f2220c3231cea`; [native-ci.json](evidence/native-ci.json) and [Windows smoke](evidence/windows-installer-smoke.json).
+- [Real TUN feasibility run 34032344518](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34032344518): both TCP and UDP underlay jobs passed. Two isolated Linux network namespaces, real TUN addresses, bidirectional TCP/UDP echo, abrupt stop/restart, management denial and owned cleanup. [TCP report](evidence/tun-feasibility-tcp.json), [UDP report](evidence/tun-feasibility-udp.json). Reproduce through the manual `feasibility.yml` workflow on a disposable Linux runner; it requires root to create isolated namespaces and has no public routes.
+- These results add OS virtual-IP feasibility, native builds and Windows preview acceptance. They do not complete the missing helper or prove desktop cross-device interoperability, NAT traversal, relay policy or ordinary-user elevation.
 
 ## Executable lab and platform procedure
 

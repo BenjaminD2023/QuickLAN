@@ -1,0 +1,16 @@
+{
+  "target": "linux-x86_64",
+  "archive": "easytier-linux-x86_64-v2.6.4.zip",
+  "archive_sha256": "61b659eaedba658fa66fe47d17e1426cdd77e5d02fa15fed447bb4357c09dfd6",
+  "binaries": [
+    {
+      "binary": "easytier-core",
+      "sha256": "35b854e0c5853c02733870488c977200f6aa06d09c08d5dc7f9f9e150e7be8d5"
+    },
+    {
+      "binary": "easytier-cli",
+      "sha256": "8da66644ec50dcf618fccf76780991f52dfbe2939797abc0efe0ef4d4c4d3383"
+    }
+  ],
+  "executed": false
+}
