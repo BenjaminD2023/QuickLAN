@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-06",
+  "environment": "macOS 26.4.1 ARM64; Rust 1.96.0; Node 22.22.3; npm 10.9.8",
+  "results": {
+    "rust_security_tests": {
+      "passed": 23,
+      "ignored": 1,
+      "ignored_test": "Native credential test is separately run and recorded"
+    },
+    "frontend_tests": {
+      "passed": 5
+    },
+    "playwright_workflow_tests": {
+      "passed": 3,
+      "adapter": "Explicit test mode; visibly labeled simulation; no production fallback"
+    },
+    "frontend_build": "pass",
+    "eslint": "pass",
+    "rustfmt": "pass for workspace and desktop",
+    "clippy": "pass for workspace all-targets and desktop, warnings denied",
+    "python_syntax": "pass",
+    "workflow_yaml_syntax": "pass",
+    "signing_config_without_credentials": "correctly refuses with exit 2"
+  },
+  "limitations": [
+    "No hosted CI execution",
+    "No privileged helper, driver, routing or multi-device tests",
+    "Browser test mode is not native IPC evidence",
+    "Compilation is not platform support evidence"
+  ]
+}

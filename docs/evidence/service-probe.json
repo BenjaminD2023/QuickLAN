@@ -1,0 +1,9 @@
+{
+  "date": "2026-09-06",
+  "results": [
+    "TCP: exact 64-byte echo passed",
+    "UDP: exact 64-byte echo passed"
+  ],
+  "topology": "127.0.0.1 using explicit --loopback-lab flag",
+  "limitation": "Tests the diagnostic CLI only; not overlay, TUN, NAT or installed helper evidence"
+}

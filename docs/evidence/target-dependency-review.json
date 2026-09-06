@@ -1,0 +1,20 @@
+[
+  {
+    "target": "aarch64-apple-darwin",
+    "normal_dependency_count": 256,
+    "missing_license_texts_in_normal_graph": [],
+    "gtk_glib_in_normal_graph": []
+  },
+  {
+    "target": "x86_64-apple-darwin",
+    "normal_dependency_count": 256,
+    "missing_license_texts_in_normal_graph": [],
+    "gtk_glib_in_normal_graph": []
+  },
+  {
+    "target": "x86_64-pc-windows-msvc",
+    "normal_dependency_count": 255,
+    "missing_license_texts_in_normal_graph": [],
+    "gtk_glib_in_normal_graph": []
+  }
+]

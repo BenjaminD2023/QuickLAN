@@ -1,0 +1,24 @@
+name: Bug report
+description: Report a reproducible issue without private diagnostics
+body:
+  - type: markdown
+    attributes:
+      value: "This is an engineering preview. Do not include invitations, secrets, raw core logs, private addresses or security exploit details."
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: QuickLAN version, OS version and architecture; no personal device names.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps, expected result and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Optional sanitized diagnostic preview
+      description: Review it before posting. Never attach raw upstream logs.

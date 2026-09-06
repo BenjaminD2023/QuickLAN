@@ -1,0 +1,13 @@
+name: Feature request
+description: Describe a user need and its trust implications
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: User need and proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Relevant platform, protocol evidence and security implications

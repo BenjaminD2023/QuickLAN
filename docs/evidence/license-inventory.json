@@ -1,0 +1,10 @@
+{
+  "components": 533,
+  "missing_license_texts": [
+    "cargo:cesu8@1.1.0",
+    "cargo:libappindicator-sys@0.9.0",
+    "cargo:winapi-i686-pc-windows-gnu@0.4.0",
+    "cargo:winapi-x86_64-pc-windows-gnu@0.4.0"
+  ],
+  "limitation": "Metadata license expressions are not legal review. Resolve missing texts and inspect platform-only bundled resources before public redistribution."
+}

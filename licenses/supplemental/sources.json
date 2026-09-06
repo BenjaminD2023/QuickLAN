@@ -175,5 +175,45 @@
       "cargo:objc2-encode@4.1.0",
       "cargo:objc2-exception-helper@0.1.1"
     ]
+  },
+  {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/6f6ab1207bb3923c2721fbc67d2fdb1c8deb0c7a/LICENSE_MIT",
+    "file": "2709c3fec0effff0-LICENSE_MIT.txt",
+    "sha256": "9dd42ea92cff2ede5cd477cbfcce051b2d0115c0ac7f368ee88cb545055dff1d",
+    "packages": [
+      "cargo:tauri-plugin@2.6.3"
+    ]
+  },
+  {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/6f6ab1207bb3923c2721fbc67d2fdb1c8deb0c7a/LICENSE_APACHE-2.0",
+    "file": "b51c5b9fa1d6d0de-LICENSE_APACHE-2.0.txt",
+    "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+    "packages": [
+      "cargo:tauri-plugin@2.6.3"
+    ]
+  },
+  {
+    "url": "https://www.mozilla.org/media/MPL/2.0/index.txt",
+    "file": "82a77dcc5793251f-MPL-2.0.txt",
+    "sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+    "packages": [
+      "cargo:selectors@0.36.1"
+    ]
+  },
+  {
+    "url": "https://raw.githubusercontent.com/r-efi/r-efi/97b55bed1c2c91dcbf787674849f05337ff80b33/AUTHORS",
+    "file": "72c7e5dc319570a6-AUTHORS.txt",
+    "sha256": "ff92bed461f50338dd703a9ba9aee496a425957873df1d91192776e4bdf5dda7",
+    "packages": [
+      "cargo:r-efi@5.3.0"
+    ]
+  },
+  {
+    "url": "https://raw.githubusercontent.com/r-efi/r-efi/7e1b0322d31d625f81a5656096330934f9cd835d/AUTHORS",
+    "file": "f026f7a606fe584a-AUTHORS.txt",
+    "sha256": "d027e91dbc9cdbb2f1190068e498bd6b61cff022b6a032b191021ba658d96111",
+    "packages": [
+      "cargo:r-efi@6.0.0"
+    ]
   }
 ]
