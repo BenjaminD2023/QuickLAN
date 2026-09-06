@@ -2,7 +2,7 @@
 
 Concept: `docs/design-concept.png`, generated before frontend implementation. Browser evidence: `docs/evidence/ui-empty.png`, `ui-create.png`, `ui-network.png`, `ui-join.png`, `ui-dark.png` and `ui-narrow.png`. These browser captures have an explicit **TEST SIMULATION — no networking** strip. The production bundle test confirms both the mock hook and strip are absent.
 
-The concept and latest captures were opened and compared directly on 2026-09-06. The in-app browser was also used to inspect the real production UI entry, create dialog and advanced settings without a mock fallback. Native rendering is recorded separately in `evidence/native-desktop.json`.
+The concept and latest captures were opened and compared directly on 2026-09-06. The in-app browser was also used to inspect the real production UI entry, create dialog and advanced settings without a mock fallback. The production macOS bundle was then inspected directly in both light and dark appearances, including saved network, helper failure, invitation and diagnostics. No major visual mismatch was observed; native select controls use macOS styling. Native rendering is recorded separately in `evidence/native-desktop.json`.
 
 | Anchor | Observed result |
 |---|---|

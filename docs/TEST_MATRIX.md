@@ -23,7 +23,7 @@ Local environment: Apple Silicon, macOS 26.4.1, Rust 1.96.0, Node 22.22.3, npm 1
 | Keyboard, focus, dark theme, narrow layout | Yes | Pass | No | Screenshots inspected | `evidence/ui-*.png`, `docs/DESIGN_QA.md`; no browser overflow at 390px |
 | Production cannot use UI test adapter | Yes | Pass | No | Production bundle scanned | `npm run build && npm test`; test hook and banner absent from generated JS |
 | Frontend type/lint/build and Rust domain Clippy | Yes | Pass | No | No | README commands, `-D warnings` |
-| Desktop ARM64 compile / bundle | Yes | See final native record | No | See native record | `evidence/native-desktop.json`; compilation alone is not end-user compatibility |
+| Desktop ARM64 compile / bundle | Yes | Pass, optimized app bundle | No | Native create/copy/error/relaunch/rename/forget and theme verified | `evidence/native-desktop.json`; compilation alone is not end-user compatibility |
 | macOS Intel / Windows installer builds | CI configured | Not verified | No | No | `.github/workflows/ci.yml`; not run on hosted runners |
 | npm / wrapper Rust vulnerability checks | Yes | Executed | No | Advisories reviewed | `evidence/*audit.json`, `docs/SECURITY_REVIEW.md`; distinguish warnings from vulnerability count |
 | SBOM and dependency notices | Generated | Inventory checked | No | Incomplete legal review | `evidence/dependencies.cdx.json`, `evidence/license-inventory.json`, `licenses/`; missing texts gate public redistribution |

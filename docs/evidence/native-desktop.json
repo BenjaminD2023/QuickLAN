@@ -1,0 +1,38 @@
+{
+  "date": "2026-09-06",
+  "platform": "macOS 26.4.1 ARM64",
+  "build_command": "npm run desktop:build",
+  "build_result": "pass",
+  "profile": "release, optimized",
+  "bundle": "src-tauri/target/release/bundle/macos/QuickLAN.app",
+  "executable_sha256": "f34bc6bff3c6d3155eebded0ee3c2426f89b516a8be62bbd6cc341f10671fa7b",
+  "signature": "Linker ad-hoc signature only; no Developer ID, sealed resources or notarization",
+  "automation": "Native packaged app via CUA accessibility controls and screenshots, tauri://localhost, production bridge",
+  "verified": [
+    "First launch empty state without test adapter or desktop-runtime error",
+    "Create network through native IPC and Keychain storage",
+    "Connect returns truthful helper_unavailable failure, no virtual IP or peers",
+    "Invitation copy returns native success; bearer not inspected or retained in report",
+    "Sanitized diagnostics shows real starting/failed lifecycle events",
+    "Copy diagnostic report replaces test invitation on clipboard",
+    "Quit and relaunch retains saved network and starts disconnected",
+    "Rename network through native IPC",
+    "Forget local test network returns to empty state",
+    "Dark preference saves and native dark render inspected",
+    "System appearance restored, no saved test networks left",
+    "Bundled notices and covered source match current source files"
+  ],
+  "limitations": [
+    "No operating-system virtual networking",
+    "No helper installation/elevation, driver, route or firewall tests",
+    "No Windows or Intel execution",
+    "Native import confirmation was covered in browser UI tests and Rust tests, not a native imported-token smoke test",
+    "Screenshots inspected in the tool session; browser evidence files remain explicitly labeled simulations"
+  ],
+  "archive": {
+    "path": "artifacts/QuickLAN-0.1.0-macos-arm64-engineering.zip",
+    "sha256": "aeb35ced68f5f3baee6f47677929674cd97105de28ca62ff97ca4652bc5d4145",
+    "bytes": 2790476,
+    "zip_integrity": "pass"
+  }
+}
