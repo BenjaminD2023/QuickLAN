@@ -5,8 +5,10 @@ use easytier::{
         stun::StunInfoCollector,
     },
     instance::instance::Instance,
+    peers::route_trait::NextHopPolicy,
     proto::common::SecureModeConfig,
 };
+use network_interface::{NetworkInterface, NetworkInterfaceConfig};
 use quicklan_core::{
     adapter::{Peer, PeerPath, candidate_config},
     error::{Error, Result},
@@ -119,6 +121,21 @@ impl NetworkSession {
             .map(|ip| ip.address());
         if let Some(ip) = own_ip {
             quicklan_core::routes::validate_advertisement(&self.subnet, ip, &[])?;
+            let name = self
+                .instance
+                .quicklan_ifname()
+                .await
+                .ok_or(Error::CoreFailed)?;
+            let interfaces = NetworkInterface::show().map_err(|_| Error::CoreFailed)?;
+            if !interfaces.iter().any(|iface| {
+                iface.name == name
+                    && iface
+                        .addr
+                        .iter()
+                        .any(|addr| addr.ip() == std::net::IpAddr::V4(ip))
+            }) {
+                return Err(Error::CoreFailed);
+            }
         }
         let mut peers = Vec::new();
         for route in manager.list_routes().await {
@@ -158,12 +175,27 @@ impl NetworkSession {
                 .map(|s| s.latency_us)
                 .min()
                 .map(|us| us as f64 / 1000.0);
+            let gateway = map
+                .get_gateway_peer_id(route.peer_id, NextHopPolicy::LeastHop)
+                .await;
+            let relay_live = if let Some(gateway) = gateway {
+                map.list_peer_conns(gateway)
+                    .await
+                    .unwrap_or_default()
+                    .iter()
+                    .any(|conn| !conn.is_closed)
+                    || manager.get_foreign_network_client().has_next_hop(gateway)
+            } else {
+                manager
+                    .get_foreign_network_client()
+                    .has_next_hop(route.peer_id)
+            };
             let path = if direct {
                 PeerPath::Direct
-            } else if route.cost > 0 {
+            } else if relay_live {
                 PeerPath::Relayed
             } else {
-                PeerPath::Unknown
+                PeerPath::Unreachable
             };
             let nickname = route
                 .hostname

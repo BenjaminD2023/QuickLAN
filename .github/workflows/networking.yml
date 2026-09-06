@@ -22,6 +22,15 @@ jobs:
           persist-credentials: false
       - name: Install Rust
         run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            engine/target
+            target
+          key: native-${{ matrix.runner }}-rust196-${{ hashFiles('engine/Cargo.lock', 'Cargo.lock') }}-${{ github.sha }}
+          restore-keys: native-${{ matrix.runner }}-rust196-${{ hashFiles('engine/Cargo.lock', 'Cargo.lock') }}-
       - name: Install protobuf compiler on Linux
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y protobuf-compiler

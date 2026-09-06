@@ -1,5 +1,19 @@
 import { createContext, useContext } from "react";
 export const en = {
+  checkService: "Check application port",
+  serviceHint:
+    "Enter the TCP port your friend’s app uses. This opens one connection without sending data. UDP-only games need an in-game connection test.",
+  tcpPort: "TCP port",
+  checkingService: "Checking…",
+  serviceReachable:
+    "TCP connection accepted. The service is listening; this does not verify the application protocol.",
+  serviceRefused:
+    "Connection refused. Ask your friend to start the app and confirm its port and bind address; a firewall may also reject it.",
+  serviceTimedOut:
+    "No response within 3 seconds. Check the peer path, app port and firewall permissions.",
+  serviceUnreachable:
+    "The connection could not be established. Check the peer connection and application settings.",
+  peerGone: "This peer is no longer in the current network state.",
   editSettings: "Edit connection settings",
   reshare:
     "After changing connection settings, copy a fresh invitation and share it with every member.",
@@ -167,6 +181,18 @@ export const en = {
 export type TextKey = keyof typeof en;
 const zh: Record<TextKey, string> = {
   ...en,
+  checkService: "检查应用端口",
+  serviceHint:
+    "输入朋友应用使用的 TCP 端口。只建立一次连接，不发送数据。仅使用 UDP 的游戏需要在游戏内测试。",
+  tcpPort: "TCP 端口",
+  checkingService: "正在检查…",
+  serviceReachable: "TCP 连接已接受，服务正在监听。这不代表已验证应用协议。",
+  serviceRefused:
+    "连接被拒绝。请朋友启动应用并确认端口和监听地址；防火墙也可能拒绝连接。",
+  serviceTimedOut:
+    "3 秒内未收到响应。请检查设备连接路径、应用端口和防火墙权限。",
+  serviceUnreachable: "无法建立连接。请检查设备连接和应用设置。",
+  peerGone: "当前网络状态中已没有此设备。",
   networks: "网络",
   create: "创建网络",
   createLong: "创建网络",

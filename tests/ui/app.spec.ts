@@ -256,3 +256,101 @@ test("keyboard, dark mode, diagnostics and narrow layout", async ({ page }) => {
   );
   expect(overflows).toBe(false);
 });
+
+test("live peer details, explicit TCP probe and peer disappearance", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.evaluate(() => {
+    const peer = {
+      id: "42",
+      nickname: "A friend's device",
+      virtual_ip: "10.73.42.2",
+      path: "direct",
+      latency_ms: 4.2,
+      identity_verified: false,
+    };
+    const view = {
+      saved: {
+        networks: [
+          {
+            id: "a".repeat(32),
+            label: "Live network",
+            subnet: "10.73.42.0/24",
+            policy: "manual",
+            bootstrap: [],
+          },
+        ],
+        preferences: {
+          nickname: "This device",
+          theme: "light",
+          language: "en",
+          onboarding_complete: true,
+        },
+      },
+      connection: {
+        phase: "connected",
+        network_id: "a".repeat(32),
+        virtual_ip: "10.73.42.1",
+        peers: [peer],
+        error: null,
+      },
+      helper: {
+        installed: true,
+        connection_enabled: true,
+        code: null,
+        release_gaps: [],
+      },
+    };
+    let probes = 0;
+    const win = window as unknown as {
+      __QUICKLAN_TEST_INVOKE: (
+        command: string,
+        args?: Record<string, unknown>,
+      ) => Promise<unknown>;
+      removePeer: () => void;
+    };
+    win.removePeer = () => {
+      view.connection.peers = [];
+    };
+    win.__QUICKLAN_TEST_INVOKE = async (command, args) => {
+      if (command === "get_state") return structuredClone(view);
+      if (command === "probe_service") {
+        if (args?.peerId !== "42" || args?.port !== 25565)
+          throw "invalid_service";
+        probes++;
+        return probes === 1 ? "refused" : "reachable";
+      }
+      throw "unsupported_test_command";
+    };
+  });
+  await expect(page).toHaveTitle("QuickLAN");
+  await expect(
+    page.getByRole("heading", { name: "Live network" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: /A friend's device/ }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByText("4.2 ms")).toBeVisible();
+  await dialog.getByLabel("TCP port").fill("25565");
+  await dialog
+    .getByRole("button", { name: "Check application port", exact: true })
+    .click();
+  await expect(dialog.getByRole("status")).toContainText("Connection refused");
+  await dialog
+    .getByRole("button", { name: "Check application port", exact: true })
+    .click();
+  await expect(dialog.getByRole("status")).toContainText(
+    "TCP connection accepted",
+  );
+  await page.screenshot({ path: "/tmp/quicklan-peer-probe.png" });
+  await page.evaluate(() =>
+    (window as unknown as { removePeer: () => void }).removePeer(),
+  );
+  await expect(
+    page
+      .getByRole("dialog")
+      .getByText("This peer is no longer in the current network state."),
+  ).toBeVisible();
+  expect(errors).toEqual([]);
+});

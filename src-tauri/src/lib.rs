@@ -60,6 +60,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::get_state,
+            commands::probe_service,
             commands::update_settings,
             commands::create_network,
             commands::preview_invitation,

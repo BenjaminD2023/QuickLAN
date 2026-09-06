@@ -13,7 +13,8 @@ import { request, nativeAvailable, testMode } from "./lib/bridge";
 import { LocaleContext, errorText, useText } from "./lib/i18n";
 import { Sidebar } from "./components/Sidebar";
 import type { Page } from "./components/Sidebar";
-import { Modal, Notice } from "./components/ui";
+import { Notice } from "./components/ui";
+import { PeerDialog } from "./features/PeerDialog";
 import { NetworkView, Welcome } from "./features/NetworkView";
 import {
   CreateDialog,
@@ -359,38 +360,13 @@ function Application({
         />
       )}
       {peer && (
-        <Modal title={t("peerDetail")} {...common}>
-          <dl className="facts">
-            <div>
-              <dt>{t("nickname")}</dt>
-              <dd>{peer.nickname}</dd>
-            </div>
-            <div>
-              <dt>{t("virtualAddress")}</dt>
-              <dd>{peer.virtual_ip ?? t("unavailable")}</dd>
-            </div>
-            <div>
-              <dt>{t("policy")}</dt>
-              <dd>{t(peer.path)}</dd>
-            </div>
-            <div>
-              <dt>{t("latency")}</dt>
-              <dd>
-                {peer.latency_ms === null
-                  ? t("unavailable")
-                  : `${peer.latency_ms} ms`}
-              </dd>
-            </div>
-          </dl>
-          <p>{t("selfReported")}</p>
-          {peer.virtual_ip && (
-            <button
-              onClick={() => copy("copy_virtual_ip", { ip: peer.virtual_ip })}
-            >
-              {t("copyIp")}
-            </button>
-          )}
-        </Modal>
+        <PeerDialog
+          key={`${peer.id}:${view.connection.peers.find((item) => item.id === peer.id)?.virtual_ip ?? "gone"}`}
+          peer={view.connection.peers.find((item) => item.id === peer.id)}
+          onClose={() => setPeer(null)}
+          onError={showError}
+          onCopy={(ip) => copy("copy_virtual_ip", { ip })}
+        />
       )}
     </div>
   );

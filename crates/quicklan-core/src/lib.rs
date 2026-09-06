@@ -10,6 +10,7 @@ pub mod model;
 pub mod protocol;
 pub mod routes;
 pub mod runtime;
+pub mod service;
 pub mod storage;
 pub mod system_routes;
 

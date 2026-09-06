@@ -23,6 +23,11 @@ output.mkdir(parents=True, exist_ok=True)
 shutil.copyfile(binary, output/name)
 (output/name).chmod(0o755)
 if windows:
+    from pe_imports import imports
+    required_dlls = imports(binary.read_bytes())
+    if any(name in required_dlls for name in ['packet.dll', 'wpcap.dll', 'windivert.dll']):
+        raise SystemExit('Unexpected packet-capture driver dependency')
+    print('Verified Windows imports: ' + ', '.join(required_dlls))
     spec = json.loads((ROOT/'upstream/wintun.lock.json').read_text())
     archive = ROOT/'.cache/wintun-0.14.1.zip'
     if not archive.exists():

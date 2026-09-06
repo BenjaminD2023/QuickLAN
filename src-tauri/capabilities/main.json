@@ -7,6 +7,7 @@
   ],
   "permissions": [
     "allow-get-state",
+    "allow-probe-service",
     "allow-create-network",
     "allow-preview-invitation",
     "allow-accept-invitation",

@@ -156,3 +156,30 @@ pub async fn update_settings(
 ) -> Result<()> {
     state.with(|a| a.update_settings(&id, policy, bootstrap, assistance_accepted))
 }
+
+#[tauri::command]
+pub async fn probe_service(
+    state: State<'_, ManagedApp>,
+    peer_id: String,
+    port: u16,
+) -> Result<quicklan_core::service::ProbeResult> {
+    use std::sync::atomic::{AtomicBool, Ordering};
+    static BUSY: AtomicBool = AtomicBool::new(false);
+    if BUSY.swap(true, Ordering::SeqCst) {
+        return Err(Error::Busy);
+    }
+    struct Guard;
+    impl Drop for Guard {
+        fn drop(&mut self) {
+            BUSY.store(false, Ordering::SeqCst);
+        }
+    }
+    let guard = Guard;
+    let endpoint = state.with(|app| app.service_endpoint(&peer_id, port))?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let _guard = guard;
+        quicklan_core::service::probe(endpoint)
+    })
+    .await
+    .map_err(|_| Error::CoreFailed)
+}

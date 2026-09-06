@@ -108,6 +108,32 @@ impl<S: Store> App<S> {
             },
         }
     }
+    pub fn service_endpoint(&mut self, peer_id: &str, port: u16) -> Result<std::net::SocketAddrV4> {
+        self.refresh()?;
+        let snapshot = self.lifecycle.snapshot();
+        if port == 0 || snapshot.phase != crate::lifecycle::Phase::Connected {
+            return Err(Error::InvalidService);
+        }
+        let peer = snapshot
+            .peers
+            .iter()
+            .find(|peer| peer.id == peer_id)
+            .ok_or(Error::InvalidService)?;
+        let ip = peer
+            .virtual_ip
+            .as_ref()
+            .ok_or(Error::InvalidService)?
+            .parse()
+            .map_err(|_| Error::InvalidService)?;
+        let network = self.network(
+            snapshot
+                .network_id
+                .as_deref()
+                .ok_or(Error::InvalidService)?,
+        )?;
+        crate::routes::validate_advertisement(&network.subnet, ip, &[])?;
+        Ok(std::net::SocketAddrV4::new(ip, port))
+    }
     pub fn network(&self, id: &str) -> Result<&Network> {
         self.saved
             .networks

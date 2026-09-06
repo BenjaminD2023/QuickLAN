@@ -425,3 +425,77 @@ fn changed_assistance_requires_new_explicit_consent() {
         1
     );
 }
+
+#[derive(Clone, Default)]
+struct RuntimeFixture(Arc<Mutex<Vec<quicklan_core::runtime::RuntimeEvent>>>);
+impl quicklan_core::runtime::NetworkRuntime for RuntimeFixture {
+    fn available(&self) -> bool {
+        true
+    }
+    fn start(&mut self, request: HelperRequest) -> quicklan_core::error::Result<()> {
+        assert!(matches!(request, HelperRequest::Start { .. }));
+        Ok(())
+    }
+    fn stop(&mut self) -> quicklan_core::error::Result<bool> {
+        Ok(true)
+    }
+    fn poll(&mut self) -> Vec<quicklan_core::runtime::RuntimeEvent> {
+        std::mem::take(&mut *self.0.lock().unwrap())
+    }
+}
+#[test]
+fn live_runtime_requires_shutdown_ack_and_rejects_stale_peer_observations() {
+    use quicklan_core::{
+        adapter::{Peer, PeerPath},
+        runtime::RuntimeEvent,
+    };
+    let runtime = RuntimeFixture::default();
+    let mut app = App::new(TestStore::default())
+        .unwrap()
+        .with_runtime(Box::new(runtime.clone()));
+    let network = app
+        .create(
+            "Test network".into(),
+            "10.73.42.0/24".into(),
+            Policy::Manual,
+            vec![],
+            false,
+        )
+        .unwrap();
+    assert_eq!(app.connect(&network.id).unwrap().phase, Phase::Starting);
+    assert!(app.connect(&network.id).is_err());
+    runtime.0.lock().unwrap().extend([
+        RuntimeEvent::Joining,
+        RuntimeEvent::State {
+            virtual_ip: Some("10.73.42.1".into()),
+            peers: vec![Peer {
+                id: "42".into(),
+                nickname: "Friend".into(),
+                virtual_ip: Some("10.73.42.2".into()),
+                path: PeerPath::Direct,
+                latency_ms: None,
+                identity_verified: false,
+            }],
+        },
+    ]);
+    app.refresh().unwrap();
+    assert_eq!(app.view().connection.phase, Phase::Connected);
+    assert_eq!(
+        app.service_endpoint("42", 25565).unwrap().to_string(),
+        "10.73.42.2:25565"
+    );
+    assert!(app.service_endpoint("arbitrary-host", 80).is_err());
+    assert!(app.service_endpoint("42", 0).is_err());
+    assert_eq!(app.disconnect().unwrap().phase, Phase::Stopping);
+    assert!(app.service_endpoint("42", 25565).is_err());
+    runtime.0.lock().unwrap().push(RuntimeEvent::State {
+        virtual_ip: Some("10.73.42.1".into()),
+        peers: vec![],
+    });
+    app.refresh().unwrap();
+    assert_eq!(app.view().connection.phase, Phase::Stopping);
+    runtime.0.lock().unwrap().push(RuntimeEvent::Stopped);
+    app.refresh().unwrap();
+    assert_eq!(app.view().connection.phase, Phase::Disconnected);
+    assert!(app.view().connection.virtual_ip.is_none());
+}

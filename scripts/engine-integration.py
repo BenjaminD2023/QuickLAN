@@ -149,6 +149,7 @@ try:
     wait(converged)
     checks.append('Authenticated QuickLAN engines converge to distinct DHCP addresses and report direct paths')
     addresses = [host.ip, remote.ip]
+    probe_servers = []
     for i, address in enumerate(addresses):
         assert any(any(addr.get('local') == address for addr in item['addr_info'])
             for item in json.loads(ns(i, ['ip', '-j', '-4', 'addr']).stdout))
@@ -158,6 +159,7 @@ try:
             str(ROOT/'scripts/service-probe.py'), 'server', '--address', address, '--seconds', '300'],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
         children.append(child)
+        probe_servers.append(child)
     def exchange(i):
         return ns(i, ['/usr/bin/python3', str(ROOT/'scripts/service-probe.py'), 'client', '--address', addresses[1-i]],
                   check=False, timeout=12).returncode == 0
@@ -177,7 +179,16 @@ try:
     checks.append('Wrong network credential cannot authenticate or exchange application data')
     remote = Engine(1, remote_network, credential)
     wait(converged)
-    assert remote.ip == addresses[1], 'Restart allocation changed; restart probe listeners before testing'
+    # DHCP may assign a different host address after a reconnect. Follow the
+    # engine's actual state and rebind application listeners, as an app must.
+    for child in probe_servers:
+        stop(child)
+    addresses = [host.ip, remote.ip]
+    for i, address in enumerate(addresses):
+        child = subprocess.Popen(['ip', 'netns', 'exec', names[i], '/usr/bin/python3',
+            str(ROOT/'scripts/service-probe.py'), 'server', '--address', address, '--seconds', '300'],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        children.append(child)
     for i in range(2):
         wait(lambda: exchange(i))
     checks.append('Restart restores direct peer state and bidirectional TCP/UDP')

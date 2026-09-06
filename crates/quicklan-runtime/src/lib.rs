@@ -67,8 +67,9 @@ impl NetworkRuntime for DesktopRuntime {
         let stop = self.stop.clone();
         let tx = self.tx.clone();
         let engine = self.engine.clone();
+        let digest = self.digest.clone();
         self.worker = Some(std::thread::spawn(move || {
-            let result = run(engine, request, &stop, &tx);
+            let result = run(engine, digest, request, &stop, &tx);
             if let Err(error) = result {
                 let _ = tx.send(RuntimeEvent::Failed(error));
             }
@@ -91,6 +92,7 @@ impl Drop for DesktopRuntime {
 
 fn run(
     engine: PathBuf,
+    digest: String,
     request: HelperRequest,
     stop: &AtomicBool,
     events: &mpsc::Sender<RuntimeEvent>,
@@ -100,7 +102,7 @@ fn run(
         _ => return Err(Error::Unauthorized),
     };
     let listener = quicklan_ipc::LocalListener::bind().map_err(|_| Error::UnsafePath)?;
-    let child = elevation::launch(&engine, &listener.endpoint(), std::process::id())?;
+    let child = elevation::launch(&engine, &digest, &listener.endpoint(), std::process::id())?;
     let result = (|| {
         let mut stream = listener
             .accept(child.pid, Duration::from_secs(10))
@@ -181,6 +183,10 @@ fn run(
     // Dropping the stream also handles every error path. The engine treats EOF
     // as mandatory teardown. Never acknowledge a disconnect while it is alive.
     if !child.wait(Duration::from_secs(20)) {
+        let _ = events.send(RuntimeEvent::Failed(Error::CoreFailed));
+        // Keep ownership and refuse another engine until the previous elevated
+        // process is confirmed dead. A failed UI state is not proof of cleanup.
+        while !child.wait(Duration::from_secs(1)) {}
         return Err(Error::CoreFailed);
     }
     result?;

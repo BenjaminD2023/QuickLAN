@@ -18,6 +18,7 @@ quicklan-core = { path = "../crates/quicklan-core" }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
 serde_json = "=1.0.145"
 zeroize = "=1.8.2"
+network-interface = "=2.0.5"
 
 [profile.release]
 strip = true

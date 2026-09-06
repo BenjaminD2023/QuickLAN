@@ -91,6 +91,20 @@
  
          self.udp_hole_puncher.lock().await.run().await?;
          self.tcp_hole_puncher.lock().await.run().await?;
+@@ -1552,6 +1564,13 @@
+     #[cfg(feature = "tun")]
+     pub fn get_nic_ctx(&self) -> ArcNicCtx {
+         self.nic_ctx.clone()
++    }
++
++    #[cfg(all(feature = "tun", feature = "quicklan"))]
++    pub async fn quicklan_ifname(&self) -> Option<String> {
++        let guard = self.nic_ctx.lock().await;
++        let nic = guard.as_ref()?.nic_ctx.as_ref()?.downcast_ref::<NicCtx>()?;
++        nic.ifname().await
+     }
+ 
+     pub fn get_peer_packet_receiver(&self) -> Arc<Mutex<PacketRecvChanReceiver>> {
 --- a/easytier/src/peers/peer_manager.rs
 +++ b/easytier/src/peers/peer_manager.rs
 @@ -911,7 +911,7 @@
@@ -262,6 +276,15 @@
      fn start_windows_udp_broadcast_relay(&mut self, virtual_ipv4: Ipv4Inet) {
          if !self.global_ctx.get_flags().enable_udp_broadcast_relay {
              return;
+@@ -1342,7 +1346,7 @@
+             let mut nic = self.nic.lock().await;
+             match nic.create_dev().await {
+                 Ok(ret) => {
+-                    #[cfg(target_os = "windows")]
++                    #[cfg(all(target_os = "windows", not(feature = "quicklan")))]
+                     {
+                         let dev_name = self.global_ctx.get_flags().dev_name;
+                         let _ = RegistryManager::reg_change_catrgory_in_profile(&dev_name);
 @@ -1380,7 +1384,7 @@
          // Assign IPv4 address if provided
          if let Some(ipv4_addr) = ipv4_addr {
@@ -284,3 +307,32 @@
  
          if let Some(stun_servers) = config_fs.get_stun_servers() {
              stun_info_collector.set_stun_servers(stun_servers);
+--- a/easytier/build.rs
++++ b/easytier/build.rs
+@@ -73,11 +73,11 @@
+         let target = std::env::var("TARGET").unwrap_or_default();
+ 
+         if target.contains("x86_64") {
+-            println!("cargo:rustc-link-search=native=easytier/third_party/x86_64/");
++            println!("cargo:rustc-link-search=native={}", std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("third_party/x86_64").display());
+         } else if target.contains("i686") {
+-            println!("cargo:rustc-link-search=native=easytier/third_party/i686/");
++            println!("cargo:rustc-link-search=native={}", std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("third_party/i686").display());
+         } else if target.contains("aarch64") {
+-            println!("cargo:rustc-link-search=native=easytier/third_party/arm64/");
++            println!("cargo:rustc-link-search=native={}", std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("third_party/arm64").display());
+         }
+ 
+         let protoc_path = if let Some(o) = Self::check_protoc_exist() {
+--- a/easytier/src/common/network.rs
++++ b/easytier/src/common/network.rs
+@@ -302,6 +302,9 @@
+                     ?e,
+                     "failed to enumerate interfaces via network-interface, falling back to pnet"
+                 );
++                #[cfg(feature = "quicklan")]
++                return Vec::new();
++                #[cfg(not(feature = "quicklan"))]
+                 match std::panic::catch_unwind(pnet::datalink::interfaces) {
+                     Ok(ifaces) => ifaces,
+                     Err(_) => {

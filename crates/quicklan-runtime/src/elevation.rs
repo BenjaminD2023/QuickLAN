@@ -1,13 +1,14 @@
 use quicklan_core::error::{Error, Result};
-use std::{
-    path::Path,
-    time::{Duration, Instant},
-};
+#[cfg(unix)]
+use std::time::Instant;
+use std::{path::Path, time::Duration};
 
 pub struct ElevatedChild {
     pub pid: u32,
     #[cfg(windows)]
     handle: std::os::windows::io::OwnedHandle,
+    #[cfg(windows)]
+    _held_files: Vec<std::fs::File>,
 }
 impl ElevatedChild {
     pub fn wait(&self, timeout: Duration) -> bool {
@@ -48,11 +49,52 @@ fn apple_quote(value: &str) -> String {
 }
 
 #[cfg(target_os = "macos")]
-pub fn launch(engine: &Path, endpoint: &str, parent: u32) -> Result<ElevatedChild> {
+fn launch_script(engine: &str, digest: &str, endpoint: &str, parent: u32) -> Result<String> {
+    if !quicklan_core::model::valid_hex(digest, 64) {
+        return Err(Error::IncompatibleCore);
+    }
+    // Copy before verifying, inside a root-owned exclusive directory. Executing
+    // that verified copy closes the user-owned bundle's check/launch race.
+    // The root supervisor removes only its own directory after the child exits.
+    Ok(format!(
+        r#"set -eu
+umask 077
+stage=$(/usr/bin/mktemp -d /private/var/tmp/quicklan-engine.XXXXXXXX)
+trap '/bin/rm -rf -- "$stage"' EXIT
+/bin/cp -- {} "$stage/quicklan-engine"
+actual=$(/usr/bin/shasum -a 256 "$stage/quicklan-engine")
+case "$actual" in '{}  '*) ;; *) exit 2 ;; esac
+/bin/chmod 500 "$stage/quicklan-engine"
+(
+  trap '/bin/rm -rf -- "$stage"' EXIT
+  /usr/bin/env -i PATH=/usr/bin:/bin:/usr/sbin:/sbin HOME=/var/empty "$stage/quicklan-engine" --ipc {} --parent-pid {} </dev/null >/dev/null 2>&1 &
+  child=$!
+  /usr/bin/printf '%s\n' "$child" > "$stage/pid"
+  wait "$child" || true
+) </dev/null >/dev/null 2>&1 &
+guard=$!
+attempt=0
+while [ ! -f "$stage/pid" ]; do
+  attempt=$((attempt + 1))
+  [ "$attempt" -lt 100 ] || exit 2
+  /bin/sleep 0.05
+done
+/bin/cat "$stage/pid"
+trap - EXIT
+"#,
+        shell_quote(engine),
+        digest,
+        shell_quote(endpoint),
+        parent
+    ))
+}
+
+#[cfg(target_os = "macos")]
+pub fn launch(engine: &Path, digest: &str, endpoint: &str, parent: u32) -> Result<ElevatedChild> {
     let engine = engine.to_str().ok_or(Error::UnsafePath)?;
     // Only fixed flags and generated endpoint/PID reach the system prompt.
     // Credentials are sent later, over the OS-authenticated socket.
-    let command = format!("/usr/bin/env -i PATH=/usr/bin:/bin:/usr/sbin:/sbin HOME=/var/empty {} --ipc {} --parent-pid {} </dev/null >/dev/null 2>&1 & /bin/echo $!", shell_quote(engine), shell_quote(endpoint), parent);
+    let command = launch_script(engine, digest, endpoint, parent)?;
     let script = format!(
         "do shell script {} with administrator privileges",
         apple_quote(&command)
@@ -76,8 +118,59 @@ pub fn launch(engine: &Path, endpoint: &str, parent: u32) -> Result<ElevatedChil
 }
 
 #[cfg(windows)]
-pub fn launch(engine: &Path, endpoint: &str, parent: u32) -> Result<ElevatedChild> {
+pub fn launch(engine: &Path, digest: &str, endpoint: &str, parent: u32) -> Result<ElevatedChild> {
+    use std::io::Read;
+    use std::os::windows::fs::{MetadataExt, OpenOptionsExt};
     use std::os::windows::{ffi::OsStrExt, io::FromRawHandle};
+    // Deny replacement and writes to both executable and driver during launch.
+    // Retain directory handles too so a writable ancestor cannot be renamed.
+    let mut held = Vec::new();
+    for directory in engine.ancestors().skip(1) {
+        if std::fs::symlink_metadata(directory)
+            .map_err(|_| Error::UnsafePath)?
+            .file_attributes()
+            & 0x400
+            != 0
+        {
+            return Err(Error::UnsafePath);
+        }
+        held.push(
+            std::fs::OpenOptions::new()
+                .read(true)
+                .share_mode(1)
+                .custom_flags(0x02000000)
+                .open(directory)
+                .map_err(|_| Error::UnsafePath)?,
+        );
+    }
+    for (path, expected) in [
+        (engine.to_path_buf(), digest),
+        (
+            engine.with_file_name("wintun.dll"),
+            "e5da8447dc2c320edc0fc52fa01885c103de8c118481f683643cacc3220dafce",
+        ),
+    ] {
+        if std::fs::symlink_metadata(&path)
+            .map_err(|_| Error::UnsafePath)?
+            .file_attributes()
+            & 0x400
+            != 0
+        {
+            return Err(Error::UnsafePath);
+        }
+        let mut file = std::fs::OpenOptions::new()
+            .read(true)
+            .share_mode(1)
+            .open(&path)
+            .map_err(|_| Error::UnsafePath)?;
+        let mut bytes = Vec::new();
+        (&mut file)
+            .take(150_000_001)
+            .read_to_end(&mut bytes)
+            .map_err(|_| Error::IncompatibleCore)?;
+        quicklan_core::adapter::verify_bytes(&bytes, expected)?;
+        held.push(file);
+    }
     use windows_sys::Win32::{
         System::Threading::GetProcessId,
         UI::{
@@ -112,17 +205,38 @@ pub fn launch(engine: &Path, endpoint: &str, parent: u32) -> Result<ElevatedChil
     if pid == 0 || pid == parent {
         return Err(Error::Unauthorized);
     }
-    Ok(ElevatedChild { pid, handle })
+    Ok(ElevatedChild {
+        pid,
+        handle,
+        _held_files: held,
+    })
 }
 
 #[cfg(not(any(target_os = "macos", windows)))]
-pub fn launch(_: &Path, _: &str, _: u32) -> Result<ElevatedChild> {
+pub fn launch(_: &Path, _: &str, _: &str, _: u32) -> Result<ElevatedChild> {
     Err(Error::HelperUnavailable)
 }
 
 #[cfg(all(test, target_os = "macos"))]
 mod tests {
     use super::*;
+    #[test]
+    fn root_staging_script_rejects_changed_payload_before_execution() {
+        let script = launch_script(
+            "/bin/echo",
+            &"0".repeat(64),
+            "/tmp/unused",
+            std::process::id(),
+        )
+        .unwrap();
+        let output = std::process::Command::new("/bin/sh")
+            .args(["-c", &script])
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(2));
+        assert!(output.stdout.is_empty());
+        assert!(launch_script("/bin/echo", "$(touch unsafe)", "/tmp/unused", 42).is_err());
+    }
     #[test]
     fn shell_metacharacters_remain_literal_arguments() {
         let value = "a'b\" $HOME `touch x` \\";
