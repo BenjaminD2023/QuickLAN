@@ -1,0 +1,30 @@
+[
+  {
+    "cidr": "10.73.42.2/24",
+    "ipv4": "10.73.42.2",
+    "hostname": "lab-1",
+    "cost": "Local",
+    "lat_ms": "-",
+    "loss_rate": "-",
+    "rx_bytes": "-",
+    "tx_bytes": "-",
+    "tunnel_proto": "-",
+    "nat_type": "Unknown",
+    "id": "3215576857",
+    "version": "2.6.4-8428a89d"
+  },
+  {
+    "cidr": "10.73.42.1/24",
+    "ipv4": "10.73.42.1",
+    "hostname": "lab-0",
+    "cost": "p2p",
+    "lat_ms": "0.14",
+    "loss_rate": "0.0%",
+    "rx_bytes": "2.05 kB",
+    "tx_bytes": "2.29 kB",
+    "tunnel_proto": "udp",
+    "nat_type": "Unknown",
+    "id": "2526283754",
+    "version": "2.6.4-8428a89d"
+  }
+]

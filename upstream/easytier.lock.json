@@ -1,0 +1,33 @@
+{
+  "repository": "https://github.com/EasyTier/EasyTier",
+  "tag": "v2.6.4",
+  "commit": "8428a89d2dabc94c97d370ec607c6ca142473626",
+  "version_output": "easytier-core 2.6.4-8428a89d",
+  "license": "LGPL-3.0",
+  "source": {
+    "url": "https://github.com/EasyTier/EasyTier/archive/refs/tags/v2.6.4.tar.gz",
+    "sha256": "352c0866da709415a837405a6ce4f51b8dfae27e5d5c1da1fb4d8f7338e46795"
+  },
+  "artifacts": {
+    "easytier-linux-x86_64-v2.6.4.zip": {
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-linux-x86_64-v2.6.4.zip",
+      "sha256": "61b659eaedba658fa66fe47d17e1426cdd77e5d02fa15fed447bb4357c09dfd6"
+    },
+    "easytier-macos-aarch64-v2.6.4.zip": {
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-macos-aarch64-v2.6.4.zip",
+      "sha256": "4be1882d1aa36d31c1d6ba0596f2cf8a097e371f8da124212324b2e0f8df7e4b"
+    },
+    "easytier-macos-x86_64-v2.6.4.zip": {
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-macos-x86_64-v2.6.4.zip",
+      "sha256": "89fc28a6e6995259d76ce3f11775220e8a21c760e94df91a6a9db30a69b6982e"
+    },
+    "easytier-windows-x86_64-v2.6.4.zip": {
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-windows-x86_64-v2.6.4.zip",
+      "sha256": "27af91e270e554709b048bd32327fefd2dfce5062ae1e8701af7550c6f525f84"
+    }
+  },
+  "verified_binaries": {
+    "aarch64-apple-darwin/easytier-core": "6478a522b8637e2bd2ad3adad66ed04a71b35f832bd9889bffaf1863262f6ddf",
+    "aarch64-apple-darwin/easytier-cli": "c700c4fee1a7f35fcc1a048520d40cea477b6cf7bf6d75f423fe1642c1ebc75d"
+  }
+}

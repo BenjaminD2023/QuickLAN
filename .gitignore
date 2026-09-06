@@ -1,0 +1,14 @@
+node_modules/
+target/
+dist/
+.cache/
+.DS_Store
+*.log
+.env*
+!*.example
+src-tauri/gen/
+playwright-report/
+test-results/
+*.tsbuildinfo
+artifacts/
+__pycache__/

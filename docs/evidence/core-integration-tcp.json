@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-06",
+  "platform": "macOS-26.4.1-arm64-arm-64bit",
+  "core": "easytier-core 2.6.4-8428a89d",
+  "topology": "two real no-TUN cores on one Mac, loopback tcp underlay; two negative peers",
+  "results": [
+    "correct-secret peer join: PASS",
+    "TCP payload 0 -> 1 -> 0: PASS",
+    "UDP payload 0 -> 1 -> 0: PASS",
+    "TCP payload 1 -> 0 -> 1: PASS",
+    "UDP payload 1 -> 0 -> 1: PASS",
+    "wrong secret excluded: PASS",
+    "separate network excluded: PASS",
+    "OS-confined public discovery empty: PASS",
+    "disconnect, restart and bidirectional TCP/UDP: PASS",
+    "owned child processes reaped and private temporary configs removed on exit: PASS"
+  ],
+  "elapsed_seconds": 7.54,
+  "limitations": [
+    "NOT host virtual-IP/TUN connectivity",
+    "NOT internet NAT traversal",
+    "NOT cross-platform verification",
+    "NOT direct-only data-plane or forced-relay validation",
+    "stock management RPC unauthenticated; trusted developer session only"
+  ]
+}

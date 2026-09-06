@@ -1,0 +1,16 @@
+{
+  "target": "windows-x86_64",
+  "archive": "easytier-windows-x86_64-v2.6.4.zip",
+  "archive_sha256": "27af91e270e554709b048bd32327fefd2dfce5062ae1e8701af7550c6f525f84",
+  "binaries": [
+    {
+      "binary": "easytier-core.exe",
+      "sha256": "da7eb2d24b5416f3d3407636949e964a0750e3f9dc53a828cb6799a57ead445d"
+    },
+    {
+      "binary": "easytier-cli.exe",
+      "sha256": "d8783e851e944b44a9b71b39fd02f227ec0a2a82b3165c55ead5dd32dcde53a1"
+    }
+  ],
+  "executed": false
+}

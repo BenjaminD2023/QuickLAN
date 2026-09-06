@@ -1,0 +1,26 @@
+[package]
+name = "quicklan-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[features]
+os-vault = ["dep:keyring"]
+
+[dependencies]
+base64 = "=0.22.1"
+ipnet = { version = "=2.11.0", features = ["serde"] }
+rand = "=0.8.6"
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.145"
+sha2 = "=0.10.9"
+thiserror = "=2.0.17"
+toml = "=0.8.23"
+url = "=2.5.7"
+zeroize = { version = "=1.8.2", features = ["derive"] }
+keyring = { version = "=3.6.3", optional = true, features = ["apple-native", "windows-native"] }
+
+[dev-dependencies]
+proptest = "=1.9.0"
+tempfile = "=3.23.0"
