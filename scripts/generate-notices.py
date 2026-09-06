@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """Generate component inventory and retain bundled dependency license texts."""
-import hashlib,json,pathlib,subprocess
+import argparse,hashlib,json,pathlib,subprocess
+parser=argparse.ArgumentParser()
+parser.add_argument("--engine", action="store_true")
+args=parser.parse_args()
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 cache=ROOT/'.cache';cache.mkdir(exist_ok=True)
-metadata=cache/'native-metadata.json'
+metadata=cache/('engine-metadata.json' if args.engine else 'native-metadata.json')
 if not metadata.exists() or not metadata.stat().st_size:
- result=subprocess.run(['cargo','metadata','--locked','--format-version','1','--manifest-path',str(ROOT/'src-tauri/Cargo.toml')],capture_output=True,check=True)
+ result=subprocess.run(['cargo','metadata','--locked','--format-version','1','--manifest-path',str(ROOT/('engine/Cargo.toml' if args.engine else 'src-tauri/Cargo.toml'))],capture_output=True,check=True)
  metadata.write_bytes(result.stdout)
-rust=json.loads(metadata.read_text())['packages'];npm=json.loads((ROOT/'package-lock.json').read_text())['packages']
+rust=json.loads(metadata.read_text())['packages'];npm={} if args.engine else json.loads((ROOT/'package-lock.json').read_text())['packages']
 components=[];notices=[];missing=[]
 supplemental=ROOT/'licenses/supplemental'
 sources=json.loads((supplemental/'sources.json').read_text()) if (supplemental/'sources.json').exists() else []
@@ -34,9 +37,9 @@ for key,spec in sorted(npm.items()):
  license_expression=manifest.get('license')
  if not isinstance(license_expression,str):license_expression=None
  append(manifest['name'],spec['version'],license_expression,directory,'npm')
-bom={'bomFormat':'CycloneDX','specVersion':'1.5','version':1,'metadata':{'component':{'type':'application','name':'QuickLAN','version':'0.1.0'}},'components':components}
-(ROOT/'docs/evidence/dependencies.cdx.json').write_text(json.dumps(bom,indent=2)+'\n')
-(ROOT/'licenses/DEPENDENCY_LICENSES.txt').write_text('QuickLAN engineering desktop dependency notices.\nIncludes target-conditional dependencies; not every listed component is linked on this host.\n'+''.join(notices))
+bom={'bomFormat':'CycloneDX','specVersion':'1.5','version':1,'metadata':{'component':{'type':'application','name':'QuickLAN','version':json.loads((ROOT/'package.json').read_text())['version']}},'components':components}
+(ROOT/('docs/evidence/engine-dependencies.cdx.json' if args.engine else 'docs/evidence/dependencies.cdx.json')).write_text(json.dumps(bom,indent=2)+'\n')
+(ROOT/('licenses/ENGINE_DEPENDENCY_LICENSES.txt' if args.engine else 'licenses/DEPENDENCY_LICENSES.txt')).write_text(('QuickLAN engine dependency notices.\nIncludes' if args.engine else 'QuickLAN engineering desktop dependency notices.\nIncludes')+' target-conditional dependencies; not every listed component is linked on this host.\n'+''.join(notices))
 report={'components':len(components),'missing_license_texts':missing,'limitation':'Metadata license expressions are not legal review. Resolve missing texts and inspect platform-only bundled resources before public redistribution.'}
-(ROOT/'docs/evidence/license-inventory.json').write_text(json.dumps(report,indent=2)+'\n')
+(ROOT/('docs/evidence/engine-license-inventory.json' if args.engine else 'docs/evidence/license-inventory.json')).write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report,indent=2))

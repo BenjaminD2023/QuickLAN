@@ -1,5 +1,14 @@
 --- a/easytier/Cargo.toml
 +++ b/easytier/Cargo.toml
+@@ -149,7 +149,7 @@
+ rand = "0.8.5"
+ 
+ serde = { version = "1.0", features = ["derive"] }
+-pnet = { version = "0.35.0", features = ["serde"] }
++pnet = { version = "0.35.0", default-features = false, features = ["serde"] }
+ serde_json = "1"
+ 
+ clap = { version = "4.5.30", features = [
 @@ -235,8 +235,8 @@
  ] }
  
@@ -11,27 +20,61 @@
  
  # for magic dns
  hickory-client = { version = "0.25.2", optional = true }
-@@ -348,7 +348,11 @@
+@@ -272,11 +272,12 @@
+ which = "7.0.3"
+ 
+ [target.'cfg(all(windows, any(target_arch = "x86_64", target_arch = "x86")))'.dependencies]
+-windivert = { git = "https://github.com/EasyTier/windivert-rust.git", rev = "adcc56d1550f7b5377ec2b3429f413ee24a77375", features = [
++windivert = { git = "https://github.com/EasyTier/windivert-rust.git", rev = "adcc56d1550f7b5377ec2b3429f413ee24a77375", optional = true, features = [
+     "static",
+ ] }
+ 
+ [target.'cfg(windows)'.dependencies]
++ipnetwork = "0.20.0"
+ windows = { version = "0.62.2", features = [
+     "Win32_Foundation",
+     "Win32_NetworkManagement_IpHelper",
+@@ -297,6 +298,7 @@
+ winapi = { version = "0.3.9", features = ["impl-default"] }
+ 
+ [target.'cfg(not(windows))'.dependencies]
++pnet = { version = "0.35.0", features = ["std"] }
+ jemallocator = { package = "tikv-jemallocator", version = "0.6.0", optional = true, features = [
+     "unprefixed_malloc_on_supported_platforms",
+ ] }
+@@ -325,7 +327,7 @@
+     "internal-namespace",
+ ] }
+ prost-reflect-build = { version = "0.14.0" }
+-thunk-rs = { git = "https://github.com/easytier/thunk.git", default-features = false, features = [
++thunk-rs = { git = "https://github.com/easytier/thunk.git", optional = true, default-features = false, features = [
+     "win7",
+ ] }
+ 
+@@ -348,7 +350,13 @@
  
  
  [features]
 +# QuickLAN: fixed subnet and restricted packet paths. See upstream/quicklan.patch.
 +quicklan = []
++legacy-windows = ["dep:windivert", "dep:thunk-rs", "pnet/std"]
 +legacy-dns = ["dep:hickory-resolver", "dep:hickory-proto"]
  default = [
 +    "legacy-dns",
++    "legacy-windows",
      "wireguard",
      "websocket",
      "smoltcp",
-@@ -361,6 +365,7 @@
+@@ -361,6 +369,8 @@
      "zstd",
  ]
  full = [
 +    "legacy-dns",
++    "legacy-windows",
      "websocket",
      "wireguard",
      "aes-gcm",
-@@ -400,7 +405,7 @@
+@@ -400,7 +410,7 @@
      "jemalloc-sys/stats",
  ]
  tracing = ["tokio/tracing", "dep:console-subscriber"]
@@ -340,9 +383,11 @@
              stun_info_collector.set_stun_servers(stun_servers);
 --- a/easytier/build.rs
 +++ b/easytier/build.rs
-@@ -73,11 +73,11 @@
+@@ -72,12 +72,13 @@
+         // add third_party dir to link search path
          let target = std::env::var("TARGET").unwrap_or_default();
  
++        #[cfg(not(feature = "quicklan"))]
          if target.contains("x86_64") {
 -            println!("cargo:rustc-link-search=native=easytier/third_party/x86_64/");
 +            println!("cargo:rustc-link-search=native={}", std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("third_party/x86_64").display());
@@ -355,9 +400,56 @@
          }
  
          let protoc_path = if let Some(o) = Self::check_protoc_exist() {
+@@ -146,6 +147,7 @@
+     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
+     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
+     // enable thunk-rs when target os is windows and arch is x86_64 or i686
++    #[cfg(feature = "legacy-windows")]
+     if target_os == "windows" && (target_arch == "x86" || target_arch == "x86_64") {
+         thunk::thunk();
+     }
 --- a/easytier/src/common/network.rs
 +++ b/easytier/src/common/network.rs
-@@ -302,6 +302,9 @@
+@@ -4,9 +4,20 @@
+ use network_interface::{
+     Addr as SystemAddr, NetworkInterface as SystemNetworkInterface, NetworkInterfaceConfig,
+ };
++#[cfg(not(all(windows, feature = "quicklan")))]
+ use pnet::datalink::NetworkInterface;
++#[cfg(all(windows, feature = "quicklan"))]
++#[derive(Debug, Clone)]
++pub struct NetworkInterface {
++    pub name: String,
++    pub ips: Vec<ipnetwork::IpNetwork>,
++    pub mac: Option<pnet::util::MacAddr>,
++    pub internal: bool,
++}
+ #[cfg(target_os = "windows")]
+-use pnet::{ipnetwork::IpNetwork, util::MacAddr};
++use pnet::util::MacAddr;
++#[cfg(target_os = "windows")]
++use ipnetwork::IpNetwork;
+ use tokio::{
+     sync::{Mutex, RwLock},
+     task::JoinSet,
+@@ -148,7 +159,15 @@
+     }
+ }
+ 
+-#[cfg(target_os = "windows")]
++#[cfg(all(windows, feature = "quicklan"))]
++impl InterfaceFilter {
++    async fn filter_iface(&self) -> bool {
++        !self.iface.internal
++            && self.iface.ips.iter().any(|ip| !ip.ip().is_loopback() && !ip.ip().is_unspecified() && !ip.ip().is_multicast())
++            && self.iface.mac.is_some_and(|mac| !mac.is_zero())
++    }
++}
++#[cfg(all(windows, not(feature = "quicklan")))]
+ impl InterfaceFilter {
+     async fn filter_iface(&self) -> bool {
+         tracing::debug!(
+@@ -302,6 +321,9 @@
                      ?e,
                      "failed to enumerate interfaces via network-interface, falling back to pnet"
                  );
@@ -367,6 +459,39 @@
                  match std::panic::catch_unwind(pnet::datalink::interfaces) {
                      Ok(ifaces) => ifaces,
                      Err(_) => {
+@@ -333,11 +355,16 @@
+ 
+         NetworkInterface {
+             name: iface.name,
++            #[cfg(not(feature = "quicklan"))]
+             description: String::new(),
++            #[cfg(not(feature = "quicklan"))]
+             index: iface.index,
++            #[cfg(feature = "quicklan")]
++            internal: iface.internal,
+             mac,
+             ips,
+             // pnet does not populate Windows flags either, so keep the existing semantics.
++            #[cfg(not(feature = "quicklan"))]
+             flags: 0,
+         }
+     }
+@@ -402,6 +429,7 @@
+             }
+         }
+ 
++        #[cfg(not(feature = "quicklan"))]
+         if let Ok(v4_addr) = local_ipv4().await {
+             tracing::trace!("got local ipv4: {}", v4_addr);
+             if !ret.interface_ipv4s.contains(&v4_addr.into()) {
+@@ -409,6 +437,7 @@
+             }
+         }
+ 
++        #[cfg(not(feature = "quicklan"))]
+         if let Ok(v6_addr) = local_ipv6().await {
+             tracing::trace!("got local ipv6: {}", v6_addr);
+             if !ret.interface_ipv6s.contains(&v6_addr.into()) {
 --- a/easytier/src/common/mod.rs
 +++ b/easytier/src/common/mod.rs
 @@ -11,6 +11,10 @@

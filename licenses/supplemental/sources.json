@@ -61,8 +61,8 @@
     "file": "20ce7394d589cc10-LICENSE-MIT.txt",
     "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1",
     "packages": [
-      "cargo:ndk@0.9.0",
-      "cargo:ndk-sys@0.6.0+11769913"
+      "cargo:ndk-sys@0.6.0+11769913",
+      "cargo:ndk@0.9.0"
     ]
   },
   {
@@ -70,8 +70,8 @@
     "file": "54c5d4bfa7ca4655-LICENSE-APACHE.txt",
     "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
     "packages": [
-      "cargo:ndk@0.9.0",
-      "cargo:ndk-sys@0.6.0+11769913"
+      "cargo:ndk-sys@0.6.0+11769913",
+      "cargo:ndk@0.9.0"
     ]
   },
   {
@@ -117,8 +117,8 @@
     "file": "e3dbfc5e0df5a8cf-LICENSE.txt",
     "sha256": "0dcf41516e608bbcb6cdc5229feb7b86fe4a643b85e7df251133c93408fdac73",
     "packages": [
-      "cargo:webview2-com@0.38.2",
-      "cargo:webview2-com-sys@0.38.2"
+      "cargo:webview2-com-sys@0.38.2",
+      "cargo:webview2-com@0.38.2"
     ]
   },
   {
@@ -215,5 +215,225 @@
     "packages": [
       "cargo:r-efi@6.0.0"
     ]
+  },
+  {
+    "file": "5ad1c94e426ee11e-SOURCE-LICENSE.txt",
+    "sha256": "5ad1c94e426ee11e349c94335e5263bdae1cb9de1ac384fa97a0ad92e05aa2ee",
+    "url": "https://docs.rs/crate/encoding-index-japanese/1.20141219.5/source/lib.rs",
+    "packages": [
+      "cargo:encoding-index-japanese@1.20141219.5"
+    ]
+  },
+  {
+    "file": "5ad1c94e426ee11e-SOURCE-LICENSE.txt",
+    "sha256": "5ad1c94e426ee11e349c94335e5263bdae1cb9de1ac384fa97a0ad92e05aa2ee",
+    "url": "https://docs.rs/crate/encoding-index-korean/1.20141219.5/source/lib.rs",
+    "packages": [
+      "cargo:encoding-index-korean@1.20141219.5"
+    ]
+  },
+  {
+    "file": "5ad1c94e426ee11e-SOURCE-LICENSE.txt",
+    "sha256": "5ad1c94e426ee11e349c94335e5263bdae1cb9de1ac384fa97a0ad92e05aa2ee",
+    "url": "https://docs.rs/crate/encoding-index-simpchinese/1.20141219.5/source/lib.rs",
+    "packages": [
+      "cargo:encoding-index-simpchinese@1.20141219.5"
+    ]
+  },
+  {
+    "file": "5ad1c94e426ee11e-SOURCE-LICENSE.txt",
+    "sha256": "5ad1c94e426ee11e349c94335e5263bdae1cb9de1ac384fa97a0ad92e05aa2ee",
+    "url": "https://docs.rs/crate/encoding-index-singlebyte/1.20141219.5/source/lib.rs",
+    "packages": [
+      "cargo:encoding-index-singlebyte@1.20141219.5"
+    ]
+  },
+  {
+    "file": "5ad1c94e426ee11e-SOURCE-LICENSE.txt",
+    "sha256": "5ad1c94e426ee11e349c94335e5263bdae1cb9de1ac384fa97a0ad92e05aa2ee",
+    "url": "https://docs.rs/crate/encoding-index-tradchinese/1.20141219.5/source/lib.rs",
+    "packages": [
+      "cargo:encoding-index-tradchinese@1.20141219.5"
+    ]
+  },
+  {
+    "file": "c699738bdf5c963e-SOURCE-LICENSE.txt",
+    "sha256": "c699738bdf5c963ea0ade4ac62006b41517f518407ac9f10e575c2a4e1901a2e",
+    "url": "https://docs.rs/crate/encoding_index_tests/0.1.4/source/index_tests.rs",
+    "packages": [
+      "cargo:encoding_index_tests@0.1.4"
+    ]
+  },
+  {
+    "file": "1d4ca88ccc0bbaf1-SOURCE-LICENSE.txt",
+    "sha256": "1d4ca88ccc0bbaf1205dc5792d267b58d12313a7d4eaa2cdd4b41766d784b063",
+    "url": "https://docs.rs/crate/tun-easytier/1.1.1/source/src/lib.rs",
+    "packages": [
+      "cargo:tun-easytier@1.1.1"
+    ]
+  },
+  {
+    "file": "2bd73a6df34e41c5-LICENSE.txt",
+    "sha256": "2bd73a6df34e41c531e4088a97e90a489b163926fb214ac90e9c172d124bc2f8",
+    "url": "https://raw.githubusercontent.com/immunant/c2rust/308da97f8ea6f76fc63d39e0fa84f0b28ee17622/LICENSE",
+    "packages": [
+      "cargo:c2rust-bitfields-derive@0.18.0",
+      "cargo:c2rust-bitfields@0.18.0"
+    ]
+  },
+  {
+    "file": "b40930bbcf80744c-LICENSE-APACHE.txt",
+    "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+    "url": "https://raw.githubusercontent.com/Kobzol/rust-delegate/b129d4cbf4cc499eff7743365dcb0fe5d8d2e820/LICENSE-APACHE",
+    "packages": [
+      "cargo:delegate@0.13.5"
+    ]
+  },
+  {
+    "file": "be7ee8aa49dc5860-LICENSE-MIT.txt",
+    "sha256": "be7ee8aa49dc586023669a0c600a0536fce6a9f61264a53a67cdd842564ed899",
+    "url": "https://raw.githubusercontent.com/Kobzol/rust-delegate/b129d4cbf4cc499eff7743365dcb0fe5d8d2e820/LICENSE-MIT",
+    "packages": [
+      "cargo:delegate@0.13.5"
+    ]
+  },
+  {
+    "file": "a60eea8175145316-LICENSE-APACHE.txt",
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "url": "https://raw.githubusercontent.com/andrewhickman/prost-reflect/71c4c98d7565dfc30f76ebc7daaa139a443419e6/LICENSE-APACHE",
+    "packages": [
+      "cargo:prost-reflect@0.14.7"
+    ]
+  },
+  {
+    "file": "23f18e03dc49df91-LICENSE-MIT.txt",
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+    "url": "https://raw.githubusercontent.com/andrewhickman/prost-reflect/71c4c98d7565dfc30f76ebc7daaa139a443419e6/LICENSE-MIT",
+    "packages": [
+      "cargo:prost-reflect@0.14.7"
+    ]
+  },
+  {
+    "file": "a60eea8175145316-LICENSE-APACHE.txt",
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "url": "https://raw.githubusercontent.com/andrewhickman/prost-reflect/be691b5670b5026ea75cc2fced50df2d31589fa7/LICENSE-APACHE",
+    "packages": [
+      "cargo:prost-reflect-build@0.14.0",
+      "cargo:prost-reflect-derive@0.14.0"
+    ]
+  },
+  {
+    "file": "23f18e03dc49df91-LICENSE-MIT.txt",
+    "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+    "url": "https://raw.githubusercontent.com/andrewhickman/prost-reflect/be691b5670b5026ea75cc2fced50df2d31589fa7/LICENSE-MIT",
+    "packages": [
+      "cargo:prost-reflect-build@0.14.0",
+      "cargo:prost-reflect-derive@0.14.0"
+    ]
+  },
+  {
+    "file": "a60eea8175145316-LICENSE.txt",
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "url": "https://raw.githubusercontent.com/fdeantoni/prost-wkt/204e4430a6e4e1904730309893024000e5ee87f0/LICENSE",
+    "packages": [
+      "cargo:prost-wkt-build@0.6.1",
+      "cargo:prost-wkt-types@0.6.1"
+    ]
+  },
+  {
+    "file": "af087aa4ba67259c-LICENSE.txt",
+    "sha256": "af087aa4ba67259ceb9c063e30976b8313ff38905fedb6a0c5a89fccb22c652d",
+    "url": "https://raw.githubusercontent.com/EasyTier/thunk/cbbeec75a66b7b3cf0824ae890d9d06bcfb9d1f3/LICENSE",
+    "packages": [
+      "cargo:thunk-rs@0.3.5"
+    ]
+  },
+  {
+    "file": "ed60d479b8fd1f64-LICENSE.txt",
+    "sha256": "ed60d479b8fd1f64e9cbc3de449a16a53ac1b3d1b6aeb9bf9d190a8e93061b44",
+    "url": "https://raw.githubusercontent.com/tokio-rs/valuable/9efc29b6e58cef28f6566a47aa7e142a55fead77/LICENSE",
+    "packages": [
+      "cargo:valuable@0.1.1"
+    ]
+  },
+  {
+    "file": "a5681bf9b05db14d-LICENSE.txt",
+    "sha256": "a5681bf9b05db14d86776930017c647ad9e6e56ff6bbcfdf21e5848288dfaf1b",
+    "url": "https://raw.githubusercontent.com/EasyTier/windivert-rust/adcc56d1550f7b5377ec2b3429f413ee24a77375/LICENSE",
+    "packages": [
+      "cargo:windivert-sys@0.10.0",
+      "cargo:windivert@0.6.0"
+    ]
+  },
+  {
+    "file": "d6fde6c28ecbccfc-LICENSE-MIT.txt",
+    "sha256": "d6fde6c28ecbccfc7f6d97c0badbb14bbea2cc8f5e81a8c1537204bdfed9a6d5",
+    "url": "https://docs.rs/crate/rust-i18n/3.1.5/source/LICENSE",
+    "packages": [
+      "cargo:rust-i18n-macro@3.1.5",
+      "cargo:rust-i18n-support@3.1.5"
+    ],
+    "provenance_note": "Companion workspace packages declare MIT but their crate archives omit the common project license; retained from the same 3.1.5 umbrella package."
+  },
+  {
+    "file": "9b0a59b4c5af60f4-COPYRIGHT.txt",
+    "sha256": "9b0a59b4c5af60f46f79d2adbe433e07189d076972b8d33e9abca077dc10ccf7",
+    "url": "https://docs.rs/crate/winapi-i686-pc-windows-gnu/0.4.0/source/src/lib.rs",
+    "packages": [
+      "cargo:winapi-i686-pc-windows-gnu@0.4.0"
+    ]
+  },
+  {
+    "file": "b40930bbcf80744c-LICENSE-APACHE.txt",
+    "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+    "url": "https://docs.rs/crate/winapi/0.3.9/source/LICENSE-APACHE",
+    "packages": [
+      "cargo:winapi-i686-pc-windows-gnu@0.4.0",
+      "cargo:winapi-x86_64-pc-windows-gnu@0.4.0"
+    ],
+    "provenance_note": "Shared winapi-rs license named by the support crate source header. GNU targets are outside the initial installer targets."
+  },
+  {
+    "file": "ce7bc3499fee93d5-LICENSE-MIT.txt",
+    "sha256": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b",
+    "url": "https://docs.rs/crate/winapi/0.3.9/source/LICENSE-MIT",
+    "packages": [
+      "cargo:winapi-i686-pc-windows-gnu@0.4.0",
+      "cargo:winapi-x86_64-pc-windows-gnu@0.4.0"
+    ],
+    "provenance_note": "Shared winapi-rs license named by the support crate source header. GNU targets are outside the initial installer targets."
+  },
+  {
+    "file": "9b0a59b4c5af60f4-COPYRIGHT.txt",
+    "sha256": "9b0a59b4c5af60f46f79d2adbe433e07189d076972b8d33e9abca077dc10ccf7",
+    "url": "https://docs.rs/crate/winapi-x86_64-pc-windows-gnu/0.4.0/source/src/lib.rs",
+    "packages": [
+      "cargo:winapi-x86_64-pc-windows-gnu@0.4.0"
+    ]
+  },
+  {
+    "file": "d3cdb764b98283ee-Apache-2.0.txt.txt",
+    "sha256": "d3cdb764b98283ee7c3a3cea8d374e2a2957322374378d1f3263f4d512741fc3",
+    "url": "https://raw.githubusercontent.com/akhilles/crc-catalog/ed4ad631f22b05055c21a3a4127eb7cf6d75bb62/LICENSES/Apache-2.0.txt",
+    "packages": [
+      "cargo:crc-catalog@2.5.0"
+    ]
+  },
+  {
+    "file": "5ef8fcfb6cccec8f-MIT.txt.txt",
+    "sha256": "5ef8fcfb6cccec8fcae043c834099a60c8b7406408db576e026d2b7e67dc5cf5",
+    "url": "https://raw.githubusercontent.com/akhilles/crc-catalog/ed4ad631f22b05055c21a3a4127eb7cf6d75bb62/LICENSES/MIT.txt",
+    "packages": [
+      "cargo:crc-catalog@2.5.0"
+    ]
+  },
+  {
+    "file": "bfe3dcd44d2b7234-ENCODING-UTILS-LICENSE.txt",
+    "sha256": "bfe3dcd44d2b7234e2330bc9945d6aea55f44c9a2cd750d8d6b5e08b7f1298c4",
+    "url": "https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/MIT.txt",
+    "packages": [
+      "cargo:encoding-utils@0.1.0"
+    ],
+    "provenance_note": "License declaration: https://github.com/greenhat616/encoding-utils/blob/f029c6e1eec8153c4d06e872b3ca9a88d90db174/Cargo.toml; canonical text retained separately from upstream attribution."
   }
 ]

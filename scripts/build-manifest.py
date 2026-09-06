@@ -29,13 +29,13 @@ records = [{'path': p.relative_to(bundle).as_posix(), 'sha256': sha(p)} for p in
 commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True, text=True)
 status = subprocess.run(['git', 'status', '--porcelain'], cwd=ROOT, capture_output=True, text=True, check=True)
 manifest = {
-    'product': 'QuickLAN', 'version': '0.1.0', 'channel': 'engineering',
+    'product': 'QuickLAN', 'version': json.loads((ROOT/'package.json').read_text())['version'], 'channel': 'native-preview',
     'target': args.target, 'commit': commit.stdout.strip() if commit.returncode == 0 else None,
     'working_tree_dirty': bool(status.stdout.strip()),
     'developer_id_or_authenticode_verified': False,
     'limitation': 'Locally generated unsigned metadata, not cryptographic provenance or a reproducible-build claim.',
     'toolchain': {tool: subprocess.check_output([tool, '--version'], text=True).strip() for tool in ['rustc', 'node']},
-    'lockfiles': {p: sha(ROOT/p) for p in ['Cargo.lock', 'src-tauri/Cargo.lock', 'package-lock.json', 'upstream/easytier.lock.json']},
+    'lockfiles': {p: sha(ROOT/p) for p in ['Cargo.lock', 'engine/Cargo.lock', 'upstream/quicklan.patch', 'src-tauri/Cargo.lock', 'package-lock.json', 'upstream/easytier.lock.json']},
     'files': records,
 }
 (bundle/'BUILD.json').write_text(json.dumps(manifest, indent=2)+'\n')

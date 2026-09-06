@@ -139,19 +139,20 @@ export const en = {
   diagnosticsHint:
     "Preview this report before sharing it. Only application state and error codes are included.",
   copyReport: "Copy sanitized report",
-  releaseChecks: "Before system networking can ship",
+  releaseChecks: "Networking availability",
   refresh: "Refresh",
   noEvents: "No connection events yet.",
   aboutTitle: "Small networks. Open source.",
   aboutBody:
     "QuickLAN is an independent desktop application built around EasyTier. It is not affiliated with the EasyTier project.",
-  wrapperLicense: "QuickLAN source: Apache-2.0.",
+  wrapperLicense:
+    "QuickLAN desktop: Apache-2.0. The separate networking engine: GPL-3.0-only.",
   coreLicense:
     "EasyTier core: LGPL-3.0. Its original license and attribution are preserved.",
   aboutGap:
     "This engineering build manages saved networks and invitations. It does not install a networking helper or connect virtual interfaces.",
   aboutEvidence:
-    "Local tests passed real TCP and UDP through two isolated, unprivileged EasyTier cores. This is not internet traversal or Windows/macOS interoperability evidence.",
+    "Native CI exercises real virtual adapters and cleanup on Windows and both Mac architectures. Isolated Linux tests exercise virtual-IP TCP and UDP. Physical cross-device and internet NAT testing remain outstanding.",
   gameTitle: "Connect by virtual IP",
   gameIntro:
     "QuickLAN targets games and applications that accept an IP address. Automatic LAN-game discovery is not supported.",

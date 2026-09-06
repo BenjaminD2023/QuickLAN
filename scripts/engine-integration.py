@@ -130,6 +130,9 @@ try:
     for name in names:
         command(['ip', 'netns', 'add', name])
         created.append(name)
+        # Namespace defaults can inherit forwarding=1 from hosted runners.
+        # Change only the freshly created lab namespace, never the host.
+        command(['ip', 'netns', 'exec', name, 'sysctl', '-w', 'net.ipv4.ip_forward=0'])
     if a.relay_lab:
         relay_exe = str(pathlib.Path(a.relay_lab).resolve(strict=True))
         for i in range(2):

@@ -40,7 +40,7 @@ pub enum Error {
     IncompatibleCore,
     #[error("The core returned an unsupported state format. No connectivity was inferred.")]
     UnsupportedCoreOutput,
-    #[error("The verified networking helper is not installed in this engineering build. Saved networks remain available.")]
+    #[error("The networking engine is missing or failed verification. Reinstall the matching QuickLAN build. Saved networks remain available.")]
     HelperUnavailable,
     #[error("System networking permission was refused. No connection was started.")]
     PermissionDenied,

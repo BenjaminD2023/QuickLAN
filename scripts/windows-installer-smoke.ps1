@@ -1,4 +1,4 @@
-param([Parameter(Mandatory = $true)][string]$BundleRoot)
+param([Parameter(Mandatory = $true)][string]$BundleRoot, [switch]$RequireEngine)
 
 $ErrorActionPreference = 'Stop'
 if (-not $env:CI -or -not $env:RUNNER_TEMP) {
@@ -35,7 +35,8 @@ $results = [ordered]@{
     graceful_exit = $false
     uninstalled = $false
     route_and_dns_unchanged = $false
-    limitations = @('Engineering preview only; no system VPN', 'Hosted runner does not verify interactive UAC or ordinary-user privileges', 'Window presence does not prove every native IPC workflow', 'No cross-device connectivity evidence')
+    native_engine_verified = $false
+    limitations = @('Hosted runner does not verify interactive UAC or ordinary-user privileges', 'Window presence does not prove every native IPC workflow', 'No cross-device connectivity evidence')
 }
 try {
     RunBounded $installers[0].FullName @('/S', "/D=$installDir")
@@ -43,6 +44,17 @@ try {
     if (-not (Test-Path -LiteralPath $exe -PathType Leaf)) { throw 'Installed application is missing.' }
     $installed = $true
     $results.installed = $true
+    if ($RequireEngine) {
+        $engine = Join-Path $installDir 'resources/engine/quicklan-engine.exe'
+        $driver = Join-Path $installDir 'resources/engine/wintun.dll'
+        $root = Split-Path $PSScriptRoot -Parent
+        foreach ($pair in @(@($engine, (Join-Path $root 'src-tauri/resources/engine/quicklan-engine.exe')), @($driver, (Join-Path $root 'src-tauri/resources/engine/wintun.dll')))) {
+            if ((Get-FileHash -LiteralPath $pair[0] -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $pair[1] -Algorithm SHA256).Hash) { throw 'Installed networking payload digest mismatch.' }
+        }
+        & (Join-Path $root 'target/debug/examples/engine_smoke.exe') $engine
+        if ($LASTEXITCODE -ne 0) { throw 'Installed engine failed native adapter acceptance.' }
+        $results.native_engine_verified = $true
+    }
     $app = Start-Process -FilePath $exe -PassThru
     $deadline = (Get-Date).AddSeconds(30)
     do {

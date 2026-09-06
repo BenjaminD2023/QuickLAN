@@ -18,6 +18,10 @@ if version != 'quicklan-engine-0.2.0-easytier-2.6.4':
 probe = subprocess.run([str(binary), '--stdio-lab'], input=b'', capture_output=True, timeout=5)
 if probe.returncode != 2 or probe.stdout:
     raise SystemExit('Refusing to package an engine with the lab-only stdio transport enabled')
+if sys.platform == 'darwin':
+    # Seal the helper before the desktop embeds its digest. Ad-hoc signing is
+    # local integrity only; this does not assert a Developer ID or notarization.
+    subprocess.run(['/usr/bin/codesign', '--force', '--sign', '-', str(binary)], check=True, capture_output=True)
 output = ROOT / 'src-tauri/resources/engine'
 output.mkdir(parents=True, exist_ok=True)
 shutil.copyfile(binary, output/name)

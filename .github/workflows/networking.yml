@@ -74,14 +74,16 @@ jobs:
           cargo clippy --manifest-path src-tauri/Cargo.toml --locked -- -D warnings
       - name: Build macOS application and disk image
         if: runner.os == 'macOS'
-        run: npm run tauri -- build --bundles app,dmg -- --locked
+        run: |
+          npm run tauri -- build --bundles app,dmg -- --locked
+          python scripts/verify-macos-bundle.py
       - name: Build and install Windows application
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           npm run tauri -- build --bundles nsis -- --locked
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          ./scripts/windows-installer-smoke.ps1 -BundleRoot src-tauri/target/release/bundle
+          ./scripts/windows-installer-smoke.ps1 -BundleRoot src-tauri/target/release/bundle -RequireEngine
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: runner.os != 'Linux'
         with:
@@ -90,6 +92,7 @@ jobs:
             src-tauri/target/release/bundle/dmg/*.dmg
             src-tauri/target/release/bundle/nsis/*.exe
             src-tauri/target/release/bundle/windows-smoke.json
+            src-tauri/target/release/bundle/macos-smoke.json
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

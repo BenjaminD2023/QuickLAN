@@ -1,5 +1,5 @@
 //! Fail-closed platform boundary. No unauthenticated privileged listener exists.
-//! OS installers / authenticated core management are release gates, not simulated.
+//! Missing or unverified engine payloads cannot start system networking.
 use crate::{
     error::{Error, Result},
     model::{valid_hex, validate_label, Network, Secret},
@@ -72,8 +72,12 @@ pub struct HelperStatus {
     pub release_gaps: Vec<&'static str>,
 }
 pub fn status() -> HelperStatus {
-    HelperStatus { installed:false, connection_enabled:false, code:Some(Error::HelperUnavailable),
-        release_gaps:vec!["Authenticated core management and signed OS helper installation are not implemented.","Stock core retains implicit TCP STUN servers.","Direct-only path migration and hostile learned-route enforcement are not verified.","Windows and both macOS architectures require real virtual-IP and install/uninstall tests."] }
+    HelperStatus {
+        installed: false,
+        connection_enabled: false,
+        code: Some(Error::HelperUnavailable),
+        release_gaps: vec!["The packaged networking engine is missing or failed verification. Reinstall the matching QuickLAN build; saved networks remain available."],
+    }
 }
 pub fn connect(_request: HelperRequest) -> Result<()> {
     Err(Error::HelperUnavailable)

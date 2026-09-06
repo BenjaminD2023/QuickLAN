@@ -2859,7 +2859,7 @@ dependencies = [
 
 [[package]]
 name = "quicklan"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "quicklan-core",
  "quicklan-runtime",
@@ -2875,7 +2875,7 @@ dependencies = [
 
 [[package]]
 name = "quicklan-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "ipnet",
@@ -2893,7 +2893,7 @@ dependencies = [
 
 [[package]]
 name = "quicklan-ipc"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "libc",
  "tempfile",
@@ -2902,7 +2902,7 @@ dependencies = [
 
 [[package]]
 name = "quicklan-runtime"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "libc",
  "quicklan-core",
