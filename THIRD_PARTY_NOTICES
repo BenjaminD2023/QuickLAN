@@ -1,0 +1,17 @@
+QuickLAN 0.1.0 — engineering preview
+Copyright 2026 QuickLAN contributors. Original source: Apache-2.0.
+
+QuickLAN is an independent project and is not affiliated with EasyTier.
+EasyTier v2.6.4, commit 8428a89d2dabc94c97d370ec607c6ca142473626:
+https://github.com/EasyTier/EasyTier
+GNU Lesser General Public License v3; see licenses/EasyTier-LGPL-3.0.txt
+and licenses/GPL-3.0.txt. The stock core is used only by an explicit developer
+integration test. It is not bundled into this engineering desktop artifact.
+
+The desktop build uses Tauri (MIT/Apache-2.0), React (MIT), lucide (ISC),
+keyring (MIT/Apache-2.0), and their transitive dependencies. A machine-derived
+license inventory/SBOM must accompany every public binary release; see scripts
+and docs/RELEASING.md. Upstream license obligations remain their own.
+
+No independent security audit, signing, notarization or network performance
+certification is claimed.

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-disconnect-network"
+description = "Enables the disconnect_network command without any pre-configured scope."
+commands.allow = ["disconnect_network"]
+
+[[permission]]
+identifier = "deny-disconnect-network"
+description = "Denies the disconnect_network command without any pre-configured scope."
+commands.deny = ["disconnect_network"]

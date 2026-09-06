@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-copy-virtual-ip"
+description = "Enables the copy_virtual_ip command without any pre-configured scope."
+commands.allow = ["copy_virtual_ip"]
+
+[[permission]]
+identifier = "deny-copy-virtual-ip"
+description = "Denies the copy_virtual_ip command without any pre-configured scope."
+commands.deny = ["copy_virtual_ip"]

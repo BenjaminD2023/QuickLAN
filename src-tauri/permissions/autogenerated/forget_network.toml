@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-forget-network"
+description = "Enables the forget_network command without any pre-configured scope."
+commands.allow = ["forget_network"]
+
+[[permission]]
+identifier = "deny-forget-network"
+description = "Denies the forget_network command without any pre-configured scope."
+commands.deny = ["forget_network"]

@@ -1,0 +1,27 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "Local main window only. No shell, filesystem, HTTP, clipboard read, remote origins or arbitrary core commands.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "allow-get-state",
+    "allow-create-network",
+    "allow-preview-invitation",
+    "allow-accept-invitation",
+    "allow-cancel-invitation",
+    "allow-rename-network",
+    "allow-forget-network",
+    "allow-replace-credentials",
+    "allow-connect-network",
+    "allow-disconnect-network",
+    "allow-save-preferences",
+    "allow-get-diagnostics",
+    "allow-copy-diagnostics",
+    "allow-copy-invitation",
+    "allow-copy-virtual-ip",
+    "allow-quit-app",
+    "allow-update-settings"
+  ]
+}

@@ -1,0 +1,29 @@
+[package]
+name = "quicklan"
+version = "0.1.0"
+description = "Private networks with friends — engineering preview"
+authors = ["QuickLAN contributors"]
+license = "Apache-2.0"
+edition = "2021"
+rust-version = "1.88"
+
+[lib]
+name = "quicklan_desktop"
+crate-type = ["rlib"]
+
+[build-dependencies]
+tauri-build = { version = "=2.6.3", features = [] }
+
+[dependencies]
+tauri = { version = "=2.11.5", features = [] }
+tauri-plugin-single-instance = "=2.4.4"
+tauri-plugin-clipboard-manager = "=2.3.3"
+quicklan-core = { path = "../crates/quicklan-core", features = ["os-vault"] }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.145"
+zeroize = "=1.8.2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+strip = true

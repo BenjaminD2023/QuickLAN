@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-preview-invitation"
+description = "Enables the preview_invitation command without any pre-configured scope."
+commands.allow = ["preview_invitation"]
+
+[[permission]]
+identifier = "deny-preview-invitation"
+description = "Denies the preview_invitation command without any pre-configured scope."
+commands.deny = ["preview_invitation"]

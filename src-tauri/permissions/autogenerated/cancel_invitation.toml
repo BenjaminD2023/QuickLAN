@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-cancel-invitation"
+description = "Enables the cancel_invitation command without any pre-configured scope."
+commands.allow = ["cancel_invitation"]
+
+[[permission]]
+identifier = "deny-cancel-invitation"
+description = "Denies the cancel_invitation command without any pre-configured scope."
+commands.deny = ["cancel_invitation"]

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "QuickLAN",
+  "version": "0.1.0",
+  "identifier": "io.quicklan.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [{"label":"main","title":"QuickLAN","width":1060,"height":740,"minWidth":760,"minHeight":560}],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src ipc: http://ipc.localhost; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'",
+      "devCsp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src ipc: http://ipc.localhost ws://127.0.0.1:1420; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Utility",
+    "shortDescription": "Private networks with friends — engineering preview",
+    "longDescription": "QuickLAN engineering preview. Saved networks and invitations work; system networking is disabled pending authenticated helper integration and platform validation.",
+    "copyright": "Copyright 2026 QuickLAN contributors",
+    "license": "Apache-2.0",
+    "resources": ["../licenses/", "../THIRD_PARTY_NOTICES", "../docs/UPSTREAM_CAPABILITIES.md"],
+    "macOS": {"minimumSystemVersion":"13.0"},
+    "windows": {"nsis": {"installMode":"currentUser"}}
+  }
+}

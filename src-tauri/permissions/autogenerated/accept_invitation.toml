@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-accept-invitation"
+description = "Enables the accept_invitation command without any pre-configured scope."
+commands.allow = ["accept_invitation"]
+
+[[permission]]
+identifier = "deny-accept-invitation"
+description = "Denies the accept_invitation command without any pre-configured scope."
+commands.deny = ["accept_invitation"]
