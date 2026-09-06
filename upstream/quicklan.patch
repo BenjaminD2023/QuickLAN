@@ -1,0 +1,253 @@
+--- a/easytier/Cargo.toml
++++ b/easytier/Cargo.toml
+@@ -348,6 +348,8 @@
+ 
+ 
+ [features]
++# QuickLAN: fixed subnet and restricted packet paths. See upstream/quicklan.patch.
++quicklan = []
+ default = [
+     "wireguard",
+     "websocket",
+--- a/easytier/src/lib.rs
++++ b/easytier/src/lib.rs
+@@ -5,6 +5,8 @@
+ use clap::Command;
+ use clap_complete::{Generator, Shell};
+ 
++#[cfg(feature = "quicklan")]
++pub mod quicklan_policy;
+ mod arch;
+ mod gateway;
+ pub mod instance;
+--- a/easytier/src/instance/instance.rs
++++ b/easytier/src/instance/instance.rs
+@@ -829,7 +829,10 @@
+         let nic_ctx = self.nic_ctx.clone();
+         let _peer_packet_receiver = self.peer_packet_receiver.clone();
+         tokio::spawn(async move {
++            #[cfg(not(feature = "quicklan"))]
+             let default_ipv4_addr = Ipv4Inet::new(Ipv4Addr::new(10, 126, 126, 0), 24).unwrap();
++            #[cfg(feature = "quicklan")]
++            let default_ipv4_addr = global_ctx_c.config.get_ipv4().expect("QuickLAN validates the subnet before construction");
+             let mut current_dhcp_ip: Option<Ipv4Inet> = None;
+             let mut next_sleep_time = 0;
+             let nic_closed_notifier = Arc::new(Notify::new());
+@@ -848,7 +851,7 @@
+ 
+                 // do not allocate ip if no peer connected
+                 let routes = peer_manager_c.list_routes().await;
+-                if routes.is_empty() {
++                if routes.is_empty() && !cfg!(feature = "quicklan") {
+                     next_sleep_time = 1;
+                     continue;
+                 } else {
+@@ -861,10 +864,16 @@
+                         continue;
+                     };
+ 
+-                    used_ipv4.insert(peer_ipv4_addr.into());
+-                }
+-
++                    let peer_ipv4_addr: Ipv4Inet = peer_ipv4_addr.into();
++                    #[cfg(feature = "quicklan")]
++                    if peer_ipv4_addr.network() != default_ipv4_addr.network() { continue; }
++                    used_ipv4.insert(peer_ipv4_addr);
++                }
++
++                #[cfg(not(feature = "quicklan"))]
+                 let dhcp_inet = used_ipv4.iter().next().unwrap_or(&default_ipv4_addr);
++                #[cfg(feature = "quicklan")]
++                let dhcp_inet = &default_ipv4_addr;
+                 // if old ip is already in this subnet and not conflicted, use it
+                 if let Some(ip) = current_dhcp_ip
+                     && ip.network() == dhcp_inet.network()
+@@ -1037,7 +1046,7 @@
+             Self::clear_nic_ctx(self.nic_ctx.clone(), self.peer_packet_receiver.clone()).await;
+ 
+             #[cfg(not(mobile))]
+-            if !self.global_ctx.config.get_flags().no_tun {
++            if !self.global_ctx.config.get_flags().no_tun && (!cfg!(feature = "quicklan") || !self.global_ctx.config.get_dhcp()) {
+                 let (output_tx, output_rx) = oneshot::channel();
+                 self.check_for_static_ip(output_tx);
+                 output_rx.await.unwrap()?;
+--- a/easytier/src/peers/peer_manager.rs
++++ b/easytier/src/peers/peer_manager.rs
+@@ -911,7 +911,7 @@
+         is_relay_data_packet_type(packet_type)
+     }
+ 
+-    fn is_relay_data_zc_packet(packet: &ZCPacket) -> bool {
++    pub(crate) fn is_relay_data_zc_packet(packet: &ZCPacket) -> bool {
+         let Some(hdr) = packet.peer_manager_header() else {
+             return false;
+         };
+@@ -1143,6 +1143,11 @@
+                         continue;
+                     }
+ 
++                    #[cfg(feature = "quicklan")]
++                    if packet_type == PacketType::Data as u8
++                        && !crate::quicklan_policy::allow_ipv4(ret.payload(), global_ctx.config.get_ipv4(), global_ctx.get_ipv4(), true) {
++                        continue;
++                    }
+                     let mut processed = false;
+                     let mut zc_packet = Some(ret);
+                     tracing::trace!(?zc_packet, "try_process_packet_from_peer");
+@@ -1412,6 +1417,10 @@
+     }
+ 
+     async fn run_nic_packet_process_pipeline(&self, data: &mut ZCPacket) -> bool {
++        #[cfg(feature = "quicklan")]
++        if !crate::quicklan_policy::allow_ipv4(data.payload(), self.global_ctx.config.get_ipv4(), self.global_ctx.get_ipv4(), false) {
++            return false;
++        }
+         // Enforce ACL for outbound (NIC-originated) packets. If ACL denies, stop processing.
+         if !self.global_ctx.get_acl_filter().process_packet_with_acl(
+             data,
+@@ -1508,6 +1517,10 @@
+             Self::get_next_hop_policy(msg.peer_manager_header().unwrap().is_latency_first());
+         let packet_type = msg.peer_manager_header().unwrap().packet_type;
+         let msg_len = msg.buf_len() as u64;
++        #[cfg(feature = "quicklan")]
++        if peers.get_global_ctx().p2p_only() && Self::is_relay_data_packet(packet_type) {
++            return peers.send_msg_directly(msg, dst_peer_id).await;
++        }
+         let send_result = if peers.has_peer(dst_peer_id) {
+             peers.send_msg_directly(msg, dst_peer_id).await
+         } else if foreign_network_client.has_next_hop(dst_peer_id) {
+--- a/easytier/src/peers/peer_conn.rs
++++ b/easytier/src/peers/peer_conn.rs
+@@ -1262,7 +1262,7 @@
+ 
+             self.info = Some(handshake_rsp);
+             self.is_client = Some(false);
+-        } else if hdr.packet_type == PacketType::HandShake as u8 {
++        } else if !cfg!(feature = "quicklan") && hdr.packet_type == PacketType::HandShake as u8 {
+             let rsp = Self::decode_handshake_packet(&first_pkt)?;
+             handshake_recved(self, &rsp.network_name)?;
+             tracing::info!("handshake request: {:?}", rsp);
+@@ -1349,6 +1349,10 @@
+         let ctrl_sender = self.ctrl_resp_sender.clone();
+         let conn_info_for_instrument = self.get_conn_info();
+         let control_metrics = self.control_metrics(&conn_info_for_instrument.network_name);
++        #[cfg(feature = "quicklan")]
++        let quicklan_direct_only = self.global_ctx.p2p_only();
++        #[cfg(feature = "quicklan")]
++        let quicklan_remote_id = conn_info_for_instrument.peer_id;
+ 
+         let is_foreign_network = conn_info_for_instrument.network_name
+             != self.global_ctx.get_network_identity().network_name;
+@@ -1392,6 +1396,12 @@
+                     }
+ 
+                     let mut zc_packet = ret.unwrap();
++                    #[cfg(feature = "quicklan")]
++                    if quicklan_direct_only
++                        && zc_packet.peer_manager_header().is_some_and(|h| h.packet_type == PacketType::ForeignNetworkPacket as u8)
++                        && crate::peers::peer_manager::PeerManager::is_relay_data_zc_packet(&zc_packet) {
++                        continue;
++                    }
+                     let buf_len = zc_packet.buf_len() as u64;
+                     let Some(peer_mgr_hdr) = zc_packet.mut_peer_manager_header() else {
+                         tracing::error!(
+@@ -1401,6 +1411,12 @@
+                         break;
+                     };
+ 
++                    #[cfg(feature = "quicklan")]
++                    if quicklan_direct_only
++                        && crate::peers::traffic_metrics::is_relay_data_packet_type(peer_mgr_hdr.packet_type)
++                        && peer_mgr_hdr.from_peer_id.get() != quicklan_remote_id {
++                        continue;
++                    }
+                     if peer_mgr_hdr.packet_type == PacketType::Ping as u8 {
+                         control_metrics.record_rx(buf_len);
+                         peer_mgr_hdr.packet_type = PacketType::Pong as u8;
+--- /dev/null
++++ b/easytier/src/quicklan_policy.rs
+@@ -0,0 +1,30 @@
++//! QuickLAN scope checks, applied to plaintext before TUN delivery / encryption.
++use cidr::Ipv4Inet;
++use std::net::Ipv4Addr;
++pub fn allow_ipv4(packet: &[u8], proposal: Option<Ipv4Inet>, local: Option<Ipv4Inet>, inbound: bool) -> bool {
++    let (Some(proposal), Some(local)) = (proposal, local) else { return false; };
++    if packet.len() < 20 || packet[0] >> 4 != 4 { return false; }
++    let header = (packet[0] & 15) as usize * 4;
++    let total = u16::from_be_bytes([packet[2], packet[3]]) as usize;
++    if header < 20 || header > packet.len() || total < header || total > packet.len() { return false; }
++    let src = Ipv4Addr::new(packet[12], packet[13], packet[14], packet[15]);
++    let dst = Ipv4Addr::new(packet[16], packet[17], packet[18], packet[19]);
++    let host = |ip: &Ipv4Addr| proposal.contains(ip) && *ip != proposal.first_address() && *ip != proposal.last_address();
++    host(&src) && host(&dst) && if inbound { dst == local.address() } else { src == local.address() }
++}
++#[cfg(test)]
++mod tests {
++    use super::*;
++    #[test]
++    fn rejects_foreign_subnets_ipv6_and_wrong_local_direction() {
++        let proposal = Some("10.73.42.0/24".parse().unwrap());
++        let local = Some("10.73.42.1/24".parse().unwrap());
++        let mut p = [0u8; 20]; p[0] = 0x45; p[3] = 20;
++        p[12..16].copy_from_slice(&[10,73,42,1]); p[16..20].copy_from_slice(&[10,73,42,2]);
++        assert!(allow_ipv4(&p, proposal, local, false));
++        assert!(!allow_ipv4(&p, proposal, local, true));
++        p[16] = 8; assert!(!allow_ipv4(&p, proposal, local, false));
++        p[16] = 10; p[19] = 255; assert!(!allow_ipv4(&p, proposal, local, false));
++        p[0] = 0x60; assert!(!allow_ipv4(&p, proposal, local, false));
++    }
++}
+--- a/easytier/src/instance/mod.rs
++++ b/easytier/src/instance/mod.rs
+@@ -11,5 +11,5 @@
+ #[cfg(feature = "tun")]
+ pub mod virtual_nic;
+ 
+-#[cfg(any(windows, test))]
++#[cfg(all(any(windows, test), not(feature = "quicklan")))]
+ pub(crate) mod windows_udp_broadcast;
+--- a/easytier/src/instance/virtual_nic.rs
++++ b/easytier/src/instance/virtual_nic.rs
+@@ -528,6 +528,7 @@
+         {
+             let dev_name = self.global_ctx.get_flags().dev_name;
+ 
++            #[cfg(not(feature = "quicklan"))]
+             match crate::arch::windows::add_self_to_firewall_allowlist() {
+                 Ok(_) => tracing::info!("add_self_to_firewall_allowlist successful!"),
+                 Err(error) => {
+@@ -538,6 +539,7 @@
+                 }
+             }
+ 
++            #[cfg(not(feature = "quicklan"))]
+             match RegistryManager::reg_delete_obsoleted_items(&dev_name) {
+                 Ok(_) => tracing::trace!("delete successful!"),
+                 Err(e) => tracing::error!("An error occurred: {}", e),
+@@ -565,6 +567,8 @@
+             }
+ 
+             config.platform_config(|config| {
++                #[cfg(feature = "quicklan")]
++                config.wintun_file(std::env::current_exe().expect("engine executable path").parent().expect("engine directory").join("wintun.dll"));
+                 config.skip_config(true);
+                 config.ring_cap(Some(std::cmp::min(
+                     config.min_ring_cap() * 32,
+@@ -1013,7 +1017,7 @@
+         });
+     }
+ 
+-    #[cfg(target_os = "windows")]
++    #[cfg(all(target_os = "windows", not(feature = "quicklan")))]
+     fn start_windows_udp_broadcast_relay(&mut self, virtual_ipv4: Ipv4Inet) {
+         if !self.global_ctx.get_flags().enable_udp_broadcast_relay {
+             return;
+@@ -1380,7 +1384,7 @@
+         // Assign IPv4 address if provided
+         if let Some(ipv4_addr) = ipv4_addr {
+             self.assign_ipv4_to_tun_device(ipv4_addr).await?;
+-            #[cfg(target_os = "windows")]
++            #[cfg(all(target_os = "windows", not(feature = "quicklan")))]
+             self.start_windows_udp_broadcast_relay(ipv4_addr);
+         }
+ 

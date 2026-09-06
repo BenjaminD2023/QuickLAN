@@ -7,7 +7,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 
 pub const MAX_REQUEST_BYTES: usize = 16_384;
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum HelperRequest {
     Start {
@@ -68,11 +68,11 @@ impl HelperRequest {
 pub struct HelperStatus {
     pub installed: bool,
     pub connection_enabled: bool,
-    pub code: Error,
+    pub code: Option<Error>,
     pub release_gaps: Vec<&'static str>,
 }
 pub fn status() -> HelperStatus {
-    HelperStatus { installed:false, connection_enabled:false, code:Error::HelperUnavailable,
+    HelperStatus { installed:false, connection_enabled:false, code:Some(Error::HelperUnavailable),
         release_gaps:vec!["Authenticated core management and signed OS helper installation are not implemented.","Stock core retains implicit TCP STUN servers.","Direct-only path migration and hostile learned-route enforcement are not verified.","Windows and both macOS architectures require real virtual-IP and install/uninstall tests."] }
 }
 pub fn connect(_request: HelperRequest) -> Result<()> {

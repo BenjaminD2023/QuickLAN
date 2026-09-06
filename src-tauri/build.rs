@@ -1,4 +1,16 @@
 fn main() {
+    use sha2::{Digest, Sha256};
+    let engine_name = if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("windows") {
+        "quicklan-engine.exe"
+    } else {
+        "quicklan-engine"
+    };
+    let engine = std::path::Path::new("resources/engine").join(engine_name);
+    println!("cargo:rerun-if-changed={}", engine.display());
+    let digest = std::fs::read(&engine)
+        .map(|bytes| format!("{:x}", Sha256::digest(bytes)))
+        .unwrap_or_default();
+    println!("cargo:rustc-env=QUICKLAN_ENGINE_SHA256={digest}");
     tauri_build::try_build(tauri_build::Attributes::new().app_manifest(
         tauri_build::AppManifest::new().commands(&[
             "get_state",

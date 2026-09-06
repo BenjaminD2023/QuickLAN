@@ -13,12 +13,14 @@ crate-type = ["rlib"]
 
 [build-dependencies]
 tauri-build = { version = "=2.6.3", features = [] }
+sha2 = "=0.10.9"
 
 [dependencies]
 tauri = { version = "=2.11.5", features = [] }
 tauri-plugin-single-instance = "=2.4.4"
 tauri-plugin-clipboard-manager = "=2.3.3"
 quicklan-core = { path = "../crates/quicklan-core", features = ["os-vault"] }
+quicklan-runtime = { path = "../crates/quicklan-runtime" }
 serde = { version = "=1.0.228", features = ["derive"] }
 serde_json = "=1.0.145"
 zeroize = "=1.8.2"

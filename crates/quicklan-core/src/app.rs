@@ -7,6 +7,7 @@ use crate::{
     model::{
         random_hex, validate_label, Bootstrap, Network, Policy, Preferences, SavedState, Secret,
     },
+    runtime::{NetworkRuntime, RuntimeEvent},
     storage::Store,
 };
 use serde::Serialize;
@@ -29,6 +30,8 @@ pub struct App<S: Store> {
     lifecycle: Lifecycle,
     events: EventLog,
     pending: Option<(String, Invitation)>,
+    runtime: Option<Box<dyn NetworkRuntime>>,
+    active_generation: Option<u64>,
 }
 impl<S: Store> App<S> {
     pub fn new(store: S) -> Result<Self> {
@@ -40,13 +43,69 @@ impl<S: Store> App<S> {
             lifecycle: Lifecycle::default(),
             events: EventLog::default(),
             pending: None,
+            runtime: None,
+            active_generation: None,
         })
+    }
+    pub fn with_runtime(mut self, runtime: Box<dyn NetworkRuntime>) -> Self {
+        self.runtime = Some(runtime);
+        self
+    }
+    pub fn refresh(&mut self) -> Result<()> {
+        let events = self.runtime.as_mut().map(|r| r.poll()).unwrap_or_default();
+        let Some(generation) = self.active_generation else {
+            return Ok(());
+        };
+        use crate::lifecycle::Phase;
+        for event in events {
+            let phase = self.lifecycle.snapshot().phase;
+            match event {
+                RuntimeEvent::Joining if phase == Phase::Starting => {
+                    self.lifecycle.transition(generation, Phase::Joining)?
+                }
+                RuntimeEvent::State { virtual_ip, peers }
+                    if matches!(
+                        phase,
+                        Phase::Joining | Phase::Connected | Phase::Reconnecting
+                    ) =>
+                {
+                    let ready = virtual_ip.is_some();
+                    self.lifecycle.observe(generation, virtual_ip, peers)?;
+                    if ready && matches!(phase, Phase::Joining | Phase::Reconnecting) {
+                        self.lifecycle.transition(generation, Phase::Connected)?;
+                    } else if !ready && phase == Phase::Connected {
+                        self.lifecycle.transition(generation, Phase::Reconnecting)?;
+                    }
+                }
+                RuntimeEvent::Stopped if phase == Phase::Stopping => {
+                    self.lifecycle.finish_stop(generation)?;
+                    self.active_generation = None;
+                }
+                RuntimeEvent::Failed(error)
+                    if !matches!(phase, Phase::Disconnected | Phase::Failed) =>
+                {
+                    self.lifecycle.fail(generation, error)?
+                }
+                _ => (), // Old observations cannot resurrect a stopped/failed session.
+            }
+            self.events.record(&self.lifecycle.snapshot());
+        }
+        Ok(())
     }
     pub fn view(&self) -> AppView {
         AppView {
             saved: self.saved.clone(),
             connection: self.lifecycle.snapshot(),
-            helper: helper::status(),
+            helper: if self.runtime.as_ref().is_some_and(|r| r.available()) {
+                helper::HelperStatus {
+                    installed: true,
+                    connection_enabled: true,
+                    code: None,
+                    release_gaps: vec![],
+                }
+            } else {
+                helper::status()
+            },
         }
     }
     pub fn network(&self, id: &str) -> Result<&Network> {
@@ -259,20 +318,46 @@ impl<S: Store> App<S> {
         Ok(())
     }
     pub fn connect(&mut self, id: &str) -> Result<Snapshot> {
-        self.network(id)?;
+        let network = self.network(id)?.clone();
         let generation = self.lifecycle.begin_start(id)?;
+        self.active_generation = Some(generation);
         self.events.record(&self.lifecycle.snapshot());
-        // Hard gate before reading credentials or invoking any privileged operation.
-        let failure = helper::status().code;
-        self.lifecycle.fail(generation, failure)?;
+        let result = if self.runtime.as_ref().is_some_and(|r| r.available()) {
+            self.store.get_secret(id).and_then(|credential| {
+                let request = helper::HelperRequest::Start {
+                    protocol: 1,
+                    session_id: random_hex(16)?,
+                    network,
+                    credential,
+                    nickname: self.saved.preferences.nickname.clone(),
+                };
+                self.runtime
+                    .as_mut()
+                    .ok_or(Error::HelperUnavailable)?
+                    .start(request)
+            })
+        } else {
+            Err(Error::HelperUnavailable)
+        };
+        if let Err(failure) = result {
+            self.lifecycle.fail(generation, failure)?;
+        }
         let state = self.lifecycle.snapshot();
         self.events.record(&state);
         Ok(state)
     }
     pub fn disconnect(&mut self) -> Result<Snapshot> {
         let generation = self.lifecycle.begin_stop()?;
+        self.active_generation = Some(generation);
         self.events.record(&self.lifecycle.snapshot());
-        self.lifecycle.finish_stop(generation)?;
+        let pending = match self.runtime.as_mut() {
+            Some(runtime) => runtime.stop()?,
+            None => false,
+        };
+        if !pending {
+            self.lifecycle.finish_stop(generation)?;
+            self.active_generation = None;
+        }
         let state = self.lifecycle.snapshot();
         self.events.record(&state);
         Ok(state)

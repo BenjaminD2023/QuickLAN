@@ -1,0 +1,56 @@
+name: Native networking implementation
+on:
+  push:
+    branches: [feature/native-networking]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: networking-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  engine:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, macos-15, macos-15-intel, windows-2022]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install Rust
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+      - name: Install protobuf compiler on Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      - name: Install protobuf compiler on macOS
+        if: runner.os == 'macOS'
+        run: brew install protobuf
+      - name: Install protobuf compiler on Windows
+        if: runner.os == 'Windows'
+        run: choco install protoc --version=31.1 -y --no-progress
+      - name: Verify domain and native IPC
+        run: cargo test --workspace --all-features --locked
+      - name: Prepare pinned core with reviewed policy patch
+        run: python scripts/prepare-engine.py
+      - name: Build networking engine
+        run: cargo build --manifest-path engine/Cargo.toml --release --locked
+      - name: Stage production engine and Windows driver
+        run: python scripts/stage-engine.py
+      - name: Build native acceptance driver
+        run: cargo build -p quicklan-runtime --example engine_smoke --locked
+      - name: Real adapter and cleanup on Unix
+        if: runner.os != 'Windows'
+        run: sudo --preserve-env=CI ./target/debug/examples/engine_smoke ./src-tauri/resources/engine/quicklan-engine
+      - name: Real adapter and cleanup on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./target/debug/examples/engine_smoke.exe ./src-tauri/resources/engine/quicklan-engine.exe
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: quicklan-engine-${{ matrix.runner }}
+          path: src-tauri/resources/engine/
+          retention-days: 7
+          if-no-files-found: error

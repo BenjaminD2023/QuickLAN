@@ -1,6 +1,6 @@
 [workspace]
-members = ["crates/quicklan-core"]
-exclude = ["src-tauri"]
+members = ["crates/quicklan-core", "crates/quicklan-ipc", "crates/quicklan-runtime"]
+exclude = ["src-tauri", "engine"]
 resolver = "2"
 
 [workspace.package]

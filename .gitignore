@@ -12,3 +12,6 @@ test-results/
 *.tsbuildinfo
 artifacts/
 __pycache__/
+
+src-tauri/resources/engine/quicklan-engine*
+src-tauri/resources/engine/wintun.dll

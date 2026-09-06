@@ -1,0 +1,25 @@
+[package]
+name = "quicklan-engine"
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.96"
+license = "GPL-3.0-only"
+description = "QuickLAN's separate EasyTier networking process, without management TCP RPC"
+
+[workspace]
+
+[features]
+lab = []
+
+[dependencies]
+easytier = { path = "../.cache/quicklan-easytier/easytier", default-features = false, features = ["tun", "aes-gcm", "quicklan"] }
+quicklan-ipc = { path = "../crates/quicklan-ipc" }
+quicklan-core = { path = "../crates/quicklan-core" }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
+serde_json = "=1.0.145"
+zeroize = "=1.8.2"
+
+[profile.release]
+strip = true
+lto = "thin"
+codegen-units = 8

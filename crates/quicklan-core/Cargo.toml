@@ -21,6 +21,9 @@ url = "=2.5.7"
 zeroize = { version = "=1.8.2", features = ["derive"] }
 keyring = { version = "=3.6.3", optional = true, features = ["apple-native", "windows-native"] }
 
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "=0.61.2", features = ["Win32_NetworkManagement_IpHelper", "Win32_NetworkManagement_Ndis", "Win32_Networking_WinSock"] }
+
 [dev-dependencies]
 proptest = "=1.9.0"
 tempfile = "=3.23.0"

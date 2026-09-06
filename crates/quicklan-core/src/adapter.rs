@@ -17,7 +17,7 @@ pub enum PeerPath {
     Unreachable,
     Unknown,
 }
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Peer {
     pub id: String,
     pub nickname: String,

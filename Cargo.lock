@@ -460,7 +460,27 @@ dependencies = [
  "thiserror",
  "toml",
  "url",
+ "windows-sys 0.61.2",
  "zeroize",
+]
+
+[[package]]
+name = "quicklan-ipc"
+version = "0.1.0"
+dependencies = [
+ "libc",
+ "tempfile",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "quicklan-runtime"
+version = "0.1.0"
+dependencies = [
+ "libc",
+ "quicklan-core",
+ "quicklan-ipc",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

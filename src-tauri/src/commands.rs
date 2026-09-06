@@ -11,7 +11,10 @@ use tauri_plugin_clipboard_manager::ClipboardExt;
 
 #[tauri::command]
 pub async fn get_state(state: State<'_, ManagedApp>) -> Result<AppView> {
-    state.with(|a| Ok(a.view()))
+    state.with(|a| {
+        a.refresh()?;
+        Ok(a.view())
+    })
 }
 #[tauri::command]
 pub async fn create_network(

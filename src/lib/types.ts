@@ -51,7 +51,7 @@ export interface AppView {
   helper: {
     installed: boolean;
     connection_enabled: boolean;
-    code: string;
+    code: string | null;
     release_gaps: string[];
   };
 }

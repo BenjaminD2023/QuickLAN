@@ -91,9 +91,7 @@ impl Lifecycle {
         Ok(())
     }
     pub fn fail(&mut self, generation: u64, error: Error) -> Result<()> {
-        if generation != self.generation
-            || matches!(self.state.phase, Phase::Disconnected | Phase::Stopping)
-        {
+        if generation != self.generation || self.state.phase == Phase::Disconnected {
             return Err(Error::InvalidTransition);
         }
         self.state.phase = Phase::Failed;

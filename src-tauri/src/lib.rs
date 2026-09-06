@@ -33,6 +33,22 @@ pub fn run() {
                 .map_err(|_| Error::UnsafePath)
                 .and_then(OsStore::new)
                 .and_then(App::new);
+            let state = state.map(|state| {
+                let engine_name = if cfg!(windows) {
+                    "quicklan-engine.exe"
+                } else {
+                    "quicklan-engine"
+                };
+                match app.path().resource_dir() {
+                    Ok(root) => {
+                        state.with_runtime(Box::new(quicklan_runtime::DesktopRuntime::new(
+                            root.join("resources/engine").join(engine_name),
+                            env!("QUICKLAN_ENGINE_SHA256").to_owned(),
+                        )))
+                    }
+                    Err(_) => state,
+                }
+            });
             app.manage(ManagedApp(Mutex::new(state)));
             Ok(())
         })
