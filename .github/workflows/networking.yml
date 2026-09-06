@@ -1,7 +1,8 @@
 name: Native networking implementation
 on:
   push:
-    branches: [feature/native-networking]
+    branches: [main, feature/native-networking]
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,12 +23,13 @@ jobs:
           persist-credentials: false
       - name: Install Rust
         run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+      - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             engine/target
+            src-tauri/target
             target
           key: native-${{ matrix.runner }}-rust196-${{ hashFiles('engine/Cargo.lock', 'Cargo.lock') }}-${{ github.sha }}
           restore-keys: |
@@ -47,6 +49,7 @@ jobs:
       - name: Prepare pinned core with reviewed policy patch
         run: python scripts/prepare-engine.py
       - name: Build networking engine
+        id: engine_build
         run: cargo build --manifest-path engine/Cargo.toml --release --locked
       - name: Stage production engine and Windows driver
         run: python scripts/stage-engine.py
@@ -72,6 +75,9 @@ jobs:
           npm run build
           npm test
           cargo clippy --manifest-path src-tauri/Cargo.toml --locked -- -D warnings
+          npx playwright install chromium --only-shell
+          npm run test:e2e
+          git restore docs/evidence/ui-*.png
       - name: Build macOS application and disk image
         if: runner.os == 'macOS'
         run: |
@@ -84,6 +90,9 @@ jobs:
           npm run tauri -- build --bundles nsis -- --locked
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./scripts/windows-installer-smoke.ps1 -BundleRoot src-tauri/target/release/bundle -RequireEngine
+      - name: Record native build checksums
+        if: runner.os != 'Linux'
+        run: python scripts/build-manifest.py --bundle-root src-tauri/target/release/bundle --target ${{ matrix.runner }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: runner.os != 'Linux'
         with:
@@ -93,6 +102,8 @@ jobs:
             src-tauri/target/release/bundle/nsis/*.exe
             src-tauri/target/release/bundle/windows-smoke.json
             src-tauri/target/release/bundle/macos-smoke.json
+            src-tauri/target/release/bundle/BUILD.json
+            src-tauri/target/release/bundle/SHA256SUMS
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -116,3 +127,13 @@ jobs:
           name: quicklan-engine-payload-evidence
           path: docs/evidence/engine-integration-*.json
           if-no-files-found: error
+      - uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        if: always() && steps.engine_build.outcome == 'success'
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            engine/target
+            src-tauri/target
+            target
+          key: native-${{ matrix.runner }}-rust196-${{ hashFiles('engine/Cargo.lock', 'Cargo.lock') }}-${{ github.sha }}

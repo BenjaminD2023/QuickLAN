@@ -1,25 +1,26 @@
 # Architecture and decisions
 
-QuickLAN is an engineering preview of a trusted-group virtual network utility. It uses Tauri 2, React, TypeScript, Vite and a Rust application domain. A pinned EasyTier process is the intended network engine; the stock release is currently confined to explicit developer tests because its management and networking-policy gaps block elevated production use.
-
-```text
-React UI (rendering, forms, typed requests; no credential persistence)
-  -> allowlisted local-window Tauri commands
-    -> Mutex<App<OsStore>>: validation, local persistence, invitations, lifecycle
-      -> per-network OS credential entry + private metadata file
-      -> sanitized event codes (100-entry memory ring)
-      -> helper boundary [closed: platform implementation is a release gate]
-          -> pinned EasyTier process [developer test harness only]
+```
+Unprivileged React/Tauri window
+  -> allowlisted, typed Tauri commands
+  -> Rust App<OsStore>: validation, invitations, state, diagnostics
+     -> Keychain / Windows Credential Manager + atomic private metadata
+     -> DesktopRuntime worker: engine digest, OS elevation, lifecycle
+        -> kernel-authenticated Unix socket / Windows named pipe
+        -> separate elevated quicklan-engine (GPL-3.0-only)
+           -> patched EasyTier 2.6.4 library -> utun/TUN/Wintun
 ```
 
-- One active network per application. A single-instance plugin prevents duplicate UI processes. The backend mutex serializes commands; lifecycle generations reject stale results after stop/restart. A failed core/helper operation clears peers and virtual IP. Unknown or unsupported JSON is an error, not invented state.
-- Friendly labels and nicknames are distinct from a random 128-bit network identifier. Secrets contain 256 bits of OS randomness encoded as lowercase hex. Invitations are `quicklan1:` followed by bounded base64url JSON with exact schema/protocol validation. Their preview exposes no credential, and its one-use local ticket binds user confirmation to the parsed content. The ticket is a local UI confirmation mechanism, **not a one-use network invitation**.
-- Persistent secrets use macOS Keychain / Windows Credential Manager, one entry per opaque network ID. JSON metadata contains names/settings but no credentials. Secrets are zeroized where owned; temporary parser/serializer/clipboard/OS copies can remain. No memory-protection guarantee is claimed.
-- Create saves the credential before atomic metadata commit; failure attempts credential cleanup. Forget removes the credential and restores it on metadata failure. A crash or failed rollback can leave an orphan credential or a saved entry with unavailable credentials. Fail clearly; do not silently regenerate credentials. Full cross-store transactional recovery is still a release gate.
-- No raw upstream output is persisted. Source inspection found that core info logs include TOML credentials. The lab redirects upstream logs to the null device, and only exports an explicit status projection. Diagnostics contain fixed error codes/state, never arbitrary exception strings.
-- The UI refreshes native state every three seconds. There is no automatic connection, account, cloud control plane, exit node, DNS change, file sharing, chat or automatic update check. Window close and explicit quit disconnect; tray/background operation is intentionally absent.
-- Public endpoint directory is empty. Saved assisted profiles require a user-specified operator, shared node and consent. Manual profile promises remain unavailable for system networking until the implicit TCP STUN issue is resolved. Direct-only profile is rejected at the backend, not merely disabled visually.
-- `routes=[]` is a candidate route-installation safeguard verified in upstream source, not a substitute for rejecting hostile data-plane advertisements. Route range checks and ownership models are unit-tested; live physical route enumeration and protected application are unfinished.
-- Original wrapper code: Apache-2.0. Separate upstream process: LGPL-3.0. Stock core not bundled in the engineering app. No affiliation or independent audit claim.
+The desktop and networking engine are separate processes and license boundaries. The stock EasyTier management TCP service is never started. Credentials use bounded framed IPC, not arguments or config files. Both ends authenticate peer process IDs through kernel APIs. The Mac launcher stages a hash-verified root-owned copy; Windows holds replacement-denying handles to the executable, driver and their directory ancestry. See [NATIVE_ENGINE.md](NATIVE_ENGINE.md).
 
-See platform/macos and platform/windows for concrete privilege-boundary requirements and docs/UPSTREAM_CAPABILITIES.md for evidence. Network startup stays closed until those requirements are implemented and tested; this is a deliberate security gate, not a silent mock adapter.
+One active network is enforced by the runtime worker and single-instance desktop plugin. Lifecycle generations reject stale state. Disconnect waits for actual engine termination before another start; a stuck old engine keeps the application busy. Heartbeat loss or controller EOF closes the adapter. Mac utun and Linux TUN vanish when their handles close; Windows explicitly deletes its owned adapter. No persistent system service or startup registration is installed. Reinstalling replaces the bundled helper; there is no separate service repair database.
+
+Invitations contain a 128-bit random network identifier and a 256-bit random credential, encoded in a bounded versioned token. Exact field/endpoint/subnet validation precedes preview; a local one-use preview ticket binds acceptance to that content. This does not make the network invitation single-use. Credentials are stored in the OS vault, separately from private atomic metadata. Best-effort rollback handles write failures; a crash between stores can still leave an orphan credential or unavailable saved entry. Failures never silently generate a replacement secret.
+
+The frontend refreshes current native state every three seconds. Engine state comes from Instance APIs and actual interface enumeration. Peer paths use live connections/next hops; unavailable latency is absent, not zero. The TCP port checker validates a current peer and overlay address in Rust, then performs one bounded connection without payloads. Local endpoint selection reads OS interfaces only and is initiated by a user action; it does not send discovery probes.
+
+The patched data plane admits only the agreed private IPv4 /24 and local destination/source direction. Unrelated route advertisements, IPv6 and broadcasts are rejected. No DNS, default route, subnet proxy, exit node or broad firewall/profile modification is enabled. Conflicting existing routes are checked before creating an adapter. A later unrelated VPN route change remains an unverified overlap scenario; users should disconnect before changing VPN configurations.
+
+Manual mode has no implicit public endpoint, STUN, external-IP probe or DNS fallback. Explicit shared nodes are configurable and require consent in assisted/direct-only profiles. Their names are descriptive, not authenticated operator keys. There is no hosted control plane, automatic connection, telemetry, updater or tray mode. Closing the window disconnects.
+
+Raw upstream logs are discarded because upstream can log secrets. Diagnostics are a 100-entry in-memory ring and a fixed field allowlist; secrets, payloads, labels and addresses are excluded. Owned secret buffers are zeroized, but parser, clipboard and OS copies can remain. No memory protection guarantee or independent audit is claimed.

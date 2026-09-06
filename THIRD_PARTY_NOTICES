@@ -1,22 +1,27 @@
-QuickLAN 0.1.0 — engineering preview
-Copyright 2026 QuickLAN contributors. Original source: Apache-2.0.
+QuickLAN 0.2.0 — native networking preview
+Copyright 2026 QuickLAN contributors.
+Desktop, domain, IPC and runtime source: Apache-2.0; see LICENSE.
+Separate quicklan-engine program: GPL-3.0-only; see engine/LICENSE.
 
-QuickLAN is an independent project and is not affiliated with EasyTier.
+QuickLAN is independent of and not affiliated with EasyTier.
 EasyTier v2.6.4, commit 8428a89d2dabc94c97d370ec607c6ca142473626:
 https://github.com/EasyTier/EasyTier
-GNU Lesser General Public License v3; see licenses/EasyTier-LGPL-3.0.txt
-and licenses/GPL-3.0.txt. The stock core is used only by an explicit developer
-integration test. It is not bundled into this engineering desktop artifact.
+GNU Lesser General Public License v3; original license is preserved in
+licenses/EasyTier-LGPL-3.0.txt and licenses/GPL-3.0.txt.
+The separate engine links a modified EasyTier library. Changes are identified
+in upstream/quicklan.patch. Exact source, dependency sources, lockfiles and
+build instructions accompany each binary release in the corresponding-source
+archive. See licenses/SOURCE_AVAILABILITY.md.
 
-The desktop build uses Tauri (MIT/Apache-2.0), React (MIT), lucide (ISC),
-keyring (MIT/Apache-2.0), and their transitive dependencies. A machine-derived
-license inventory/SBOM must accompany every public binary release; see scripts
-and docs/RELEASING.md. Upstream license obligations remain their own.
+The desktop uses Tauri (MIT/Apache-2.0), React (MIT), lucide (ISC), keyring
+(MIT/Apache-2.0) and their dependencies. See licenses/DEPENDENCY_LICENSES.txt,
+licenses/ENGINE_DEPENDENCY_LICENSES.txt and the matching SBOMs.
 
-No independent security audit, signing, notarization or network performance
-certification is claimed.
+Windows includes the official Wintun 0.14.1 x64 binary under its redistribution
+license, preserved in licenses/Wintun-Binary-LICENSE.txt. This is separate from
+the driver's source license. Windows also links Microsoft's WebView2 SDK
+loader, SDK 1.0.3650.58; see licenses/Microsoft-WebView2-LICENSE.txt and NOTICE.
 
-Windows links Microsoft's WebView2 SDK loader through webview2-com-sys.
-SDK version 1.0.3650.58; the x64 loader matches the official package bytes.
-See licenses/Microsoft-WebView2-LICENSE.txt and Microsoft-WebView2-NOTICE.txt
-in the companion notices archive. Preserve that archive with redistribution.
+No independent security audit, publisher signature, notarization, or network
+performance certification is claimed. Preserve the accompanying notices and
+source availability materials when redistributing binaries.

@@ -1,7 +1,34 @@
-# Covered source availability
+# Corresponding source and notices
 
-The desktop normal dependency graph includes `selectors 0.36.1` under MPL-2.0. Its unmodified crate source is included in `sources/selectors-0.36.1.crate`; the adjacent JSON records the crates.io URL and verified Cargo.lock checksum. The complete MPL-2.0 text is retained in `supplemental/` and the combined dependency notices. Source files retain their original notices. QuickLAN has not modified these files. Extract the gzip tar archive and use Cargo with its manifest to inspect/build the library and fetch its declared dependencies.
+QuickLAN's desktop/domain/IPC/runtime are Apache-2.0. The separate networking
+engine is GPL-3.0-only and links modified EasyTier 2.6.4 under its original
+LGPL-3.0 license. `engine/LICENSE`, `GPL-3.0.txt` and `EasyTier-LGPL-3.0.txt`
+retain the complete texts. `upstream/quicklan.patch` identifies modifications.
 
-EasyTier LGPL code is not included in the desktop executable or bundled as an engine. Its locally downloaded source and binaries are for explicit development tests only. If a future package includes a core executable, ship its exact corresponding source, lockfiles, patch set, build recipes and required license notices alongside it before public distribution.
+Each native networking release supplies `QuickLAN-0.2.0-corresponding-source.tar.gz`:
+QuickLAN source at the release commit, exact modified EasyTier source, Cargo
+lockfiles, vendored engine dependency source, build scripts and license notices.
+The archive README describes building the engine offline with Rust 1.96 and a
+protobuf compiler. No account or payment is required to obtain the archive.
+The desktop's embedded helper hash must be regenerated with `stage-engine.py`
+and the desktop rebuilt if the helper is modified. QuickLAN does not require a
+publisher secret to run a user's rebuilt engine; platform elevation still applies.
 
-`docs/evidence/license-inventory.json` covers a broader all-target inventory than the three launch targets. Four missing texts remain for nonlaunch target packages; the recorded normal dependency graphs for the three initial targets have no missing license-text entries. This inventory is not a substitute for checking platform resources, build provenance and legal redistribution obligations.
+The desktop includes unmodified MPL-2.0 `selectors 0.36.1`; its crate source is
+included at `sources/selectors-0.36.1.crate`, with original notices, URL and
+Cargo.lock checksum in the adjacent JSON. Extract with tar and build with its
+Cargo manifest. The engine's complete vendor tree also retains its dependencies'
+original source/license files, including MPL-covered code.
+
+`DEPENDENCY_LICENSES.txt` and `ENGINE_DEPENDENCY_LICENSES.txt` include all-target
+inventories, some of which are not linked into the launch platforms. Supplemental
+license provenance and digests are recorded in `supplemental/sources.json`.
+This is an engineering inventory, not an independent legal review. In particular,
+encoding-utils' published crate declares MIT but omits its license text; its exact
+source and declared metadata are retained, with a clearly identified canonical
+MIT template rather than an invented copyright attribution.
+
+Wintun 0.14.1's official signed x64 DLL is redistributed with software using its
+API under `Wintun-Binary-LICENSE.txt`; this is not a relicensing of the driver.
+Its official archive and DLL hashes are pinned in `upstream/wintun.lock.json`.
+Microsoft's WebView2 SDK loader license and notices are retained separately.

@@ -1,6 +1,6 @@
 # Native networking implementation
 
-QuickLAN's `feature/native-networking` branch adds a separate `quicklan-engine`
+QuickLAN 0.2.0 uses a separate `quicklan-engine`
 process using the pinned EasyTier 2.6.4 library with the reviewed patch in
 `upstream/quicklan.patch`. This document describes the implementation under test;
 it does not change the older `v0.1.0-engineering.1` draft's disabled networking.
@@ -42,8 +42,8 @@ Assisted mode can use an explicitly selected compatible shared node; public
 services are not bundled or assumed available. Secure Mode must be enabled on
 that shared node. Names/operator labels do not authenticate an operator's key.
 Direct-only enforcement is implemented at the final packet-send decision and
-inbound relay boundaries; its UI remains disabled until controlled migration
-acceptance passes. It must never silently fall back to relayed application data.
+inbound relay boundaries; controlled relay-to-direct-to-unreachable migration tests pass over TCP and UDP
+underlays. It must never silently fall back to relayed application data.
 
 The overlay is for direct-IP applications, not Ethernet bridging or automatic
 LAN-game discovery. OS firewalls remain authoritative. The peer details screen

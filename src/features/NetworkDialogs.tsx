@@ -9,6 +9,7 @@ import type {
 } from "../lib/types";
 import { useText } from "../lib/i18n";
 import { Modal, ModalFooter, Notice } from "../components/ui";
+import { LocalEndpointPicker } from "./LocalEndpointPicker";
 export interface DialogProps {
   onClose: () => void;
   busy: boolean;
@@ -78,6 +79,18 @@ export function CreateDialog({
           />
         </label>
         <p className="muted">{t("singleActive")}</p>
+        <LocalEndpointPicker
+          onSelect={(value) => {
+            setEndpoint(value);
+            setOperator(nickname.trim() || preferences.nickname);
+            setConsent(false);
+          }}
+        />
+        {endpoint && (
+          <p className="field-hint">
+            <code>{endpoint}</code>
+          </p>
+        )}
         <details className="advanced">
           <summary>
             <Settings />
@@ -106,9 +119,7 @@ export function CreateDialog({
               >
                 <option value="manual">{t("manual")}</option>
                 <option value="assisted">{t("assisted")}</option>
-                <option value="direct_only" disabled>
-                  {t("directOnly")} — {t("unavailable")}
-                </option>
+                <option value="direct_only">{t("directOnly")}</option>
               </select>
             </label>
             <label>
@@ -118,7 +129,7 @@ export function CreateDialog({
                 onChange={(e) => setEndpoint(e.target.value)}
                 placeholder="tcp://192.168.1.12:11010"
                 maxLength={256}
-                required={policy === "assisted"}
+                required={policy !== "manual"}
                 spellCheck={false}
               />
             </label>
@@ -427,9 +438,7 @@ export function SettingsDialog({
           >
             <option value="manual">{t("manual")}</option>
             <option value="assisted">{t("assisted")}</option>
-            <option disabled value="direct_only">
-              {t("directOnly")} — {t("unavailable")}
-            </option>
+            <option value="direct_only">{t("directOnly")}</option>
           </select>
         </label>
         {nodes.map((node, i) => (
@@ -490,7 +499,7 @@ export function SettingsDialog({
               required
               onChange={(e) => setConsent(e.target.checked)}
             />
-            {t("assistedConsent")}
+            {t(policy === "direct_only" ? "directConsent" : "assistedConsent")}
           </label>
         )}
         <Notice>{t("reshare")}</Notice>

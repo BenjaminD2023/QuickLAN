@@ -6,7 +6,7 @@
     "component": {
       "type": "application",
       "name": "QuickLAN",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   },
   "components": [
@@ -2454,6 +2454,17 @@
     },
     {
       "type": "library",
+      "name": "network-interface",
+      "version": "2.0.5",
+      "purl": "pkg:cargo/network-interface@2.0.5",
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "new_debug_unreachable",
       "version": "1.0.6",
       "purl": "pkg:cargo/new_debug_unreachable@1.0.6",
@@ -4017,8 +4028,8 @@
     {
       "type": "library",
       "name": "tempfile",
-      "version": "3.27.0",
-      "purl": "pkg:cargo/tempfile@3.27.0",
+      "version": "3.23.0",
+      "purl": "pkg:cargo/tempfile@3.23.0",
       "licenses": [
         {
           "expression": "MIT OR Apache-2.0"

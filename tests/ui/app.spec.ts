@@ -33,6 +33,8 @@ async function installTestAdapter(page: Page) {
       ) => Promise<unknown>;
     };
     w.__QUICKLAN_TEST_INVOKE = async (command, args = {}) => {
+      if (command === "get_local_endpoints")
+        return [{ interface: "en0", endpoint: "tcp://192.168.1.12:11010" }];
       if (command === "get_state")
         return structuredClone({
           saved: { networks, preferences },
@@ -142,6 +144,48 @@ test.beforeEach(async ({ page }) => {
   await installTestAdapter(page);
   await page.goto("/");
   await expect(page.getByText("TEST SIMULATION — no networking")).toBeVisible();
+});
+test("choose a local host endpoint and preserve it in saved connection settings", async ({
+  page,
+}) => {
+  await page
+    .getByRole("button", { name: "Create a network", exact: true })
+    .click();
+  await page.getByLabel("Network label", { exact: true }).fill("Local friends");
+  await page
+    .getByRole("button", { name: "Host on the same Wi-Fi or LAN" })
+    .click();
+  await page
+    .getByLabel("This computer’s local endpoint")
+    .selectOption("tcp://192.168.1.12:11010");
+  await page
+    .getByRole("button", { name: "Create network", exact: true })
+    .last()
+    .click();
+  await page
+    .getByRole("button", { name: /Connection policy Manual endpoints/ })
+    .click();
+  await expect(
+    page.getByLabel("Reachable endpoint", { exact: true }),
+  ).toHaveValue("tcp://192.168.1.12:11010");
+  await expect(page.getByLabel("Node operator", { exact: true })).toHaveValue(
+    "My computer",
+  );
+  await page
+    .getByLabel("Connection policy", { exact: true })
+    .selectOption("direct_only");
+  await expect(
+    page.getByRole("button", { name: "Save", exact: true }),
+  ).toBeDisabled();
+  await page
+    .getByRole("checkbox", { name: /I accept the listed nodes for discovery/ })
+    .check();
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(
+    page.getByRole("button", {
+      name: /Connection policy Discovery assistance; no relayed application data Direct-only application traffic/,
+    }),
+  ).toBeVisible();
 });
 test("create, real error presentation, invite, settings and local forget", async ({
   page,

@@ -1,32 +1,36 @@
-# Feature status
+# Feature status — 0.2.0 native preview
 
-This is an engineering preview. **QuickLAN does not yet connect users into a system virtual network.** Passing packaging and core feasibility tests does not complete the missing application/helper integration. The original product brief is not fully implemented.
+Real system networking is implemented. The release remains a native preview
+because physical device pairs, ordinary-user privilege dialogs, minimum OS
+versions and broader network/security acceptance are not fully verified.
 
-| Requested capability | Current implementation | Remaining work |
+| Capability | Implemented behavior | Evidence / limit |
 |---|---|---|
-| Saved networks, labels, device nickname | Implemented; native Mac workflows and domain/UI tests pass | Broader Windows native workflow acceptance |
-| Create, preview/join, copy invitation, forget, replacement credentials | Implemented with validated versioned tokens and explicit preview consent | Real network join; replacement does not revoke the old group |
-| Secret storage | OS Keychain / Windows Credential Manager; real roundtrips pass | Cross-store crash recovery and additional Windows ACL/recovery checks |
-| Diagnostics, preferences, help, about/licenses | Implemented; sanitized projection and local preferences | Live core health and actual application-port reachability integration |
-| Light/dark, keyboard navigation, responsive layout | Implemented with UI automation and native Mac inspection | Full accessibility audit; Chinese translation remains partial |
-| Connect/disconnect and one active network | Lifecycle/serialization model implemented; Connect truthfully fails for missing helper | Authenticated helper, actual engine lifecycle and service-state reconciliation |
-| Virtual IP, peer path and measured latency | Version-pinned adapter/parser and UI prepared | Live authenticated core state; no production peers or metrics are fabricated |
-| Windows/macOS helper installation, permission refusal, repair, removal | Typed request validation only | Actual OS services, peer authentication, protected IPC, verified executables and installers |
-| Route/address safety | Private-subnet, saved-network collision and forbidden-route validators | Live route inspection, data-plane enforcement, coordinated migration and owned-resource recovery |
-| P2P preferred with relay consent | Saved policy and custom endpoints | Production enforcement, truthful mixed paths and controlled relay tests |
-| Direct-only application traffic | Disabled with explicit gap | Packet-level enforcement through migration/reconnect, both directions |
-| No public assistance | Production core launch disabled | Eliminate implicit upstream public TCP STUN and verify no public egress without lab confinement |
-| No transit/exit/subnet forwarding | Restricted adapter configuration designed and source reviewed | Hostile-peer and OS data-plane proof; no public nodes are bundled |
-| Real TCP/UDP through virtual addresses | Upstream core feasibility passes through real Linux TUN devices, TCP and UDP underlays, both directions | QuickLAN helper integration, supported desktop OS pairs and different physical networks |
-| Failures, cleanup and recovery | Model tests; Linux lab abrupt core stop/restart and owned cleanup pass | Installed desktop crash, sleep/wake, interface change, firewall refusal, MTU and VPN overlap matrix |
-| Native packaging | Apple Silicon/Intel DMGs and Windows x64 EXE built in passing native CI; Windows installer smoke passed | Signed/notarized delivery; ordinary-user, upgrade, repair, minimum-OS and helper acceptance tests |
-| Source, notices, SBOM, security checks | Public GitHub source; pinned dependencies; private vulnerability reporting; wrapper scans pass with documented warnings | Pinned upstream vulnerability remediation, complete core distribution materials before bundling core, security review |
-| Performance and internet traversal | No performance or NAT success claims | Controlled measured benchmarks and realistic NAT/relay topologies |
+| Saved networks and identities | Labels, device nicknames, create/join/invite/forget/replacement | Domain, UI and earlier native vault checks; names are not verified identities |
+| Protected credentials | OS Keychain / Windows Credential Manager, secret-free metadata and diagnostics | Native roundtrips passed; cross-store crash recovery is best effort |
+| Connect/disconnect | Bundled elevated helper, one active engine, real adapter/IP, shutdown acknowledgement | Native Windows, ARM/Intel Mac acceptance; current package checks tracked in TEST_MATRIX |
+| Helper security | Both-end kernel PID authentication, private socket/pipe, fixed commands, bounded framing, hash verification and substitution defenses | Native IPC tests; no stock TCP management RPC |
+| Permissions and repair | Per-connection OS elevation, denial error, bundled helper replacement by reinstall, no persistent service | Ordinary-user OS dialog and upgrade matrix remain unverified |
+| Peer state | Live virtual IP, direct/relayed/unreachable path and measured direct latency | Actual Instance APIs; absent metrics remain absent |
+| Reachability | One explicit bounded TCP port probe to a current peer | Real listener/refusal unit tests and UI workflows; UDP apps need application tests |
+| No public assistance | Explicit IP endpoints, no implicit STUN/public endpoint/external-IP probe/DNS fallback | Patched core and isolated stacks with no public route |
+| P2P preferred, relay permitted | Custom operator-approved node and consent, actual relay state | Forced-relay TCP/UDP underlay tests pass |
+| Direct-only application traffic | Final-send and inbound enforcement, no relay data fallback | Both-direction TCP/UDP pass directly, then fail when only the relay remains |
+| Route restrictions | Fixed private /24, startup overlap checks, hostile advertised subnet rejection and packet scope | Domain/packet tests and real owned-adapter cleanup; later VPN route changes remain unverified |
+| Forwarding restrictions | No foreign or in-group application transit, exit node, subnet proxy, default route, DNS change or broad firewall rule | Source enforcement and isolated/native checks; full hostile-peer audit outstanding |
+| Local setup | User-selected OS Wi-Fi/Ethernet endpoint in create flow | UI test preserves choice; remote NAT discovery is not automatic |
+| Failure recovery | Controller EOF/heartbeat cleanup, restart, wrong-secret rejection, stale observation suppression | Native and isolated integration tests |
+| Interface | English/Chinese, light/dark, keyboard, responsive layout, preferences/help/about | Five browser workflows; native GUI inspection is separately recorded |
+| Packaging | ARM/Intel DMG and Windows x64 EXE with engine and notices | Native CI; ad-hoc Mac integrity only, unsigned Windows, no notarization |
+| Source and maintenance | Public source, locked/patched engine, SBOM/notices, corresponding-source recipe, scans | No independent audit, reproducible-build or performance claim |
 
-## Verified without a second physical device
+There is no built-in public service. An invitation needs a shared reachable
+endpoint. Compatible user-operated nodes are optional; arbitrary remote NATed
+peers may fail. No account, subscriptions, chat, file sharing, telemetry,
+automatic updater, startup auto-connect, tray background mode or LAN broadcast
+emulation is included. These are scope decisions, not hidden paid features.
 
-[Native CI](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34031905272) passed all three platform jobs and wrapper advisory/secret scans. The Windows runner installed the actual EXE, opened a native QuickLAN window, closed it gracefully and uninstalled it with routes/DNS unchanged. This is Windows Server CI evidence, not Windows 11 ordinary-user or UAC testing.
-
-[Networking feasibility CI](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34032344518) ran two isolated Linux kernel network stacks linked only to each other. Each received a real TUN interface and virtual IPv4 address. Both directions passed exact TCP and UDP payload checks, remote core death/restart and cleanup. The host routes and DNS were unchanged. No public egress was possible. The lab denies all IPv4 management callers; this is not a production helper authentication solution.
-
-These tests establish that the chosen core can provide real virtual-IP transport in the tested topology. They do not establish that every requested product feature is implemented or safe. See [TEST_MATRIX.md](TEST_MATRIX.md) for the full evidence and executable follow-up procedures.
+Controlled scale tested is two application peers plus a relay, not unlimited
+practical capacity. Physical Windows/Mac combinations and realistic home/restrictive
+NAT, IPv6, sleep/wake, MTU, Wi-Fi changes and concurrent VPN changes have executable
+follow-up procedures in TEST_MATRIX but are not all verified.

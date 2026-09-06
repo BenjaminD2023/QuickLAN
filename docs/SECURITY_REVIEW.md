@@ -1,5 +1,25 @@
 # Dependency and boundary review
 
+## Current 0.2.0 engine
+
+The selected patched engine lock has zero known vulnerability findings and five
+unmaintained-package warnings in `evidence/engine-rust-audit.json`: derivative,
+encoding, paste, proc-macro-error and rustls-pemfile. This scan covers the actual
+selected source graph; the historical stock-lock findings below are not the new
+engine result. Windows capture/thunk and implicit external DNS dependencies have
+been removed from this graph. The stock core is never elevated. Native
+kernel-authenticated IPC and executable substitution defenses are implemented;
+see NATIVE_ENGINE.md and THREAT_MODEL.md. Neither zero findings nor passing tests
+constitute an independent security audit.
+
+Desktop and engine notice inventories now report no missing license-text entries.
+Exact source headers and supplemental provenance notes are retained for crates
+that omit license files; this is not an independent legal opinion. Corresponding
+source is exported with the release.
+
+## Historical 0.1.0 / stock-core baseline
+
+
 This is an engineering review, not an independent security audit. Machine-readable evidence lives in `docs/evidence/`. Scans ran on 2026-09-06 using cargo-audit 0.22.2 / RustSec and npm audit. Lockfile coverage includes target-conditional packages that may not be linked on this Mac.
 
 - npm: zero reported vulnerabilities.

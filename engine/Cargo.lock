@@ -1083,6 +1083,7 @@ dependencies = [
  "petgraph 0.8.3",
  "pin-project-lite",
  "pnet",
+ "pnet_base",
  "prefix-trie",
  "prost",
  "prost-build",

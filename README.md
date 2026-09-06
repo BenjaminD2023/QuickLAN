@@ -1,73 +1,54 @@
 # QuickLAN
 
-A desktop utility for private networks with friends, built with Tauri, Rust and React, integrating the separately licensed EasyTier core. No account or hosted control plane is required by the design. QuickLAN is independent of the EasyTier project.
+Private virtual networks with friends. Create a network, share an invitation, and connect to a game or application by virtual IP. QuickLAN uses Tauri, React and Rust with a separately packaged, modified EasyTier 2.6.4 engine. It requires no account, paid API or project-operated server. QuickLAN is independent of EasyTier.
 
-**Engineering preview, not a working system VPN or public beta.** Saved networks, OS-protected credentials, invitation preview/import/copy, replacement credentials, preferences and sanitized diagnostics work. The desktop refuses to connect until authenticated helper installation and core policy enforcement are implemented and tested. It never substitutes simulated connections.
+**0.2.0 native preview:** real networking is implemented. Native CI creates and removes actual adapters on Windows x64, Apple Silicon and Intel Mac. Isolated Linux stacks exchange real TCP and UDP through QuickLAN virtual IPs. Physical Windows/Mac device pairs, arbitrary internet NAT traversal, ordinary-user permission dialogs and minimum OS versions remain unverified. This is not a production-ready or signed public beta.
 
-Real EasyTier 2.6.4 processes passed bidirectional TCP/UDP tests through real Linux TUN interfaces in two isolated kernel network stacks, including abrupt stop, restart and cleanup. Native CI built Windows x64 and both Mac architectures; Windows installation, launch, credential storage and uninstall passed. These are feasibility and preview checks, **not** proof of QuickLAN desktop VPN connectivity or cross-device NAT traversal. See [test evidence](docs/TEST_MATRIX.md) and [upstream findings](docs/UPSTREAM_CAPABILITIES.md).
+[GitHub releases](https://github.com/BenjaminD2023/QuickLAN/releases) · [Feature status](docs/FEATURES.md) · [Test evidence](docs/TEST_MATRIX.md)
 
-![QuickLAN interface, explicitly labeled UI test simulation](docs/evidence/ui-empty.png)
+## Connect with friends
 
-Source: [BenjaminD2023/QuickLAN](https://github.com/BenjaminD2023/QuickLAN). Installer assets are staged in a **draft engineering release**, accessible to repository maintainers through [Releases](https://github.com/BenjaminD2023/QuickLAN/releases). See the [feature checklist](docs/FEATURES.md) for implemented and missing functionality.
+1. Install the package for your architecture. The networking engine is included; end users need no Rust, Node or separate core installation.
+2. Create a network. For friends on the same router, use **Host on the same Wi-Fi or LAN** and choose your Wi-Fi/Ethernet address. For remote friends, open connection settings and enter an endpoint they can reach, or an explicitly selected compatible shared node with permission from its operator.
+3. Connect and approve the operating system's networking permission request. Keep the host connected while friends join.
+4. Copy the invitation and share it privately. Friends preview it, save the network, then connect. Copy the host's **virtual** IP into the game's direct-connect screen.
+5. Use peer details to check an explicitly selected TCP application port. Keep firewalls enabled and allow only the intended application/port when needed.
 
-## Develop
+An invitation alone cannot find arbitrary remote computers behind NAT. No public discovery/relay service is built in. Local interface choices can include VPN/container addresses; choose an address reachable by your friends. Changing routers or local addresses may require editing connection settings and sharing a fresh invitation. [Troubleshooting](docs/TROUBLESHOOTING.md) explains setup and failure states.
 
-Verified locally: macOS 26.4.1 ARM64, Xcode, Rust 1.96.0, Node 22.22.3, npm 10.9.8, Python 3.9. Install the native [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your platform. Candidate targets are Windows 11 x64 and macOS 13+ on Apple Silicon and Intel; native CI also exercised macOS 15 ARM64/Intel builds and a Windows Server 2022 x64 runner. Windows 11 and minimum-version end-user compatibility remain unverified.
+## Develop and package
+
+Verified toolchain: Rust 1.96.0, Node 22.22.3, Python 3.9+, protobuf compiler and native [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/). Builds are tested on macOS 15 ARM64/Intel and Windows Server 2022 x64 CI. macOS 13+ and Windows 11 x64 are candidate end-user baselines, not verified minimum-version claims.
 
 ```sh
+python3 scripts/prepare-engine.py
+cargo build --manifest-path engine/Cargo.toml --release --locked
+python3 scripts/stage-engine.py
 npm ci
 npm run desktop:dev
 ```
 
-`npm run dev` opens the web interface only; it honestly reports that native IPC is unavailable. Production has no mock fallback. For checks:
+To package on a native Mac use `npm run tauri -- build --bundles app,dmg -- --locked`; on Windows use `npm run tauri -- build --bundles nsis -- --locked`. Output: `src-tauri/target/release/bundle/`. macOS helper and app are ad-hoc signed for integrity only; Windows app/installer are unsigned. No Developer ID, Authenticode or notarization credentials are configured.
 
 ```sh
 npm run check
 cargo fmt --all --check
-cargo fmt --manifest-path src-tauri/Cargo.toml --check
-cargo clippy --all-features --all-targets --locked -- -D warnings
-cargo check --manifest-path src-tauri/Cargo.toml --locked
+cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
+cargo clippy --manifest-path src-tauri/Cargo.toml --locked -- -D warnings
 npx playwright install chromium --only-shell
 npm run test:e2e
 ```
 
-The E2E suite runs with a visibly labeled test adapter; it does not validate native IPC. Run the explicit OS credential-store test only on a test machine:
-
-```sh
-cargo test --all-features --locked --test security native_credential_round_trip -- --ignored
-```
-
-## Core integration lab
-
-On macOS, without elevated privileges, using OS sandbox confinement to loopback:
-
-```sh
-python3 scripts/fetch-core.py --target macos-aarch64
-python3 scripts/core-integration.py
-python3 scripts/core-integration.py --transport udp
-```
-
-This downloads pinned upstream binaries into ignored `.cache/`, verifies their digests and runs a bounded local lab. Tests discard raw core output because upstream may log credentials. They require Python and macOS `sandbox-exec`; production does not use that deprecated sandbox interface. No public nodes are used. Intel and Windows downloads can be verified with `--target macos-x86_64` or `windows-x86_64`; the lab itself is currently macOS-specific.
-
-## Package
-
-```sh
-# macOS engineering application bundle
-npm run desktop:build
-# macOS disk image
-npm run tauri -- build --bundles app,dmg
-# Windows, in a native Windows developer environment
-npm run tauri -- build --bundles nsis
-```
-
-These packages contain the desktop engineering preview and notices, **not an operational privileged networking service or a bundled EasyTier executable**. Build output is under `src-tauri/target/release/bundle/`. End users of the built preview do not need Rust or Node. There is no automatic updater, telemetry or background networking.
+`npm run dev` is a browser interface with no native storage/networking. Playwright uses an explicitly labeled test adapter; it does not prove VPN connectivity. Native and isolated networking acceptance procedures are in [TEST_MATRIX.md](docs/TEST_MATRIX.md) and `.github/workflows/networking.yml`.
 
 ## Trust and scope
 
-An invitation contains a bearer credential. Anyone possessing it may join the corresponding network when connectivity is implemented. Nicknames and numeric peer IDs are not verified identities. Forgetting a network is local; creating replacement credentials does not revoke old holders on the old network. Trusted peers may reach listening services permitted by your firewall. Keep your firewall enabled.
+An invitation is a bearer credential. Anyone possessing it may join. Names, peer IDs and addresses are not verified personal identities. Forget is local; replacement credentials create a new network and do not revoke communication on the old one. Trusted peers may reach services allowed by your firewall. This is not an anonymity tool.
 
-Virtual IP access is the compatibility target, not universal LAN-game discovery. Direct-only is disabled because data-plane enforcement is unverified. No built-in public endpoints are shipped: operators have not granted product distribution capacity. [Architecture](docs/ARCHITECTURE.md), [threat model](docs/THREAT_MODEL.md), [troubleshooting](docs/TROUBLESHOOTING.md), [release procedure](docs/RELEASING.md), [progress](docs/PROGRESS.md).
+One active network per device. No automatic connection, background tray networking, telemetry, automatic updates, DNS/default-route changes, internet exit node, subnet proxy or LAN broadcast bridging. Closing the window or choosing Quit disconnects. Virtual IPs may change after reconnect; applications bound to an old address must be rebound. Relay use requires explicit configuration and consent. No unlimited bandwidth, universal LAN discovery or unmeasured performance claim is made.
+
+[Architecture](docs/ARCHITECTURE.md) · [Native helper](docs/NATIVE_ENGINE.md) · [Threat model](docs/THREAT_MODEL.md) · [Security review](docs/SECURITY_REVIEW.md) · [Release procedure](docs/RELEASING.md)
 
 ## License
 
-Original QuickLAN code: Apache-2.0. EasyTier v2.6.4: LGPL-3.0; it has not been relicensed. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES), `licenses/` and the dependency inventory. Installer companion notices include the Microsoft WebView2 SDK license and exact covered MPL source. The inventory includes non-target dependencies with outstanding notices; no EasyTier executable is distributed. No independent security audit is claimed.
+Original desktop/domain/IPC/runtime code: Apache-2.0. The separate `quicklan-engine` program: GPL-3.0-only. Modified EasyTier retains LGPL-3.0. Wintun's official binary has its own redistribution license. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES), `licenses/`, and the corresponding-source archive supplied with each networking binary release. No independent security audit is claimed.

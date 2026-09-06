@@ -7,6 +7,7 @@
   ],
   "permissions": [
     "allow-get-state",
+    "allow-get-local-endpoints",
     "allow-probe-service",
     "allow-create-network",
     "allow-preview-invitation",

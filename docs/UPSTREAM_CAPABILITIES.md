@@ -1,4 +1,32 @@
-# Pinned upstream capabilities
+# Pinned upstream capabilities — stock baseline and QuickLAN patch
+
+
+## Current QuickLAN 0.2.0 integration
+
+The table below records the original stock-core findings. The release engine now
+builds the exact pinned source with `upstream/quicklan.patch`, using a separate
+GPL-3.0-only process linked to the still-LGPL EasyTier library. It never starts the
+stock TCP RPC server. Native Unix sockets / Windows named pipes replace management
+RPC; the wrapper embeds the staged helper digest. No stock executable is elevated.
+
+The patch fixes DHCP to the invitation prefix, rejects legacy secure-mode
+handshakes, scopes packets and advertisements, disables implicit STUN/DNS fallback/
+external-IP probes, prevents broad Windows firewall/profile edits and excludes
+unneeded proxies/Windows capture dependencies. Direct-only is enforced on final
+send and inbound relay paths. Windows uses official Wintun only; Npcap/WinDivert
+are not required. The selected dependency graph is locked separately in
+`engine/Cargo.lock`, with zero vulnerability-class findings in the recorded scan.
+
+Native adapter/IPC/cleanup checks pass on Windows and both Mac architectures.
+QuickLAN direct and forced-relay TCP/UDP tests, wrong credential, restart and
+direct-only path-loss checks pass in isolated Linux stacks (run 34041033461).
+These replace the original implementation gaps below; the older evidence is kept
+as a review trail and is not the current feature-status table. Physical-device,
+ordinary-user elevation and internet traversal evidence remains incomplete.
+See NATIVE_ENGINE.md, FEATURES.md and TEST_MATRIX.md. Each binary release supplies
+exact corresponding source and original notices; no upstream relicensing occurs.
+
+## Original stock-core inspection (historical)
 
 Inspected 2026-09-06. This is an evidence ledger, not a security audit or beta approval.
 

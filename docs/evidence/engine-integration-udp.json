@@ -1,0 +1,17 @@
+{
+  "engine_sha256": "4f09f75243bad8715da233048817261d380f7b5ec5e963254b21cbf82a328e34",
+  "transport": "udp",
+  "relay_policy_lab": false,
+  "checks_passed": [
+    "Authenticated QuickLAN engines converge to distinct DHCP addresses and report direct paths",
+    "Bidirectional TCP and UDP exact payload echo through OS virtual IPs",
+    "Controller disappearance closes engine and removes its TUN and route",
+    "Wrong network credential cannot authenticate or exchange application data",
+    "Restart restores direct peer state and bidirectional TCP/UDP",
+    "No default/public underlay route; all owned resources removed; host routes and DNS unchanged"
+  ],
+  "limitations": [
+    "Linux isolated stacks, not physical Windows-to-Mac or internet NAT evidence",
+    "Lab-only framed stdio; production authenticated IPC is tested separately"
+  ]
+}

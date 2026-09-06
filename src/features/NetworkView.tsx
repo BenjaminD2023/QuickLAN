@@ -157,10 +157,22 @@ export function NetworkView({
         <span>
           <strong>{t("policy")}</strong>
           <small>
-            {t(network.policy === "manual" ? "manualDetail" : "assistedDetail")}
+            {t(
+              network.policy === "manual"
+                ? "manualDetail"
+                : network.policy === "direct_only"
+                  ? "directOnlyDetail"
+                  : "assistedDetail",
+            )}
           </small>
           <small>
-            {t(network.policy === "manual" ? "manual" : "assisted")}
+            {t(
+              network.policy === "manual"
+                ? "manual"
+                : network.policy === "direct_only"
+                  ? "directOnly"
+                  : "assisted",
+            )}
           </small>
         </span>
         <ChevronRight />

@@ -24,6 +24,7 @@ quicklan-runtime = { path = "../crates/quicklan-runtime" }
 serde = { version = "=1.0.228", features = ["derive"] }
 serde_json = "=1.0.145"
 zeroize = "=1.8.2"
+network-interface = "=2.0.5"
 
 [profile.release]
 codegen-units = 1

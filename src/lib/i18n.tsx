@@ -1,5 +1,12 @@
 import { createContext, useContext } from "react";
 export const en = {
+  hostLocally: "Host on the same Wi-Fi or LAN",
+  localAddress: "This computer’s local endpoint",
+  chooseAddress: "Choose your Wi-Fi or Ethernet address",
+  localUnavailable:
+    "No local address could be read. Enter a reachable endpoint in connection settings.",
+  localEndpointHint:
+    "For friends on the same router, choose your Wi-Fi or Ethernet address. Keep this computer connected while friends join. VPN/container addresses may also appear; remote friends need a reachable endpoint in connection settings.",
   nativeFooter: "QuickLAN · One active network per device",
   helperReady: "Networking engine available",
   helperReadyBody:
@@ -39,7 +46,7 @@ export const en = {
   headline: "Your friends. Your network.",
   intro:
     "Create a private network, share an invitation, and connect by virtual IP.",
-  engineering: "Engineering preview · System networking is not yet available",
+  engineering: "Networking helper unavailable in this build",
   welcomeNote:
     "QuickLAN works with people you trust. An invitation is a shared credential, and peers may reach listening services allowed by your firewall.",
   learnMore: "How it works",
@@ -57,7 +64,8 @@ export const en = {
   assisted: "P2P preferred, relay permitted",
   assistedDetail: "Custom assistance nodes",
   directOnly: "Direct-only application traffic",
-  directOnlyGap: "Unavailable until data-plane enforcement is verified.",
+  directOnlyDetail: "Discovery assistance; no relayed application data",
+  directOnlyGap: "This connection policy is not supported by this engine.",
   helperTitle: "Networking helper unavailable",
   helperBody:
     "Your networks are saved. Connection requires the verified system helper.",
@@ -150,7 +158,7 @@ export const en = {
   coreLicense:
     "EasyTier core: LGPL-3.0. Its original license and attribution are preserved.",
   aboutGap:
-    "This engineering build manages saved networks and invitations. It does not install a networking helper or connect virtual interfaces.",
+    "The packaged networking helper is missing or could not be verified. Reinstall the complete matching package.",
   aboutEvidence:
     "Native CI exercises real virtual adapters and cleanup on Windows and both Mac architectures. Isolated Linux tests exercise virtual-IP TCP and UDP. Physical cross-device and internet NAT testing remain outstanding.",
   gameTitle: "Connect by virtual IP",
@@ -190,6 +198,12 @@ export const en = {
 export type TextKey = keyof typeof en;
 const zh: Record<TextKey, string> = {
   ...en,
+  hostLocally: "在同一 Wi-Fi 或局域网中创建连接",
+  localAddress: "本机的局域网端点",
+  chooseAddress: "选择 Wi-Fi 或以太网地址",
+  localUnavailable: "无法读取局域网地址，请在连接设置中输入可达端点。",
+  localEndpointHint:
+    "同一路由器下的朋友可使用 Wi-Fi 或以太网地址。朋友加入时请保持本机连接。列表也可能包含 VPN 或容器地址；远程朋友需要在连接设置中配置可达端点。",
   nativeFooter: "QuickLAN · 每台设备同时连接一个网络",
   helperReady: "组网引擎可用",
   helperReadyBody: "从已保存网络发起连接。操作系统将请求创建虚拟网卡的权限。",
@@ -220,7 +234,7 @@ const zh: Record<TextKey, string> = {
   quit: "退出并断开连接",
   headline: "朋友之间，轻松组网。",
   intro: "创建私有网络，分享邀请，通过虚拟 IP 连接。",
-  engineering: "工程预览版 · 系统组网功能尚不可用",
+  engineering: "此版本的组网引擎不可用",
   welcomeNote:
     "请只与信任的人组网。邀请包含共享凭据；成员可能访问防火墙允许的监听服务。",
   learnMore: "了解使用方式",
@@ -238,7 +252,8 @@ const zh: Record<TextKey, string> = {
   assisted: "优先直连，允许中继",
   assistedDetail: "自定义协助节点",
   directOnly: "应用流量仅直连",
-  directOnlyGap: "数据平面验证完成前不可用。",
+  directOnlyDetail: "允许辅助发现；禁止中继应用流量",
+  directOnlyGap: "此引擎不支持该连接策略。",
   helperTitle: "组网服务不可用",
   helperBody: "网络已保存。连接需要经过验证的系统组网服务。",
   details: "查看详情",
@@ -316,11 +331,11 @@ const zh: Record<TextKey, string> = {
   aboutTitle: "小型网络，开放源码。",
   aboutBody:
     "QuickLAN 是基于 EasyTier 的独立桌面应用，与 EasyTier 项目没有隶属关系。",
-  wrapperLicense: "QuickLAN 源码：Apache-2.0。",
+  wrapperLicense: "QuickLAN 桌面：Apache-2.0；独立组网引擎：GPL-3.0-only。",
   coreLicense: "EasyTier 核心：LGPL-3.0，保留原始许可证及署名。",
-  aboutGap: "此工程版本可管理网络和邀请，尚不安装组网服务或连接虚拟网卡。",
+  aboutGap: "组网引擎缺失或验证失败，请重新安装完整的对应安装包。",
   aboutEvidence:
-    "本机已通过两个隔离的非特权核心验证真实 TCP 和 UDP 流量。这不等于互联网穿透或跨平台验证。",
+    "原生 CI 验证 Windows 和两种 Mac 架构的真实虚拟网卡及清理。隔离 Linux 测试验证虚拟 IP 的 TCP/UDP 流量。尚未完成跨实体设备和互联网 NAT 测试。",
   gameTitle: "通过虚拟 IP 连接",
   gameIntro: "适用于支持输入 IP 的游戏和应用，不支持自动发现所有局域网游戏。",
   gameOne: "请可信朋友开启游戏主机或应用，确认服务正在监听。",

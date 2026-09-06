@@ -9,6 +9,42 @@ use quicklan_core::{
 use tauri::State;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 
+#[derive(serde::Serialize)]
+pub struct LocalEndpoint {
+    interface: String,
+    endpoint: String,
+}
+
+/// Read interface addresses only. No discovery packets, external IP lookup or
+/// firewall changes. The user chooses which address to put in an invitation.
+#[tauri::command]
+pub async fn get_local_endpoints() -> Result<Vec<LocalEndpoint>> {
+    use network_interface::{NetworkInterface, NetworkInterfaceConfig};
+    let interfaces = NetworkInterface::show().map_err(|_| Error::CoreFailed)?;
+    let mut choices = Vec::new();
+    for interface in interfaces {
+        for address in interface.addr {
+            if let std::net::IpAddr::V4(ip) = address.ip() {
+                if ip.is_private() {
+                    choices.push(LocalEndpoint {
+                        interface: interface
+                            .name
+                            .chars()
+                            .filter(|c| !c.is_control())
+                            .take(64)
+                            .collect(),
+                        endpoint: format!("tcp://{ip}:11010"),
+                    });
+                }
+            }
+        }
+    }
+    choices.sort_by(|a, b| a.endpoint.cmp(&b.endpoint));
+    choices.dedup_by(|a, b| a.endpoint == b.endpoint);
+    choices.truncate(32);
+    Ok(choices)
+}
+
 #[tauri::command]
 pub async fn get_state(state: State<'_, ManagedApp>) -> Result<AppView> {
     state.with(|a| {
