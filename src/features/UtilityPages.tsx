@@ -4,6 +4,7 @@ import type { AppView, Diagnostics, Preferences } from "../lib/types";
 import { useText } from "../lib/i18n";
 import { BRAND } from "../lib/brand";
 import { request } from "../lib/bridge";
+import { FirewallPanel } from "./FirewallPanel";
 import { Notice } from "../components/ui";
 export function PreferencesPage({
   preferences,
@@ -86,6 +87,7 @@ export function PreferencesPage({
           {busy ? t("working") : t("savePreferences")}
         </button>
       </form>
+      <FirewallPanel />
     </section>
   );
 }

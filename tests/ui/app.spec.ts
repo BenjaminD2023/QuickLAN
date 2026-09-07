@@ -16,6 +16,11 @@ async function installTestAdapter(page: Page) {
       peers: [],
       error: null as string | null,
     };
+    let firewallProfiles = [
+      { name: "Domain", enabled: true },
+      { name: "Private", enabled: true },
+      { name: "Public", enabled: false },
+    ];
     let pending: Record<string, unknown> | null = null;
     const helper = {
       installed: false,
@@ -33,6 +38,23 @@ async function installTestAdapter(page: Page) {
       ) => Promise<unknown>;
     };
     w.__QUICKLAN_TEST_INVOKE = async (command, args = {}) => {
+      if (command === "get_firewall_status")
+        return structuredClone({
+          platform: "windows",
+          profiles: firewallProfiles,
+        });
+      if (command === "set_firewall_enabled") {
+        if (!args.enabled && !args.confirmed)
+          throw "firewall_confirmation_required";
+        firewallProfiles = firewallProfiles.map((p) => ({
+          ...p,
+          enabled: Boolean(args.enabled),
+        }));
+        return structuredClone({
+          platform: "windows",
+          profiles: firewallProfiles,
+        });
+      }
       if (command === "get_local_endpoints")
         return [{ interface: "en0", endpoint: "tcp://192.168.1.12:11010" }];
       if (command === "get_state")
@@ -397,4 +419,73 @@ test("live peer details, explicit TCP probe and peer disappearance", async ({
       .getByText("This peer is no longer in the current network state."),
   ).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test("firewall confirmation, cancel, disable and enable reflect OS results", async ({
+  page,
+}) => {
+  await page.getByRole("button", { name: "Preferences", exact: true }).click();
+  const panel = page.getByRole("region", { name: "System firewall" });
+  await expect(panel.getByText("Enabled", { exact: true })).toHaveCount(2);
+  await expect(panel.getByText("Disabled", { exact: true })).toHaveCount(1);
+  await panel
+    .getByRole("button", { name: "Disable firewall", exact: true })
+    .click();
+  let dialog = page.getByRole("dialog");
+  await expect(
+    dialog.getByRole("button", { name: "Disable firewall", exact: true }),
+  ).toBeDisabled();
+  await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(panel.getByText("Enabled", { exact: true })).toHaveCount(2);
+  await panel
+    .getByRole("button", { name: "Disable firewall", exact: true })
+    .click();
+  dialog = page.getByRole("dialog");
+  await dialog.getByRole("checkbox").check();
+  await dialog
+    .getByRole("button", { name: "Disable firewall", exact: true })
+    .click();
+  await expect(dialog).not.toBeVisible();
+  await expect(panel.getByText("Disabled", { exact: true })).toHaveCount(3);
+  await panel
+    .getByRole("button", { name: "Enable firewall", exact: true })
+    .click();
+  await expect(panel.getByText("Enabled", { exact: true })).toHaveCount(3);
+  await expect(
+    panel.getByText(
+      "The operating system reports the requested firewall state.",
+    ),
+  ).toBeVisible();
+});
+test("firewall denial and unreadable state never report false success", async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    const original = window.__QUICKLAN_TEST_INVOKE!;
+    window.__QUICKLAN_TEST_INVOKE = async (c, a) => {
+      if (c === "set_firewall_enabled") throw "firewall_change_failed";
+      return original(c, a);
+    };
+  });
+  await page.getByRole("button", { name: "Preferences", exact: true }).click();
+  const panel = page.getByRole("region", { name: "System firewall" });
+  await panel
+    .getByRole("button", { name: "Enable firewall", exact: true })
+    .click();
+  await expect(panel.getByRole("alert")).toContainText("cancelled");
+  await expect(panel.getByText("Disabled", { exact: true })).toHaveCount(1);
+  await page.evaluate(() => {
+    const original = window.__QUICKLAN_TEST_INVOKE!;
+    window.__QUICKLAN_TEST_INVOKE = async (c, a) => {
+      if (c === "get_firewall_status") throw "firewall_unavailable";
+      return original(c, a);
+    };
+  });
+  await panel.getByRole("button", { name: "Refresh", exact: true }).click();
+  await expect(
+    panel.getByRole("button", { name: "Disable firewall", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    panel.getByRole("button", { name: "Enable firewall", exact: true }),
+  ).toBeDisabled();
 });

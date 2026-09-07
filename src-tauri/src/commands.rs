@@ -219,3 +219,24 @@ pub async fn probe_service(
     .await
     .map_err(|_| Error::CoreFailed)
 }
+
+#[tauri::command]
+pub async fn get_firewall_status() -> std::result::Result<quicklan_runtime::firewall::Status, String>
+{
+    tauri::async_runtime::spawn_blocking(quicklan_runtime::firewall::status)
+        .await
+        .map_err(|_| "firewall_unavailable".to_owned())?
+        .map_err(str::to_owned)
+}
+#[tauri::command]
+pub async fn set_firewall_enabled(
+    enabled: bool,
+    confirmed: bool,
+) -> std::result::Result<quicklan_runtime::firewall::Status, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        quicklan_runtime::firewall::set_enabled(enabled, confirmed)
+    })
+    .await
+    .map_err(|_| "firewall_change_failed".to_owned())?
+    .map_err(str::to_owned)
+}

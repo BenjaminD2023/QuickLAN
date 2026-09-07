@@ -1,5 +1,6 @@
 //! Supervises a verified elevated engine while the Tauri application stays unprivileged.
 mod elevation;
+pub mod firewall;
 use quicklan_core::{
     adapter::verify_bytes,
     error::{Error, Result},

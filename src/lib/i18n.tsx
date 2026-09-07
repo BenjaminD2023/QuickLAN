@@ -38,6 +38,31 @@ export const en = {
   create: "Create network",
   createLong: "Create a network",
   join: "Join with invitation",
+  firewallTitle: "System firewall",
+  firewallScope:
+    "Controls all Windows Defender Firewall profiles or the macOS application firewall. Third-party firewalls and macOS packet-filter rules are outside this control.",
+  firewallOn: "Enabled",
+  firewallOff: "Disabled",
+  firewallEnable: "Enable firewall",
+  firewallDisable: "Disable firewall",
+  firewallUnavailable:
+    "Firewall state is unavailable. Refresh to retry; no state is assumed.",
+  firewallPersistence:
+    "Changes apply to this whole computer and stay in effect after disconnecting or quitting QuickLAN. Use Enable firewall to turn protection back on. Existing application rules are retained.",
+  firewallWarning:
+    "Disabling the system firewall affects all applications and networks, including public Wi-Fi. Listening services may become reachable. This does not fix every connection problem. Administrator authorization is required.",
+  firewallAccept:
+    "I understand this affects the whole computer and persists until I enable the firewall again.",
+  firewallWaiting:
+    "Waiting for system authorization and checking the firewall…",
+  firewallVerified:
+    "The operating system reports the requested firewall state.",
+  firewallPolicyBlocked:
+    "The requested state was not reached. A managed policy may override local changes. The current state is shown below; QuickLAN does not bypass organization policies.",
+  firewallFailed:
+    "The change was cancelled or could not be completed. Check the current state and retry with administrator authorization.",
+  firewallBusy:
+    "Another firewall change is still running. Wait for it to finish, then refresh.",
   preferences: "Preferences",
   about: "About",
   diagnostics: "Diagnostics",
@@ -171,7 +196,7 @@ export const en = {
   gameThree:
     "Use the game’s direct-connect option with that IP and the port documented by the game.",
   gameFour:
-    "Keep the firewall enabled. If necessary, allow only that application or port for overlay peers.",
+    "Check the application’s firewall permissions. Preferences also provides explicit system firewall controls with administrator authorization.",
   gameGap:
     "If the virtual IP changes after reconnecting, copy the new address and restart any application bound to the old address.",
   troubleshooting: "If a connection fails",
@@ -227,6 +252,26 @@ const zh: Record<TextKey, string> = {
   create: "创建网络",
   createLong: "创建网络",
   join: "通过邀请加入",
+  firewallTitle: "系统防火墙",
+  firewallScope:
+    "控制 Windows Defender 防火墙的所有配置文件或 macOS 应用程序防火墙。不控制第三方防火墙或 macOS 数据包过滤规则。",
+  firewallOn: "已启用",
+  firewallOff: "已停用",
+  firewallEnable: "启用防火墙",
+  firewallDisable: "停用防火墙",
+  firewallUnavailable: "无法获取防火墙状态。请刷新重试；不会假定当前状态。",
+  firewallPersistence:
+    "更改影响整台电脑，断开连接或退出 QuickLAN 后仍然有效。点击启用防火墙可恢复保护。现有应用程序规则会保留。",
+  firewallWarning:
+    "停用系统防火墙会影响所有应用和网络，包括公共 Wi-Fi。正在监听的服务可能被访问。这不能解决所有连接问题，需要管理员授权。",
+  firewallAccept: "我了解这会影响整台电脑，并持续到我再次启用防火墙。",
+  firewallWaiting: "正在等待系统授权并检查防火墙…",
+  firewallVerified: "操作系统已报告所请求的防火墙状态。",
+  firewallPolicyBlocked:
+    "未达到请求的状态。管理策略可能覆盖本地更改。请查看当前状态；QuickLAN 不会绕过组织策略。",
+  firewallFailed:
+    "更改已取消或未能完成。请检查当前状态，并使用管理员授权重试。",
+  firewallBusy: "另一项防火墙更改仍在进行。请等待完成后刷新。",
   preferences: "偏好设置",
   about: "关于",
   diagnostics: "诊断",
@@ -341,7 +386,8 @@ const zh: Record<TextKey, string> = {
   gameOne: "请可信朋友开启游戏主机或应用，确认服务正在监听。",
   gameTwo: "双方连接同一个 QuickLAN 网络，复制主机的虚拟 IP。",
   gameThree: "在游戏直连界面输入该 IP 和游戏文档注明的端口。",
-  gameFour: "保持防火墙启用；如需放行，仅允许特定应用或端口及组网成员。",
+  gameFour:
+    "检查应用的防火墙权限。偏好设置中也提供需要管理员授权的系统防火墙控制。",
   gameGap:
     "若重新连接后虚拟 IP 发生变化，请复制新地址，并重启绑定旧地址的应用。",
   troubleshooting: "连接失败时",

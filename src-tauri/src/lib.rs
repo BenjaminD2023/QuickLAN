@@ -60,6 +60,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::get_state,
+            commands::get_firewall_status,
+            commands::set_firewall_enabled,
             commands::get_local_endpoints,
             commands::probe_service,
             commands::update_settings,

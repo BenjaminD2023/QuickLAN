@@ -9,6 +9,9 @@ rust-version.workspace = true
 quicklan-core = { path = "../quicklan-core" }
 quicklan-ipc = { path = "../quicklan-ipc" }
 
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.145"
+
 [dev-dependencies]
 sha2 = "=0.10.9"
 
@@ -16,4 +19,4 @@ sha2 = "=0.10.9"
 libc = "=0.2.189"
 
 [target.'cfg(windows)'.dependencies]
-windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_System_Threading", "Win32_System_Registry", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging"] }
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_System_Threading", "Win32_System_Registry", "Win32_System_SystemInformation", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging"] }

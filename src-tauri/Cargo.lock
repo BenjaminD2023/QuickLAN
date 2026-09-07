@@ -2871,7 +2871,7 @@ dependencies = [
 
 [[package]]
 name = "quicklan"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "network-interface",
  "quicklan-core",
@@ -2920,6 +2920,8 @@ dependencies = [
  "libc",
  "quicklan-core",
  "quicklan-ipc",
+ "serde",
+ "serde_json",
  "windows-sys 0.61.2",
 ]
 
