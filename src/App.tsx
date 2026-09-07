@@ -159,6 +159,8 @@ function Application({
         assistanceAccepted: data.assistanceAccepted,
       });
       chosen(n);
+      await refresh();
+      await request("connect_network", { id: n.id });
     });
   }
   const common = { onClose: close, busy, error };
@@ -298,15 +300,16 @@ function Application({
             )
           }
           onAccept={(ticket, consent) =>
-            void act(async () =>
-              chosen(
-                await request<SavedNetwork>("accept_invitation", {
-                  ticket,
-                  trusted: true,
-                  assistanceAccepted: consent,
-                }),
-              ),
-            )
+            void act(async () => {
+              const n = await request<SavedNetwork>("accept_invitation", {
+                ticket,
+                trusted: true,
+                assistanceAccepted: consent,
+              });
+              chosen(n);
+              await refresh();
+              await request("connect_network", { id: n.id });
+            })
           }
         />
       )}{" "}

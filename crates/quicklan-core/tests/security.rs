@@ -505,3 +505,45 @@ fn live_runtime_requires_shutdown_ack_and_rejects_stale_peer_observations() {
     assert_eq!(app.view().connection.phase, Phase::Disconnected);
     assert!(app.view().connection.virtual_ip.is_none());
 }
+
+#[test]
+fn internet_vpn_capture_routes_do_not_block_private_overlay() {
+    let routes =
+        ["0.0.0.0/1", "128.0.0.0/1", "8.0.0.0/5", "192.168.0.0/24"].map(|r| r.parse().unwrap());
+    assert!(check_conflicts("10.73.42.0/24", &routes, &[]).is_ok());
+    assert!(check_conflicts("172.25.42.0/24", &routes, &[]).is_ok());
+    assert_eq!(
+        check_conflicts("192.168.0.0/24", &routes, &[]),
+        Err(Error::RouteConflict)
+    );
+    for route in ["10.0.0.0/8", "10.73.0.0/16", "10.73.42.2/32"] {
+        assert_eq!(
+            check_conflicts("10.73.42.0/24", &[route.parse().unwrap()], &[]),
+            Err(Error::RouteConflict)
+        );
+    }
+}
+
+#[test]
+fn automatic_subnet_avoids_private_vpn_and_saved_allocations() {
+    let routes = [
+        "10.0.0.0/8",
+        "172.16.0.0/12",
+        "192.168.0.0/25",
+        "128.0.0.0/1",
+    ]
+    .map(|r| r.parse().unwrap());
+    let saved = (1..255)
+        .map(|n| format!("192.168.{n}.0/24"))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        quicklan_core::routes::choose_subnet(&routes, &saved).unwrap(),
+        "192.168.255.0/24"
+    );
+    let mut full = saved;
+    full.push("192.168.255.0/24".into());
+    assert_eq!(
+        quicklan_core::routes::choose_subnet(&routes, &full),
+        Err(Error::RouteConflict)
+    );
+}

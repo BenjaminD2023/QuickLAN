@@ -219,6 +219,16 @@ export const en = {
     "This browser view displays the interface. Secure storage and networking commands are available only in the native QuickLAN app.",
   storageTitle: "Secure storage unavailable",
   retry: "Try again",
+  createAndConnect: "Create and connect",
+  joinAndConnect: "Join and connect",
+  chooseConnection:
+    "On the same Wi-Fi? Use the button below. For friends on another internet connection, add a shared node in Connection settings. This build does not yet include an automatic internet service.",
+  setupNeeded: "Finish connection setup",
+  setupConnection: "Set up connection",
+  connectionFailed: "Connection could not start",
+  waitingForFriends:
+    "Your computer is ready. Share an invitation and ask your friend to join and connect.",
+  automaticSubnet: "Automatic — choose an available range",
 } as const;
 export type TextKey = keyof typeof en;
 const zh: Record<TextKey, string> = {
@@ -409,6 +419,15 @@ const zh: Record<TextKey, string> = {
     "浏览器仅显示界面。安全存储和组网命令只在原生 QuickLAN 应用中可用。",
   storageTitle: "安全存储不可用",
   retry: "重试",
+  createAndConnect: "创建并连接",
+  joinAndConnect: "加入并连接",
+  chooseConnection:
+    "同一 Wi-Fi 的朋友可使用下方按钮。异地朋友需要在连接设置中添加共享节点。此版本尚未提供自动互联网组网服务。",
+  setupNeeded: "完成连接设置",
+  setupConnection: "设置连接",
+  connectionFailed: "无法启动连接",
+  waitingForFriends: "本机已就绪。分享邀请，让朋友加入并连接。",
+  automaticSubnet: "自动选择可用地址范围",
 };
 export const LocaleContext = createContext<"en" | "zh-CN">("en");
 export function useText() {
@@ -423,7 +442,7 @@ const errors: Record<string, string> = {
   invalid_label: "Use 1–64 characters without control characters.",
   invalid_subnet: "Use a private IPv4 /24 network such as 10.73.42.0/24.",
   route_conflict:
-    "This address range overlaps another saved network. All members must agree on a new range.",
+    "This address range is already used by a LAN, another VPN, or a saved QuickLAN network. Create a new network to choose a free range, then share its new invitation with your friends.",
   invalid_endpoint:
     "Use tcp://IP:port or udp://IP:port, without a path or credentials. Manual mode requires an IP address.",
   unsupported_policy: en.directOnlyGap,
@@ -439,9 +458,15 @@ const errors: Record<string, string> = {
     "Saved data is invalid or newer than this app. It has not been overwritten.",
   unsafe_path: "The private application data folder could not be used safely.",
   release_gate: "System networking has not passed its release checks.",
-  core_failed: "The core stopped unexpectedly.",
-  permission_denied: "Networking permission was refused.",
+  core_failed:
+    "The networking service could not start or stopped unexpectedly. Try Connect again and review Diagnostics if it keeps failing.",
+  permission_denied:
+    "Allow the administrator prompt to create the virtual network adapter, then try Connect again.",
   unauthorized: "The helper request was not authorized.",
+  incompatible_core:
+    "The networking engine is missing or does not match this app. Reinstall QuickLAN from its GitHub release and try again.",
+  unsupported_core_output:
+    "The networking engine returned an incompatible response. Reinstall the matching QuickLAN release.",
 };
 export function errorText(value: unknown) {
   return typeof value === "string" && value in errors

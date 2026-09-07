@@ -62,7 +62,23 @@ pub async fn create_network(
     bootstrap: Vec<Bootstrap>,
     assistance_accepted: bool,
 ) -> Result<Network> {
+    // An empty range requests automatic allocation. Validate again at connect
+    // time because routes may change between saving and starting the adapter.
+    let routes = quicklan_core::system_routes::read()?;
     state.with(|a| {
+        let saved = a
+            .view()
+            .saved
+            .networks
+            .into_iter()
+            .map(|n| n.subnet)
+            .collect::<Vec<_>>();
+        let subnet = if subnet.is_empty() {
+            quicklan_core::routes::choose_subnet(&routes, &saved)?
+        } else {
+            quicklan_core::routes::check_conflicts(&subnet, &routes, &saved)?;
+            subnet
+        };
         a.create_with_nickname(
             label,
             subnet,

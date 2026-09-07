@@ -160,6 +160,12 @@ try:
             ns(i, ['ip', 'link', 'set', link, 'up'])
     for i in range(len(names)):
         assert ns(i, ['ip', 'route', 'get', '1.1.1.1'], check=False).returncode != 0
+    # Reproduce Internet VPN capture routes without touching the runner host.
+    # They overlap 10/8 but must not prevent a more-specific QuickLAN /24.
+    for i in range(2):
+        link = f'edge{i}' if a.relay_lab else ['underlay-a', 'underlay-b'][i]
+        ns(i, ['ip', 'route', 'add', '8.0.0.0/5', 'dev', link])
+        ns(i, ['ip', 'route', 'add', '128.0.0.0/1', 'dev', link])
     network = {'id': secrets.token_hex(16), 'label': 'CI private network', 'subnet': '10.73.42.0/24',
                'policy': 'manual', 'bootstrap': []}
     credential = secrets.token_hex(32)
@@ -175,6 +181,12 @@ try:
         return host.ip != remote.ip and all(any(peer['virtual_ip'] == other.ip and peer['path'] == expected_path
             for peer in item.state['peers']) for item, other in [(host, remote), (remote, host)])
     wait(converged)
+    for i, other in [(0, remote), (1, host)]:
+        route = json.loads(ns(i, ['ip', '-j', 'route', 'get', other.ip]).stdout)[0]
+        assert route['dev'] not in ['edge0', 'edge1', 'underlay-a', 'underlay-b']
+        assert '8.0.0.0/5' in ns(i, ['ip', '-4', 'route']).stdout
+        assert '128.0.0.0/1' in ns(i, ['ip', '-4', 'route']).stdout
+    checks.append('Overlay takes precedence over existing Internet VPN capture routes; capture routes remain unchanged')
     checks.append(f'Authenticated QuickLAN engines converge to distinct DHCP addresses and report {expected_path} paths')
     addresses = [host.ip, remote.ip]
     probe_servers = []

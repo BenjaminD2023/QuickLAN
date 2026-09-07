@@ -33,10 +33,7 @@ export function CreateDialog({
   const t = useText();
   const [label, setLabel] = useState("");
   const [nickname, setNickname] = useState(preferences.nickname);
-  const [subnet, setSubnet] = useState(() => {
-    const bytes = crypto.getRandomValues(new Uint8Array(2));
-    return `10.${bytes[0]}.${bytes[1]}.0/24`;
-  });
+  const [subnet, setSubnet] = useState("");
   const [policy, setPolicy] = useState<Policy>("manual");
   const [endpoint, setEndpoint] = useState("");
   const [operator, setOperator] = useState("");
@@ -78,7 +75,7 @@ export function CreateDialog({
             onChange={(e) => setNickname(e.target.value)}
           />
         </label>
-        <p className="muted">{t("singleActive")}</p>
+        <p className="muted">{t("chooseConnection")}</p>
         <LocalEndpointPicker
           onSelect={(value) => {
             setEndpoint(value);
@@ -102,7 +99,7 @@ export function CreateDialog({
               {t("subnet")}
               <input
                 value={subnet}
-                required
+                placeholder={t("automaticSubnet")}
                 onChange={(e) => setSubnet(e.target.value)}
                 spellCheck={false}
               />
@@ -168,8 +165,13 @@ export function CreateDialog({
         </details>
         <ModalFooter
           {...props}
-          submit={t("create")}
-          disabled={!label.trim() || !nickname.trim()}
+          submit={t("createAndConnect")}
+          disabled={
+            !label.trim() ||
+            !nickname.trim() ||
+            !endpoint.trim() ||
+            (policy !== "manual" && !consent)
+          }
         />
       </form>
     </Modal>
@@ -290,7 +292,7 @@ export function JoinDialog({
           )}
           <ModalFooter
             {...props}
-            submit={t("saveNetwork")}
+            submit={t("joinAndConnect")}
             disabled={
               !trusted || (preview.network.policy !== "manual" && !consent)
             }
@@ -427,6 +429,13 @@ export function SettingsDialog({
           );
         }}
       >
+        <LocalEndpointPicker
+          onSelect={(endpoint) => {
+            setPolicy("manual");
+            setNodes([{ endpoint, operator: network.label }]);
+            setConsent(false);
+          }}
+        />
         <label>
           {t("policy")}
           <select

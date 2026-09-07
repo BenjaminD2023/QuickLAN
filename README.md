@@ -13,7 +13,7 @@ Private virtual networks with friends. Create a network, share an invitation, an
 1. Install the package for your architecture. The networking engine is included; end users need no Rust, Node or separate core installation.
 2. Create a network. For friends on the same router, use **Host on the same Wi-Fi or LAN** and choose your Wi-Fi/Ethernet address. For remote friends, open connection settings and enter an endpoint they can reach, or an explicitly selected compatible shared node with permission from its operator.
 3. Connect and approve the operating system's networking permission request. Keep the host connected while friends join.
-4. Copy the invitation and share it privately. Friends preview it, save the network, then connect. Copy the host's **virtual** IP into the game's direct-connect screen.
+4. Copy the invitation and share it privately. Friends preview it and choose **Join and connect**. Copy the host's **virtual** IP into the game's direct-connect screen.
 5. Use peer details to check an explicitly selected TCP application port. Preferences → System firewall can explicitly disable or enable the built-in firewall with administrator authorization. This applies to the whole computer and persists after QuickLAN quits; use Enable firewall to turn protection back on. Application-specific rules can also be configured in the OS.
 
 See [firewall controls](docs/FIREWALL.md) for scope, verification and managed-policy behavior.
@@ -56,3 +56,18 @@ One active network per device. No automatic connection, background tray networki
 ## License
 
 Original desktop/domain/IPC/runtime code: Apache-2.0. The separate `quicklan-engine` program: GPL-3.0-only with an explicit Wintun linking permission. Modified EasyTier retains LGPL-3.0. Wintun's official binary has its own redistribution license. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES), `licenses/`, and the corresponding-source archive supplied with each networking binary release. No independent security audit is claimed.
+
+### Connection setup fixes under verification
+
+The easy-connect branch shows asynchronous startup errors on the network page,
+starts connecting after create/join, selects an unused private address range, and
+allows an overlay /24 to coexist with broad Internet VPN capture routes. Specific
+private LAN/VPN routes still block overlapping allocations. Creation requires a
+host/shared endpoint so it cannot silently produce a remotely unusable invitation.
+A single available LAN host address is selected with one click.
+
+Automatic internet discovery is **not ready**: the former upstream service is no
+longer offered, and the three community endpoints tested did not establish a
+secure relay session. See [the investigation](docs/investigations/easy-connect.md).
+No incompatible node has been added as a default and no encryption fallback was
+introduced. This is not yet the Radmin-style internet experience requested.

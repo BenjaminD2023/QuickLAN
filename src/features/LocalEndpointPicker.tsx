@@ -26,7 +26,14 @@ export function LocalEndpointPicker({
           setLoading(true);
           setFailed(false);
           try {
-            setChoices(await request<LocalEndpoint[]>("get_local_endpoints"));
+            const endpoints = await request<LocalEndpoint[]>(
+              "get_local_endpoints",
+            );
+            setChoices(endpoints);
+            if (endpoints.length === 1) {
+              setSelected(endpoints[0].endpoint);
+              onSelect(endpoints[0].endpoint);
+            }
           } catch {
             setFailed(true);
           } finally {

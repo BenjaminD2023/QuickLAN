@@ -9,7 +9,7 @@ import {
   Power,
 } from "lucide-react";
 import type { AppView, Peer, SavedNetwork } from "../lib/types";
-import { useText } from "../lib/i18n";
+import { errorText, useText } from "../lib/i18n";
 import { Notice } from "../components/ui";
 export function Welcome({
   onCreate,
@@ -106,6 +106,14 @@ export function NetworkView({
           </button>
         </div>
       </header>
+      {connection?.error && (
+        <Notice kind="error" title={t("connectionFailed")}>
+          <p>{errorText(connection.error)}</p>
+          <button className="text-button" onClick={onDiagnostics}>
+            {t("details")}
+          </button>
+        </Notice>
+      )}
       <div className="network-summary">
         <div className="address">
           <h2>{t("virtualAddress")}</h2>
@@ -131,7 +139,7 @@ export function NetworkView({
           {peers.length === 0 ? (
             <div className="empty-peers">
               <strong>{t("noDevices")}</strong>
-              <p>{t("noDevicesHint")}</p>
+              <p>{t(ip ? "waitingForFriends" : "noDevicesHint")}</p>
             </div>
           ) : (
             <ul className="peer-list">
@@ -186,7 +194,10 @@ export function NetworkView({
         </Notice>
       )}
       {network.bootstrap.length === 0 && (
-        <p className="subtle-note">{t("noEndpoints")}</p>
+        <Notice title={t("setupNeeded")}>
+          <p>{t("noEndpoints")}</p>
+          <button onClick={onPolicy}>{t("setupConnection")}</button>
+        </Notice>
       )}
     </section>
   );
