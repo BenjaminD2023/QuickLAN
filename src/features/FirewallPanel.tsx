@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { request } from "../lib/bridge";
+import { isAndroid, request } from "../lib/bridge";
 import { useText } from "../lib/i18n";
 import { Modal, ModalFooter, Notice } from "../components/ui";
 
@@ -25,6 +25,7 @@ export function FirewallPanel() {
     return t("firewallFailed");
   }
   useEffect(() => {
+    if (isAndroid()) return;
     let alive = true;
     function read() {
       if (changing.current) return;
@@ -92,6 +93,16 @@ export function FirewallPanel() {
       changing.current = false;
       setBusy(false);
     }
+  }
+  if (isAndroid()) {
+    return (
+      <section className="firewall-panel" aria-labelledby="firewall-title">
+        <h2 id="firewall-title">{t("firewallTitle")}</h2>
+        <Notice kind="info" title={t("firewallUnsupported")}>
+          {t("firewallUnsupportedBody")}
+        </Notice>
+      </section>
+    );
   }
   return (
     <section className="firewall-panel" aria-labelledby="firewall-title">

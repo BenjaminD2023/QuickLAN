@@ -1,14 +1,15 @@
 # Native preview releases
 
-Published: [QuickLAN 0.2.1 native networking preview](https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.1-preview.1).
-All ten published asset sizes and SHA-256 digests match the verified local payloads;
-see [publication evidence](evidence/github-release-021.json).
+Published desktop: [QuickLAN 0.2.1 native networking preview](https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.1-preview.1).
+Android and route-coexistence changes ship as 0.2.2 prerelease assets. 0.2.1
+desktop checksums remain in [publication evidence](evidence/github-release-021.json).
 
-Source: https://github.com/BenjaminD2023/QuickLAN. Version 0.2.1 packages include
-the production networking helper; 0.1.0 engineering draft binaries remain
-historical and cannot connect. Use a prerelease channel until ordinary-user,
-physical-device and signing acceptance is complete. Public upload of unsigned
-previews does not imply a signed public beta or production readiness.
+Source: https://github.com/BenjaminD2023/QuickLAN. Version 0.2.2 packages include
+the production networking helper on desktop and an in-process Android engine;
+0.1.0 engineering draft binaries remain historical and cannot connect. Use a
+prerelease channel until ordinary-user, physical-device and signing acceptance
+is complete. Public upload of unsigned previews does not imply a signed public
+beta, Play Store listing, or production readiness.
 
 The 0.2.1 release also verifies explicit firewall transitions and restores the
 CI machine’s original firewall settings; see [firewall controls](FIREWALL.md).
@@ -39,20 +40,55 @@ Regenerate both metadata inventories and audit all three Cargo lockfiles plus
 npm. Preserve the official Wintun and WebView2 resources/notices. The helper's
 macOS signature is applied before its digest is embedded in the desktop.
 
+## Android APK
+
+Install JDK 17, Android SDK `platforms;android-35`, `build-tools;35.0.0` and
+`ndk;27.2.12479018`; set `JAVA_HOME` and `ANDROID_HOME`. Install Rust targets
+`aarch64-linux-android` and `x86_64-linux-android`, Node/npm and protobuf.
+
+```sh
+rustup target add aarch64-linux-android x86_64-linux-android
+npm ci
+npm run android:build
+adb install -r artifacts/android/QuickLAN-0.2.2-android-debug.apk
+```
+
+The script builds the actual JNI engine, stages the shared frontend and notices,
+and invokes the checked-in Gradle wrapper. Both 64-bit ABIs ship by default;
+`npm run android:build -- --abi arm64-v8a` builds only ARM64. Android 8/API 26 is
+the declared minimum, not a minimum-device verification claim. A current Android
+System WebView with secure web-message support is required.
+
+`npm run android:release` creates an **unsigned** release APK. Debug APKs use the
+local Android debug key; they are for sideload testing, not Play Store submission.
+No Android release key or store listing is configured. Keep release keys outside
+the repository and use Android `apksigner` only in a reviewed signing environment.
+Verify the final signed bytes with `apksigner verify --verbose` and
+`zipalign -c -P 16 4 <apk>`, then record SHA-256. Preserve one signing identity for
+updates; uninstalling an differently signed copy deletes its private credentials.
+
+`.github/workflows/android.yml` builds and checks APK packaging. Local emulator
+runtime evidence is recorded separately in TEST_MATRIX; a workflow file is not
+proof that hosted CI or physical-device acceptance ran. Include corresponding
+source, Android notices/SBOM, APK build metadata and test limitations before any
+public Android release. Existing published desktop assets do not include Android.
+
 ## Corresponding source
 
 From a reviewed clean commit, with the pinned source already prepared:
 
 ```
-cargo vendor --manifest-path engine/Cargo.toml --locked .cache/engine-vendor > .cache/engine-vendor-config.toml
-python3 scripts/package-source.py --output artifacts/QuickLAN-0.2.1-corresponding-source.tar.gz --check-build
+cargo vendor --manifest-path engine/Cargo.toml --sync android/native/Cargo.toml --locked .cache/engine-vendor > .cache/engine-vendor-config.toml
+python3 scripts/package-source.py --output artifacts/QuickLAN-0.2.2-corresponding-source.tar.gz --check-build
 ```
 
 The script exports tracked source at HEAD, the exact patched EasyTier tree,
 vendor source and an offline engine build configuration. It checks locked offline
-resolution and optionally compiles the export. No compiled unused upstream
-Packet/WinDivert drivers are included. Toolchain/protobuf are prerequisites.
-The source archive and original license notices must accompany engine binaries.
+resolution for desktop and Android Rust engines, and optionally compiles the
+desktop export. No compiled unused upstream Packet/WinDivert drivers are included.
+Toolchain/protobuf are prerequisites. Gradle/SDK/npm artifacts are not vendored.
+The source archive and original notices must accompany desktop engine and Android
+APK releases; the combined Android application is GPL-3.0-only.
 
 ## Publish the reviewed preview
 

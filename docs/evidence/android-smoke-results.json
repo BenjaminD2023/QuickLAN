@@ -1,0 +1,49 @@
+{
+  "platform": "Android 15 API 35 ARM64 emulators",
+  "checks": {
+    "create": true,
+    "localEndpoints": true,
+    "clipboardInvitation": true,
+    "invitationTrust": true,
+    "vpnDenied": true,
+    "vpnConnected": true,
+    "dhcpRebound": true,
+    "directTcpEcho": true,
+    "directUdpEcho": true,
+    "appTcpProbe": true,
+    "busyPreservesSession": true,
+    "invalidPeerAndClipboardRejected": true,
+    "firewallUnsupportedExplicit": true,
+    "diagnostics": true,
+    "rename": true,
+    "backgroundTraffic": true,
+    "disconnectRemovesRoutes": true,
+    "upgradePersistence": true,
+    "noAutoConnect": true,
+    "assistanceConsent": true,
+    "relayPeerState": true,
+    "forcedRelayTcp": true,
+    "forcedRelayUdp": true,
+    "directOnlyBlocksRelayBothDirections": true,
+    "fixtureFirewallRestored": true,
+    "directOnlyAllowsDirectBothDirections": true,
+    "notificationDisconnect": true,
+    "systemVpnRevocation": true,
+    "consentDoesNotBlockPolling": true,
+    "overlayBootstrapRejected": true,
+    "preferencesAndDiagnostics": true,
+    "forgetLocal": true,
+    "keyboardInset": true
+  },
+  "knownFixed": [
+    "VPN consent no longer blocks state polling; verified with delayed approval",
+    "WebView parent owns system/keyboard insets; Save stayed above IME"
+  ],
+  "relayIsolation": "Disposable emulator UID-scoped firewall permits only configured TCP relay underlay; app itself remains unprivileged",
+  "consentRegression": {
+    "pendingMs": 37943,
+    "polls": 11,
+    "maxPollMs": 12
+  },
+  "version": "0.2.2"
+}

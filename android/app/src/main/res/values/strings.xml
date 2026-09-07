@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QuickLAN</string>
+    <string name="vpn_special_use">QuickLAN holds a VPN session only while a network is connected so overlay traffic can reach peers. The session stops on disconnect, quit, or revocation. Always-on VPN is not supported.</string>
+    <string name="notification_channel">Network session</string>
+    <string name="notification_title">QuickLAN</string>
+    <string name="notification_text">Networking is active</string>
+    <string name="notification_disconnect">Disconnect</string>
+    <string name="webview_update_title">Update Android System WebView</string>
+    <string name="webview_update_body">QuickLAN requires an up-to-date Android System WebView for its secure app interface. Update your WebView provider, then reopen QuickLAN. No VPN connection has been started.</string>
+    <string name="webview_settings">WebView settings</string>
+    <string name="close_app">Close</string>
+</resources>

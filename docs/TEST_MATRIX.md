@@ -1,5 +1,29 @@
 # Test matrix
 
+## Current 0.2.2 Android and route-coexistence preview
+
+Local Android 15 API 35 ARM64 emulator pair (`emulator-5554` / `emulator-5556`)
+plus packed [PR #1](https://github.com/BenjaminD2023/QuickLAN/pull/1) route/setup
+fixes. Hosted Android CI packaging exists as `.github/workflows/android.yml`;
+that file is not evidence a hosted run passed. Desktop native CI evidence below
+is unchanged from 0.2.1.
+
+| Check | Result | Scope |
+|---|---|---|
+| Android create, local endpoints, invitation clipboard, trust review | Pass | Real APK WebView; native clipboard paste |
+| VPN permission deny and delayed consent | Pass | System VpnService dialog; polling stays live during consent (11 polls, max 12 ms) |
+| Direct overlay TCP/UDP both directions | Pass | `tun0` 10.73.42.0/24; toybox netcat echo |
+| Forced-relay TCP/UDP with UID-scoped underlay firewall | Pass | Only configured TCP relay `10.0.2.2:21110` allowed; app remained unprivileged |
+| Direct-only blocks relayed payload both ways, then allows direct | Pass | Relay control stayed up during the block; later explicit peer endpoint recovered direct traffic |
+| Notification disconnect and Settings VPN revoke | Pass | Overlay routes gone after each |
+| Background Home traffic | Pass | TCP echo while both activities stopped |
+| Overlay-subnet bootstrap rejected | Pass | `route_conflict` for `tcp://10.73.42.9:11010` |
+| Keyboard inset | Pass | Save remained above IME after FrameLayout inset |
+| Internet VPN capture routes vs private overlay | Pass (unit + Linux integration from PR #1) | `8.0.0.0/5` and `128.0.0.0/1` no longer block `10.73.42.0/24` |
+| Physical phones, Play signing, hosted Android CI runtime, automatic internet discovery | Not verified | Do not represent this preview as completing those |
+
+Machine-readable local smoke: `artifacts/android/smoke-results.json`.
+
 ## Current 0.2.1 firewall release
 
 [Native run 34082162974](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34082162974)

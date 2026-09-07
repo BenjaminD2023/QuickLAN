@@ -1,10 +1,10 @@
 # QuickLAN
 
-[Download 0.2.1 for Windows and Mac](https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.1-preview.1).
+[Download 0.2.1 for Windows and Mac](https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.1-preview.1). Android 0.2.2 preview APK is on the latest prerelease.
 
-Private virtual networks with friends. Create a network, share an invitation, and connect to a game or application by virtual IP. QuickLAN uses Tauri, React and Rust with a separately packaged, modified EasyTier 2.6.4 engine. It requires no account, paid API or project-operated server. QuickLAN is independent of EasyTier.
+Private virtual networks with friends. Create a network, share an invitation, and connect to a game or application by virtual IP. QuickLAN uses Tauri, React and Rust with a separately packaged, modified EasyTier 2.6.4 engine on desktop. Android links the same engine in-process through JNI. It requires no account, paid API or project-operated server. QuickLAN is independent of EasyTier.
 
-**0.2.1 native preview:** real networking is implemented. Native CI creates and removes actual adapters on Windows x64, Apple Silicon and Intel Mac. Isolated Linux stacks exchange real TCP and UDP through QuickLAN virtual IPs. Physical Windows/Mac device pairs, arbitrary internet NAT traversal, ordinary-user permission dialogs and minimum OS versions remain unverified. This is not a production-ready or signed public beta.
+**0.2.2 native preview:** real networking is implemented on Windows, macOS and Android. Native CI creates and removes actual adapters on Windows x64, Apple Silicon and Intel Mac. Isolated Linux stacks exchange real TCP and UDP through QuickLAN virtual IPs. Two Android 15 emulators exchanged real overlay TCP/UDP, including forced-relay and direct-only isolation. Physical Windows/Mac/phone pairs, arbitrary internet NAT traversal, ordinary-user permission dialogs, Play signing and minimum OS versions remain unverified. This is not a production-ready or signed public beta. Automatic internet discovery is unfinished; a compatible permitted discovery/relay service is still required for a Radmin-style internet experience.
 
 [GitHub releases](https://github.com/BenjaminD2023/QuickLAN/releases) · [Feature status](docs/FEATURES.md) · [Test evidence](docs/TEST_MATRIX.md)
 
@@ -34,6 +34,15 @@ npm run desktop:dev
 
 To package on a native Mac use `npm run tauri -- build --bundles app,dmg -- --locked`; on Windows use `npm run tauri -- build --bundles nsis -- --locked`. Output: `src-tauri/target/release/bundle/`. macOS helper and app are ad-hoc signed for integrity only; Windows app/installer are unsigned. No Developer ID, Authenticode or notarization credentials are configured.
 
+Android APK (JDK 17, Android SDK 35, NDK 27.2.12479018, Rust Android targets):
+
+```sh
+rustup target add aarch64-linux-android x86_64-linux-android
+npm ci
+npm run android:build
+adb install -r artifacts/android/QuickLAN-0.2.2-android-debug.apk
+```
+
 ```sh
 npm run check
 cargo fmt --all --check
@@ -49,10 +58,10 @@ npm run test:e2e
 
 An invitation is a bearer credential. Anyone possessing it may join. Names, peer IDs and addresses are not verified personal identities. Forget is local; replacement credentials create a new network and do not revoke communication on the old one. Trusted peers may reach services allowed by your firewall. This is not an anonymity tool.
 
-One active network per device. No automatic connection, background tray networking, telemetry, automatic updates, DNS/default-route changes, internet exit node, subnet proxy or LAN broadcast bridging. Closing the window or choosing Quit disconnects. Virtual IPs may change after reconnect; applications bound to an old address must be rebound. Relay use requires explicit configuration and consent. No unlimited bandwidth, universal LAN discovery or unmeasured performance claim is made.
+One active network per device. No automatic connection, background tray networking, telemetry, automatic updates, DNS/default-route changes, internet exit node, subnet proxy or LAN broadcast bridging. On desktop, closing the window or choosing Quit disconnects. On Android, leaving the app keeps the VPN under a notification until Disconnect, Quit, the notification action, or Android VPN settings. Virtual IPs may change after reconnect; applications bound to an old address must be rebound. Relay use requires explicit configuration and consent. No unlimited bandwidth, universal LAN discovery or unmeasured performance claim is made.
 
 [Architecture](docs/ARCHITECTURE.md) · [Native helper](docs/NATIVE_ENGINE.md) · [Threat model](docs/THREAT_MODEL.md) · [Security review](docs/SECURITY_REVIEW.md) · [Release procedure](docs/RELEASING.md)
 
 ## License
 
-Original desktop/domain/IPC/runtime code: Apache-2.0. The separate `quicklan-engine` program: GPL-3.0-only with an explicit Wintun linking permission. Modified EasyTier retains LGPL-3.0. Wintun's official binary has its own redistribution license. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES), `licenses/`, and the corresponding-source archive supplied with each networking binary release. No independent security audit is claimed.
+Original desktop/domain/IPC/runtime code: Apache-2.0. The separate `quicklan-engine` program: GPL-3.0-only with an explicit Wintun linking permission. The combined Android APK: GPL-3.0-only. Modified EasyTier retains LGPL-3.0. Wintun's official binary has its own redistribution license and is not included in Android. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES), `licenses/`, and the corresponding-source archive supplied with each networking binary release. No independent security audit is claimed.

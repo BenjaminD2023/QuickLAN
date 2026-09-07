@@ -3,17 +3,19 @@ import { Copy, RefreshCw, Shield, Network } from "lucide-react";
 import type { AppView, Diagnostics, Preferences } from "../lib/types";
 import { useText } from "../lib/i18n";
 import { BRAND } from "../lib/brand";
-import { request } from "../lib/bridge";
+import { isAndroid, request } from "../lib/bridge";
 import { FirewallPanel } from "./FirewallPanel";
 import { Notice } from "../components/ui";
 export function PreferencesPage({
   preferences,
   busy,
   onSave,
+  onQuit,
 }: {
   preferences: Preferences;
   busy: boolean;
   onSave: (p: Preferences) => void;
+  onQuit?: () => void;
 }) {
   const t = useText();
   const [draft, setDraft] = useState(preferences);
@@ -76,8 +78,18 @@ export function PreferencesPage({
           </label>
         </section>
         <section>
-          <h2>{t("behavior")}</h2>
-          <p>{t("closeBehavior")}</p>
+          <h2>{t(isAndroid() ? "behaviorAndroid" : "behavior")}</h2>
+          <p>{t(isAndroid() ? "closeBehaviorAndroid" : "closeBehavior")}</p>
+          {isAndroid() && onQuit && (
+            <button
+              type="button"
+              className="danger"
+              disabled={busy}
+              onClick={onQuit}
+            >
+              {t("quit")}
+            </button>
+          )}
         </section>
         <section>
           <h2>{t("privacy")}</h2>
@@ -145,7 +157,13 @@ export function DiagnosticsPage({
           view.helper.connection_enabled ? "helperReady" : "helperTitle",
         )}
       >
-        {t(view.helper.connection_enabled ? "helperReadyBody" : "helperBody")}
+        {t(
+          view.helper.connection_enabled
+            ? isAndroid()
+              ? "helperReadyBodyAndroid"
+              : "helperReadyBody"
+            : "helperBody",
+        )}
       </Notice>
       <h2 className="section-title">{t("releaseChecks")}</h2>
       <ul className="checklist">
@@ -180,19 +198,29 @@ export function AboutPage({ available }: { available: boolean }) {
         {BRAND.version} · {BRAND.core}
       </p>
       <h2>{t("aboutTitle")}</h2>
-      <p>{t("aboutBody")}</p>
+      <p>{t(isAndroid() ? "aboutBodyAndroid" : "aboutBody")}</p>
       <Notice
         kind={available ? "info" : "warning"}
         title={t(available ? "helperReady" : "engineering")}
       >
-        {t(available ? "helperReadyBody" : "aboutGap")}
+        {t(
+          available
+            ? isAndroid()
+              ? "helperReadyBodyAndroid"
+              : "helperReadyBody"
+            : "aboutGap",
+        )}
       </Notice>
       <p>{t("aboutEvidence")}</p>
       <div className="license-copy">
         <h2>{t("about")}</h2>
-        <p>{t("wrapperLicense")}</p>
+        <p>{t(isAndroid() ? "wrapperLicenseAndroid" : "wrapperLicense")}</p>
         <p>{t("coreLicense")}</p>
-        <p className="muted">Tauri · React · TypeScript · Rust · lucide</p>
+        <p className="muted">
+          {isAndroid()
+            ? t("androidStack")
+            : "Tauri · React · TypeScript · Rust · lucide"}
+        </p>
       </div>
       <p>
         <Shield className="inline-icon" />
@@ -210,7 +238,14 @@ export function HelpPage() {
       </header>
       <p className="lead">{t("gameIntro")}</p>
       <ol className="guide-steps">
-        {(["gameOne", "gameTwo", "gameThree", "gameFour"] as const).map(
+        {(
+          [
+            "gameOne",
+            "gameTwo",
+            "gameThree",
+            isAndroid() ? "gameFourAndroid" : "gameFour",
+          ] as const
+        ).map(
           (k, i) => (
             <li key={k}>
               <span>{i + 1}</span>

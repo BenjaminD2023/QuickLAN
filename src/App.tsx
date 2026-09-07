@@ -9,9 +9,9 @@ import type {
   Preferences,
 } from "./lib/types";
 import { emptyView } from "./lib/types";
-import { request, nativeAvailable, testMode } from "./lib/bridge";
+import { request, nativeAvailable, testMode, isAndroid } from "./lib/bridge";
 import { LocaleContext, errorText, useText } from "./lib/i18n";
-import { Sidebar } from "./components/Sidebar";
+import { BottomNav, NetworkSwitcher, Sidebar } from "./components/Sidebar";
 import type { Page } from "./components/Sidebar";
 import { Notice } from "./components/ui";
 import { PeerDialog } from "./features/PeerDialog";
@@ -103,6 +103,35 @@ function Application({
     document.documentElement.lang = view.saved.preferences.language;
   }, [view.saved.preferences]);
   useEffect(() => {
+    document.documentElement.classList.toggle("android", isAndroid());
+    return () => document.documentElement.classList.remove("android");
+  }, []);
+  useEffect(() => {
+    const seen = new WeakSet<Event>();
+    function onBack(event: Event) {
+      if (seen.has(event)) return;
+      seen.add(event);
+      const openDialog = document.querySelector("dialog[open]");
+      if (openDialog) {
+        event.preventDefault();
+        if (!busy)
+          openDialog.dispatchEvent(new Event("cancel", { cancelable: true }));
+        return;
+      }
+      if (page !== "networks") {
+        event.preventDefault();
+        setPage("networks");
+        setError(null);
+      }
+    }
+    window.addEventListener("quicklan:back", onBack);
+    document.addEventListener("quicklan:back", onBack);
+    return () => {
+      window.removeEventListener("quicklan:back", onBack);
+      document.removeEventListener("quicklan:back", onBack);
+    };
+  }, [busy, page]);
+  useEffect(() => {
     if (!toast) return;
     const id = setTimeout(() => setToast(null), 3500);
     return () => clearTimeout(id);
@@ -159,6 +188,8 @@ function Application({
         assistanceAccepted: data.assistanceAccepted,
       });
       chosen(n);
+      await refresh();
+      await request("connect_network", { id: n.id });
     });
   }
   const common = { onClose: close, busy, error };
@@ -168,7 +199,7 @@ function Application({
       () => setToast(t("copied")),
     );
   return (
-    <div className="app-shell">
+    <div className={isAndroid() ? "app-shell android" : "app-shell"}>
       {testMode && (
         <div className="test-banner">TEST SIMULATION — no networking</div>
       )}
@@ -191,6 +222,19 @@ function Application({
       />
       <main>
         <div className="main-scroll">
+          {isAndroid() && page === "networks" && view.saved.networks.length > 0 && (
+            <NetworkSwitcher
+              networks={view.saved.networks}
+              selected={network?.id}
+              onSelect={(id) => {
+                setSelected(id);
+                setPage("networks");
+                setError(null);
+              }}
+              onCreate={() => open("create")}
+              onJoin={() => open("join")}
+            />
+          )}
           {!native && (
             <div className="runtime-notice">
               <Notice kind="info" title={t("browserTitle")}>
@@ -257,6 +301,7 @@ function Application({
                   () => setToast(t("saved")),
                 )
               }
+              onQuit={() => void act(() => request("quit_app"))}
             />
           ) : page === "diagnostics" ? (
             <DiagnosticsPage
@@ -272,8 +317,26 @@ function Application({
         </div>
         <footer className="app-footer">
           {t(view.helper.connection_enabled ? "nativeFooter" : "engineering")}
+          {isAndroid() && (
+            <button
+              type="button"
+              className="text-button"
+              onClick={() => void act(() => request("quit_app"))}
+            >
+              {t("quit")}
+            </button>
+          )}
         </footer>
       </main>
+      {isAndroid() && (
+        <BottomNav
+          page={page}
+          onPage={(p) => {
+            setPage(p);
+            setError(null);
+          }}
+        />
+      )}
       {toast && (
         <div className="toast" role="status">
           {toast}
@@ -298,15 +361,16 @@ function Application({
             )
           }
           onAccept={(ticket, consent) =>
-            void act(async () =>
-              chosen(
-                await request<SavedNetwork>("accept_invitation", {
-                  ticket,
-                  trusted: true,
-                  assistanceAccepted: consent,
-                }),
-              ),
-            )
+            void act(async () => {
+              const n = await request<SavedNetwork>("accept_invitation", {
+                ticket,
+                trusted: true,
+                assistanceAccepted: consent,
+              });
+              chosen(n);
+              await refresh();
+              await request("connect_network", { id: n.id });
+            })
           }
         />
       )}{" "}

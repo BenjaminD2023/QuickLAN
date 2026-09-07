@@ -1,7 +1,7 @@
 {
   "name": "quicklan",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "license": "Apache-2.0",
   "engines": {
@@ -19,6 +19,8 @@
     "tauri": "tauri",
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build --bundles app -- --locked",
+    "android:build": "python3 scripts/build-android.py",
+    "android:release": "python3 scripts/build-android.py --release",
     "check": "npm run lint && npm run build && npm test && npm run test:rust"
   },
   "dependencies": {

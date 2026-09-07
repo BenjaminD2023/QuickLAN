@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { request } from "../lib/bridge";
+import { isAndroid, request } from "../lib/bridge";
 import { useText } from "../lib/i18n";
 
 interface LocalEndpoint {
@@ -26,7 +26,14 @@ export function LocalEndpointPicker({
           setLoading(true);
           setFailed(false);
           try {
-            setChoices(await request<LocalEndpoint[]>("get_local_endpoints"));
+            const endpoints = await request<LocalEndpoint[]>(
+              "get_local_endpoints",
+            );
+            setChoices(endpoints);
+            if (endpoints.length === 1) {
+              setSelected(endpoints[0].endpoint);
+              onSelect(endpoints[0].endpoint);
+            }
           } catch {
             setFailed(true);
           } finally {
@@ -60,7 +67,9 @@ export function LocalEndpointPicker({
           {t("localUnavailable")}
         </p>
       )}
-      <p className="field-hint">{t("localEndpointHint")}</p>
+      <p className="field-hint">
+        {t(isAndroid() ? "localEndpointHintAndroid" : "localEndpointHint")}
+      </p>
     </div>
   );
 }

@@ -71,7 +71,7 @@ async function installTestAdapter(page: Page) {
         const n = {
           id: crypto.randomUUID().replaceAll("-", ""),
           label: args.label,
-          subnet: args.subnet,
+          subnet: args.subnet || "10.73.42.0/24",
           policy: args.policy,
           bootstrap: args.bootstrap,
         };
@@ -83,7 +83,7 @@ async function installTestAdapter(page: Page) {
           ...connection,
           phase: "failed",
           network_id: args.id as string,
-          error: "helper_unavailable",
+          error: "permission_denied",
         };
         return connection;
       }
@@ -181,7 +181,7 @@ test("choose a local host endpoint and preserve it in saved connection settings"
     .getByLabel("This computer’s local endpoint")
     .selectOption("tcp://192.168.1.12:11010");
   await page
-    .getByRole("button", { name: "Create network", exact: true })
+    .getByRole("button", { name: "Create and connect", exact: true })
     .last()
     .click();
   await page
@@ -216,19 +216,26 @@ test("create, real error presentation, invite, settings and local forget", async
     .getByRole("button", { name: "Create a network", exact: true })
     .click();
   await page.getByLabel("Network label", { exact: true }).fill("Friday night");
+  await expect(
+    page.getByRole("button", { name: "Create and connect", exact: true }),
+  ).toBeDisabled();
   await page
-    .getByRole("button", { name: "Create network", exact: true })
+    .getByRole("button", { name: "Host on the same Wi-Fi or LAN" })
+    .click();
+  await page
+    .getByLabel("This computer’s local endpoint")
+    .selectOption("tcp://192.168.1.12:11010");
+  await page
+    .getByRole("button", { name: "Create and connect", exact: true })
     .last()
     .click();
   await expect(
     page.getByRole("heading", { name: "Friday night", exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("Disconnected", { exact: true })).toBeVisible();
-  await page.screenshot({ path: "docs/evidence/ui-network.png" });
-  await page.getByRole("button", { name: "Connect", exact: true }).click();
   await expect(
     page.getByText("Connection unavailable", { exact: true }),
   ).toBeVisible();
+  await page.screenshot({ path: "docs/evidence/ui-network.png" });
   await expect(
     page.getByText("No connected devices", { exact: true }),
   ).toBeVisible();
@@ -244,7 +251,6 @@ test("create, real error presentation, invite, settings and local forget", async
   await page
     .getByRole("button", { name: /Connection policy Manual endpoints/ })
     .click();
-  await page.getByRole("button", { name: "Add node", exact: true }).click();
   await page
     .getByLabel("Reachable endpoint", { exact: true })
     .fill("tcp://192.168.1.12:11010");
@@ -285,15 +291,17 @@ test("join is previewed and requires trust; malformed invitations remain errors"
     .getByRole("button", { name: "Review invitation", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Save network", exact: true }),
+    page.getByRole("button", { name: "Join and connect", exact: true }),
   ).toBeDisabled();
   await page.screenshot({ path: "docs/evidence/ui-join.png" });
   await page.getByRole("checkbox").check();
-  await page.getByRole("button", { name: "Save network", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Join and connect", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "Game night", exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("Disconnected", { exact: true })).toBeVisible();
+  await expect(page.getByText("Connection unavailable", { exact: true })).toBeVisible();
 });
 test("keyboard, dark mode, diagnostics and narrow layout", async ({ page }) => {
   await page.screenshot({ path: "docs/evidence/ui-empty.png" });

@@ -1,5 +1,7 @@
 //! Read-only inspection before creating a virtual interface. No DNS/firewall writes.
+#[cfg(any(target_os = "macos", target_os = "linux", target_os = "android", windows, test))]
 use crate::error::{Error, Result};
+#[cfg(any(target_os = "macos", target_os = "linux", target_os = "android", windows, test))]
 use ipnet::Ipv4Net;
 
 #[cfg(target_os = "macos")]
@@ -133,6 +135,53 @@ pub fn read() -> Result<Vec<Ipv4Net>> {
         .collect()
 }
 
+#[cfg(target_os = "android")]
+pub fn read() -> Result<Vec<Ipv4Net>> {
+    parse_proc_net_route(
+        &std::fs::read_to_string("/proc/net/route").map_err(|_| Error::CoreFailed)?,
+    )
+}
+
+/// Destination and mask are little-endian hex, as in /proc/net/route.
+#[cfg(any(target_os = "android", test))]
+pub fn parse_proc_net_route(text: &str) -> Result<Vec<Ipv4Net>> {
+    let mut routes = Vec::new();
+    let mut header = false;
+    for line in text.lines().map(str::trim).filter(|l| !l.is_empty()) {
+        if !header {
+            header = line.contains("Destination") && line.contains("Mask");
+            continue;
+        }
+        let mut cols = line.split_whitespace();
+        let _iface = cols.next().ok_or(Error::CoreFailed)?;
+        let destination = cols.next().ok_or(Error::CoreFailed)?;
+        let _gateway = cols.next().ok_or(Error::CoreFailed)?;
+        let _flags = cols.next().ok_or(Error::CoreFailed)?;
+        let _refcnt = cols.next().ok_or(Error::CoreFailed)?;
+        let _use = cols.next().ok_or(Error::CoreFailed)?;
+        let _metric = cols.next().ok_or(Error::CoreFailed)?;
+        let mask = cols.next().ok_or(Error::CoreFailed)?;
+        let dest = u32::from_be(
+            u32::from_str_radix(destination, 16).map_err(|_| Error::CoreFailed)?,
+        );
+        let mask = u32::from_be(u32::from_str_radix(mask, 16).map_err(|_| Error::CoreFailed)?);
+        if mask == 0 {
+            continue;
+        }
+        let prefix = mask.count_ones() as u8;
+        if prefix == 0 || prefix > 32 || mask != u32::MAX << (32 - prefix) {
+            return Err(Error::CoreFailed);
+        }
+        let net = Ipv4Net::new(std::net::Ipv4Addr::from(dest), prefix)
+            .map_err(|_| Error::CoreFailed)?;
+        routes.push(net);
+    }
+    if !header {
+        return Err(Error::CoreFailed);
+    }
+    Ok(routes)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -155,5 +204,19 @@ mod tests {
         );
         assert!(parse_macos("unexpected output").is_err());
         assert!(parse_macos("Destination Gateway Flags Netif\n10/99 x U x").is_err());
+    }
+    #[test]
+    fn proc_net_route_reads_private_lan_and_skips_default() {
+        let text = "Iface\tDestination\tGateway\tFlags\tRefCnt\tUse\tMetric\tMask\tMTU\tWindow\tIRTT\nwlan0\t00000000\t0100A8C0\t0003\t0\t0\t0\t00000000\t0\t0\t0\nwlan0\t0001A8C0\t00000000\t0001\t0\t0\t0\t00FFFFFF\t0\t0\t0\n";
+        let rows = parse_proc_net_route(text).unwrap();
+        assert_eq!(
+            rows.iter().map(ToString::to_string).collect::<Vec<_>>(),
+            ["192.168.1.0/24"]
+        );
+        assert_eq!(
+            crate::routes::check_conflicts("192.168.1.0/24", &rows, &[]),
+            Err(Error::RouteConflict)
+        );
+        assert!(crate::routes::check_conflicts("10.73.42.0/24", &rows, &[]).is_ok());
     }
 }

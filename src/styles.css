@@ -1180,3 +1180,238 @@ code {
   flex-wrap: wrap;
   margin: 16px 0;
 }
+
+.network-switcher,
+.bottom-nav {
+  display: none;
+}
+html.android,
+html.android body,
+html.android #root {
+  height: 100%;
+  overflow: hidden;
+}
+html.android .app-shell {
+  min-height: 0;
+  height: 100%;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+html.android button {
+  min-height: 48px;
+}
+html.android button.icon-button {
+  min-width: 48px;
+  min-height: 48px;
+}
+html.android input,
+html.android select,
+html.android textarea {
+  min-height: 48px;
+  font-size: 16px;
+}
+html.android .checkbox {
+  min-height: 48px;
+  align-items: center;
+  font-size: 14px;
+}
+html.android .checkbox input {
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
+}
+html.android .modal {
+  width: min(440px, calc(100vw - 24px));
+  max-height: calc(
+    100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
+      16px
+  );
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+}
+html.android .modal-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  background: var(--bg);
+  padding-top: 12px;
+  margin-bottom: 0;
+}
+html.android .header-actions {
+  flex-wrap: wrap;
+}
+html.android .peer-row,
+html.android .policy-row,
+html.android .nav-row,
+html.android .saved-network,
+html.android .advanced summary {
+  min-height: 48px;
+}
+html.android .app-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+}
+html.android .welcome-actions button {
+  min-height: 48px;
+}
+html.android .network-switcher {
+  margin: 16px 16px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--rail);
+}
+html.android .network-switcher-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+html.android .network-switcher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: min(40vh, 280px);
+  overflow: auto;
+  margin-top: 8px;
+}
+html.android .network-switcher .saved-network {
+  font-size: 14px;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 12px 10px;
+  background: var(--bg);
+  border-radius: 6px;
+}
+html.android .network-switcher .saved-network > span:last-child {
+  display: inline;
+}
+html.android .bottom-nav {
+  border-top: 1px solid var(--line);
+  background: var(--rail);
+  padding: 6px 4px max(6px, env(safe-area-inset-bottom, 0px));
+  gap: 2px;
+}
+html.android .bottom-nav button {
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  min-height: 56px;
+  border: 0;
+  background: transparent;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.15;
+  padding: 6px 2px;
+  border-radius: 8px;
+}
+html.android .bottom-nav button svg {
+  width: 22px;
+  height: 22px;
+}
+html.android .bottom-nav button.selected {
+  color: var(--accent);
+  background: var(--selected);
+}
+html.android .bottom-nav button.selected svg {
+  color: var(--accent);
+}
+html.android button:active:not(:disabled) {
+  background: var(--selected);
+}
+html.android button.primary:active:not(:disabled) {
+  background: var(--accent-hover);
+}
+@media (max-width: 839px) {
+  html.android .app-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  html.android main {
+    grid-row: 1;
+    grid-column: 1;
+  }
+  html.android .bottom-nav {
+    grid-row: 2;
+    grid-column: 1;
+  }
+  html.android .toast,
+  html.android .modal {
+    grid-row: 1;
+    grid-column: 1;
+  }
+  html.android .sidebar {
+    display: none;
+  }
+  html.android .bottom-nav {
+    display: flex;
+  }
+  html.android .network-switcher {
+    display: block;
+  }
+  html.android .toast {
+    left: 50%;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    max-width: calc(100vw - 24px);
+    text-align: center;
+    white-space: normal;
+  }
+  html.android .app-footer {
+    padding-bottom: 12px;
+  }
+  html.android .network-view,
+  html.android .utility-page {
+    padding: 24px 16px 28px;
+  }
+  html.android .runtime-notice {
+    margin: 12px 16px 0;
+  }
+}
+@media (max-width: 360px) {
+  html.android .bottom-nav button {
+    font-size: 9px;
+  }
+}
+@media (min-width: 840px) {
+  html.android .app-shell {
+    grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  }
+  html.android .sidebar {
+    padding: 20px 12px max(12px, env(safe-area-inset-bottom, 0px));
+  }
+  html.android .brand {
+    font-size: 20px;
+    gap: 10px;
+  }
+  html.android .nav-row,
+  html.android .saved-network {
+    font-size: 13px;
+    justify-content: flex-start;
+    padding: 12px 10px;
+  }
+  html.android .saved-network {
+    padding-left: 16px;
+  }
+  html.android .saved-network > span:last-child {
+    display: inline;
+  }
+  html.android .network-switcher,
+  html.android .bottom-nav {
+    display: none;
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  html.android .modal {
+    max-height: calc(100dvh - 12px);
+  }
+  html.android .network-switcher-list {
+    max-height: 28vh;
+  }
+}

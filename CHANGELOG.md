@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2 — Android preview and VPN route coexistence
+
+- Shipped a real Android app: in-process JNI engine, VpnService tun0, EncryptedSharedPreferences, no separate elevated helper.
+- Verified two Android 15 ARM64 emulators: create/join, clipboard invitations, VPN consent/deny, direct and forced-relay TCP/UDP, direct-only isolation, notification disconnect, system VPN revoke, background traffic, and local forget.
+- Permitted a more-specific private overlay /24 alongside Internet VPN capture routes such as `8.0.0.0/5` and `128.0.0.0/1`, while still rejecting private LAN/VPN overlaps.
+- New networks can leave the subnet blank to choose a free private /24. Create and Join start connecting immediately; failures appear on the network page. Empty endpoint creation is disabled.
+- Android combined APK is GPL-3.0-only. Desktop remains a separate Apache-2.0 UI plus GPL engine. This is not a signed Play Store or physical-device release.
+
 ## 0.2.0 — native networking preview
 
 - Bundled a separate elevated networking engine with authenticated local IPC, real adapters, live peer state and supervised cleanup.

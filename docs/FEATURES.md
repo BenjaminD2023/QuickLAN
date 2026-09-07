@@ -1,14 +1,14 @@
-# Feature status — 0.2.0 native preview
+# Feature status — 0.2.2 native preview
 
-Real system networking is implemented. The release remains a native preview
-because physical device pairs, ordinary-user privilege dialogs, minimum OS
-versions and broader network/security acceptance are not fully verified.
+Real system networking is implemented on desktop and Android. The release remains a
+native preview because physical device pairs, ordinary-user privilege dialogs,
+minimum OS versions and broader network/security acceptance are not fully verified.
 
 | Capability | Implemented behavior | Evidence / limit |
 |---|---|---|
 | Saved networks and identities | Labels, device nicknames, create/join/invite/forget/replacement | Domain, UI and earlier native vault checks; names are not verified identities |
-| Protected credentials | OS Keychain / Windows Credential Manager, secret-free metadata and diagnostics | Native roundtrips passed; cross-store crash recovery is best effort |
-| Connect/disconnect | Bundled elevated helper, one active engine, real adapter/IP, shutdown acknowledgement | Native Windows, ARM/Intel Mac acceptance; current package checks tracked in TEST_MATRIX |
+| Protected credentials | OS Keychain / Windows Credential Manager / Android EncryptedSharedPreferences; secret-free metadata and diagnostics | Native roundtrips passed; cross-store crash recovery is best effort |
+| Connect/disconnect | Desktop: bundled elevated helper. Android: VpnService + JNI engine. One active engine, real adapter/IP, shutdown acknowledgement | Native Windows, ARM/Intel Mac acceptance; Android 15 emulator pair in TEST_MATRIX |
 | Helper security | Both-end kernel PID authentication, private socket/pipe, fixed commands, bounded framing, hash verification and substitution defenses | Native IPC tests; no stock TCP management RPC |
 | Permissions and repair | Per-connection OS elevation, denial error, bundled helper replacement by reinstall, no persistent service | Ordinary-user OS dialog and upgrade matrix remain unverified |
 | Peer state | Live virtual IP, direct/relayed/unreachable path and measured direct latency | Actual Instance APIs; absent metrics remain absent |
@@ -21,7 +21,7 @@ versions and broader network/security acceptance are not fully verified.
 | Local setup | User-selected OS Wi-Fi/Ethernet endpoint in create flow | UI test preserves choice; remote NAT discovery is not automatic |
 | Failure recovery | Controller EOF/heartbeat cleanup, restart, wrong-secret rejection, stale observation suppression | Native and isolated integration tests |
 | Interface | English/Chinese, light/dark, keyboard, responsive layout, preferences/help/about | Five browser workflows; native GUI inspection is separately recorded |
-| Packaging | ARM/Intel DMG and Windows x64 EXE with engine and notices | Native CI; ad-hoc Mac integrity only, unsigned Windows, no notarization |
+| Packaging | ARM/Intel DMG, Windows x64 EXE, Android 64-bit APK with notices | Native CI for desktop; local Android debug APK. Ad-hoc Mac integrity only, unsigned Windows, local debug Android key, no notarization or Play signing |
 | Source and maintenance | Public source, locked/patched engine, SBOM/notices, corresponding-source recipe, scans | No independent audit, reproducible-build or performance claim |
 
 There is no built-in public service. An invitation needs a shared reachable
