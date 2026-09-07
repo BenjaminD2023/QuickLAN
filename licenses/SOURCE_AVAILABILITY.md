@@ -6,7 +6,7 @@ engine is GPL-3.0-only with the specific Wintun linking permission in
 LGPL-3.0 license. `engine/LICENSE`, `GPL-3.0.txt` and `EasyTier-LGPL-3.0.txt`
 retain the complete texts. `upstream/quicklan.patch` identifies modifications.
 
-Each native networking release supplies `QuickLAN-0.2.0-corresponding-source.tar.gz`:
+Each native networking release supplies `QuickLAN-0.2.1-corresponding-source.tar.gz`:
 QuickLAN source at the release commit, exact modified EasyTier source, Cargo
 lockfiles, vendored engine dependency source, build scripts and license notices.
 The archive README describes building the engine offline with Rust 1.96 and a

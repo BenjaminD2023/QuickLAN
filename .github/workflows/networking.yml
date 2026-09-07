@@ -91,6 +91,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./scripts/windows-installer-smoke.ps1 -BundleRoot src-tauri/target/release/bundle -RequireEngine
       - name: Verify explicit firewall controls and restore original settings
+        shell: bash
         if: runner.os != 'Linux'
         run: |
           cargo build -p quicklan-runtime --example firewall_smoke --locked
