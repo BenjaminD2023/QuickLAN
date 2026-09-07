@@ -1,0 +1,345 @@
+{
+  "version": "0.2.1",
+  "commit": "eaf7c02aa825d9d9ccf507af7ff73a05bc2907c5",
+  "native_run": "https://github.com/BenjaminD2023/QuickLAN/actions/runs/34082162974",
+  "audit_run": "https://github.com/BenjaminD2023/QuickLAN/actions/runs/34082162971",
+  "native_jobs": [
+    {
+      "name": "engine (macos-15)",
+      "conclusion": "success"
+    },
+    {
+      "name": "engine (windows-2022)",
+      "conclusion": "success"
+    },
+    {
+      "name": "engine (macos-15-intel)",
+      "conclusion": "success"
+    },
+    {
+      "name": "engine (ubuntu-24.04)",
+      "conclusion": "success"
+    }
+  ],
+  "local_checks": {
+    "browser_workflows": 7,
+    "frontend_unit_tests": 5,
+    "rust_workspace_tests": "pass; OS-vault test is opt-in",
+    "rust_clippy": "pass",
+    "secret_scan": "24 commits; no leaks",
+    "corresponding_source_offline_release_build": true,
+    "source_sha256": "bfbba31c6a7874abd0d9403ff208717d03d89b11daafe507ee517b307004842d",
+    "both_dmg_integrity_checks": true
+  },
+  "platforms": {
+    "macos-arm64": {
+      "firewall": {
+        "before": {
+          "platform": "macos",
+          "profiles": [
+            {
+              "enabled": false,
+              "name": "Application Firewall"
+            }
+          ]
+        },
+        "confirmation_gate": true,
+        "disabled": {
+          "platform": "macos",
+          "profiles": [
+            {
+              "enabled": false,
+              "name": "Application Firewall"
+            }
+          ]
+        },
+        "enabled": {
+          "platform": "macos",
+          "profiles": [
+            {
+              "enabled": true,
+              "name": "Application Firewall"
+            }
+          ]
+        },
+        "initially_enabled": {
+          "platform": "macos",
+          "profiles": [
+            {
+              "enabled": true,
+              "name": "Application Firewall"
+            }
+          ]
+        },
+        "runtime_path": true,
+        "original_settings_restored": true,
+        "original_settings": {
+          "global": "Firewall is disabled. (State = 0)",
+          "blockall": "Firewall has block all state set to disabled."
+        },
+        "platform": "darwin",
+        "commit": "eaf7c02aa825d9d9ccf507af7ff73a05bc2907c5"
+      },
+      "installer": {
+        "dmg_sha256": "09a41b13d8544413591503b58093639698a8e5508bf71527dc1f39dc69629134",
+        "helper_sha256": "85e026a189fddcd416c4a0289ef63af207c8da481ff6eda1dad784ea9d4123f2",
+        "checks": [
+          "DMG verified and mounted read-only",
+          "Embedded helper digest and production mode verified",
+          "Bundle signature integrity verified",
+          "Packaged native helper creates and cleans up real adapter"
+        ],
+        "limitations": [
+          "Ad-hoc signature integrity is not Apple Developer ID signing or notarization",
+          "Does not automate interactive macOS elevation approval or physical cross-device traffic"
+        ]
+      }
+    },
+    "macos-x64": {
+      "firewall": {
+        "before": {
+          "platform": "macos",
+          "profiles": [
+            {
+              "enabled": false,
+              "name": "Application Firewall"
+            }
+          ]
+        },
+        "confirmation_gate": true,
+        "disabled": {
+          "platform": "macos",
+          "profiles": [
+            {
+              "enabled": false,
+              "name": "Application Firewall"
+            }
+          ]
+        },
+        "enabled": {
+          "platform": "macos",
+          "profiles": [
+            {
+              "enabled": true,
+              "name": "Application Firewall"
+            }
+          ]
+        },
+        "initially_enabled": {
+          "platform": "macos",
+          "profiles": [
+            {
+              "enabled": true,
+              "name": "Application Firewall"
+            }
+          ]
+        },
+        "runtime_path": true,
+        "original_settings_restored": true,
+        "original_settings": {
+          "global": "Firewall is disabled. (State = 0)",
+          "blockall": "Firewall has block all state set to disabled."
+        },
+        "platform": "darwin",
+        "commit": "eaf7c02aa825d9d9ccf507af7ff73a05bc2907c5"
+      },
+      "installer": {
+        "dmg_sha256": "d364283f65805b48c3ccfa45553b236afaf0a786b5df5b76183bbc420e434edf",
+        "helper_sha256": "eba0aa1836889e9be6393787f44f0bf869a2239cfc73cc681d48b0ade99ff7e4",
+        "checks": [
+          "DMG verified and mounted read-only",
+          "Embedded helper digest and production mode verified",
+          "Bundle signature integrity verified",
+          "Packaged native helper creates and cleans up real adapter"
+        ],
+        "limitations": [
+          "Ad-hoc signature integrity is not Apple Developer ID signing or notarization",
+          "Does not automate interactive macOS elevation approval or physical cross-device traffic"
+        ]
+      }
+    },
+    "windows-x64": {
+      "firewall": {
+        "before": {
+          "platform": "windows",
+          "profiles": [
+            {
+              "enabled": true,
+              "name": "Domain"
+            },
+            {
+              "enabled": true,
+              "name": "Private"
+            },
+            {
+              "enabled": true,
+              "name": "Public"
+            }
+          ]
+        },
+        "confirmation_gate": true,
+        "disabled": {
+          "platform": "windows",
+          "profiles": [
+            {
+              "enabled": false,
+              "name": "Domain"
+            },
+            {
+              "enabled": false,
+              "name": "Private"
+            },
+            {
+              "enabled": false,
+              "name": "Public"
+            }
+          ]
+        },
+        "enabled": {
+          "platform": "windows",
+          "profiles": [
+            {
+              "enabled": true,
+              "name": "Domain"
+            },
+            {
+              "enabled": true,
+              "name": "Private"
+            },
+            {
+              "enabled": true,
+              "name": "Public"
+            }
+          ]
+        },
+        "initially_enabled": {
+          "platform": "windows",
+          "profiles": [
+            {
+              "enabled": true,
+              "name": "Domain"
+            },
+            {
+              "enabled": true,
+              "name": "Private"
+            },
+            {
+              "enabled": true,
+              "name": "Public"
+            }
+          ]
+        },
+        "runtime_path": true,
+        "original_settings_restored": true,
+        "original_settings": [
+          {
+            "Name": "Domain",
+            "Enabled": 1
+          },
+          {
+            "Name": "Private",
+            "Enabled": 1
+          },
+          {
+            "Name": "Public",
+            "Enabled": 1
+          }
+        ],
+        "platform": "win32",
+        "commit": "eaf7c02aa825d9d9ccf507af7ff73a05bc2907c5"
+      },
+      "installer": {
+        "platform": "Windows x64 GitHub-hosted runner",
+        "installed": true,
+        "native_window_opened": true,
+        "graceful_exit": true,
+        "uninstalled": true,
+        "route_and_dns_unchanged": true,
+        "native_engine_verified": true,
+        "limitations": [
+          "Hosted runner does not verify interactive UAC or ordinary-user privileges",
+          "Window presence does not prove every native IPC workflow",
+          "No cross-device connectivity evidence"
+        ]
+      }
+    }
+  },
+  "networking": {
+    "engine-integration-tcp-relay": {
+      "engine_sha256": "4f09f75243bad8715da233048817261d380f7b5ec5e963254b21cbf82a328e34",
+      "transport": "tcp",
+      "relay_policy_lab": true,
+      "checks_passed": [
+        "Authenticated QuickLAN engines converge to distinct DHCP addresses and report relayed paths",
+        "Bidirectional TCP and UDP exact payload echo through OS virtual IPs",
+        "Controller disappearance closes engine and removes its TUN and route",
+        "Wrong network credential cannot authenticate or exchange application data",
+        "Restart restores relayed peer state and bidirectional TCP/UDP",
+        "Direct-only passes direct TCP/UDP, then blocks both directions after direct link removal while relay control remains alive",
+        "No default/public underlay route; all owned resources removed; host routes and DNS unchanged"
+      ],
+      "limitations": [
+        "Linux isolated stacks, not physical Windows-to-Mac or internet NAT evidence",
+        "Lab-only framed stdio; production authenticated IPC is tested separately"
+      ]
+    },
+    "engine-integration-tcp": {
+      "engine_sha256": "4f09f75243bad8715da233048817261d380f7b5ec5e963254b21cbf82a328e34",
+      "transport": "tcp",
+      "relay_policy_lab": false,
+      "checks_passed": [
+        "Authenticated QuickLAN engines converge to distinct DHCP addresses and report direct paths",
+        "Bidirectional TCP and UDP exact payload echo through OS virtual IPs",
+        "Controller disappearance closes engine and removes its TUN and route",
+        "Wrong network credential cannot authenticate or exchange application data",
+        "Restart restores direct peer state and bidirectional TCP/UDP",
+        "No default/public underlay route; all owned resources removed; host routes and DNS unchanged"
+      ],
+      "limitations": [
+        "Linux isolated stacks, not physical Windows-to-Mac or internet NAT evidence",
+        "Lab-only framed stdio; production authenticated IPC is tested separately"
+      ]
+    },
+    "engine-integration-udp-relay": {
+      "engine_sha256": "4f09f75243bad8715da233048817261d380f7b5ec5e963254b21cbf82a328e34",
+      "transport": "udp",
+      "relay_policy_lab": true,
+      "checks_passed": [
+        "Authenticated QuickLAN engines converge to distinct DHCP addresses and report relayed paths",
+        "Bidirectional TCP and UDP exact payload echo through OS virtual IPs",
+        "Controller disappearance closes engine and removes its TUN and route",
+        "Wrong network credential cannot authenticate or exchange application data",
+        "Restart restores relayed peer state and bidirectional TCP/UDP",
+        "Direct-only passes direct TCP/UDP, then blocks both directions after direct link removal while relay control remains alive",
+        "No default/public underlay route; all owned resources removed; host routes and DNS unchanged"
+      ],
+      "limitations": [
+        "Linux isolated stacks, not physical Windows-to-Mac or internet NAT evidence",
+        "Lab-only framed stdio; production authenticated IPC is tested separately"
+      ]
+    },
+    "engine-integration-udp": {
+      "engine_sha256": "4f09f75243bad8715da233048817261d380f7b5ec5e963254b21cbf82a328e34",
+      "transport": "udp",
+      "relay_policy_lab": false,
+      "checks_passed": [
+        "Authenticated QuickLAN engines converge to distinct DHCP addresses and report direct paths",
+        "Bidirectional TCP and UDP exact payload echo through OS virtual IPs",
+        "Controller disappearance closes engine and removes its TUN and route",
+        "Wrong network credential cannot authenticate or exchange application data",
+        "Restart restores direct peer state and bidirectional TCP/UDP",
+        "No default/public underlay route; all owned resources removed; host routes and DNS unchanged"
+      ],
+      "limitations": [
+        "Linux isolated stacks, not physical Windows-to-Mac or internet NAT evidence",
+        "Lab-only framed stdio; production authenticated IPC is tested separately"
+      ]
+    }
+  },
+  "limitations": [
+    "Physical device pairs, arbitrary internet NAT, ordinary-user permission dialogs and organization policy combinations remain unverified.",
+    "Mac bundles have ad-hoc integrity signatures; Windows app/installer unsigned. No notarization or independent audit.",
+    "Original unsigned BUILD metadata is preserved, including the Windows dirty-checkout flag; six pinned input hashes match a clean CRLF checkout. No signed provenance or reproducible-binary claim.",
+    "Firewall changes are explicit, computer-wide and persistent; third-party firewalls and macOS PF are outside scope."
+  ]
+}

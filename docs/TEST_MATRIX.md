@@ -1,6 +1,34 @@
 # Test matrix
 
-## Current 0.2.0 native implementation
+## Current 0.2.1 firewall release
+
+[Native run 34082162974](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34082162974)
+passes all four jobs at `eaf7c02aa825d9d9ccf507af7ff73a05bc2907c5`.
+[Security checks](https://github.com/BenjaminD2023/QuickLAN/actions/runs/34082162971)
+also pass. The exact corresponding-source export passes a locked offline engine
+release build. See [native evidence](evidence/native-021.json) and
+[public release checksums](evidence/github-release-021.json).
+
+| Check | Result | Scope |
+|---|---|---|
+| Windows firewall runtime | Pass | All three effective profiles: enable, disable, enable; confirmation refusal; original settings restored |
+| macOS firewall runtime, ARM and Intel | Pass | Actual application firewall transitions; original global/block-all settings restored |
+| Native adapters and packaged helper | Pass on all desktop targets | Actual launcher, IPC, connect/stop and cleanup; Windows install/window/uninstall; both mounted DMGs |
+| Real virtual-IP traffic | Pass on isolated Linux stacks | TCP/UDP, forced relay, wrong credentials, restart, cleanup and direct-only path loss |
+| Browser workflows | Seven pass on each desktop job | Explicit test adapter; includes confirmation/cancel, mixed state, disable/enable, denial and unreadable firewall state |
+| Release files | All ten public assets verified | Original per-target BUILD metadata; SHA-256 and size match; source and notices included |
+
+The original Windows BUILD dirty-checkout flag is retained. Its six pinned input
+hashes match a clean CRLF checkout; no signed provenance or reproducible-binary
+claim is made. Physical OS pairs, ordinary-user permission dialogs, managed policy
+combinations, arbitrary NAT and publisher signing remain unverified.
+
+The acceptance harness restores macOS block-all mode before restoring a disabled
+global state. Its delayed-frame IPC test holds the client open through OS identity
+authentication and the server acknowledgement, avoiding a premature test-peer exit.
+
+
+## Previous 0.2.0 native implementation
 
 The original 0.1.0 matrix is retained below as historical evidence, not current
 feature status. The following checks execute QuickLAN's new engine, not a stock

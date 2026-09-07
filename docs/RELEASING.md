@@ -1,14 +1,17 @@
 # Native preview releases
 
-Published: [QuickLAN 0.2.0 native networking preview](https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.0-preview.1).
+Published: [QuickLAN 0.2.1 native networking preview](https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.1-preview.1).
 All ten published asset sizes and SHA-256 digests match the verified local payloads;
-see [publication evidence](evidence/github-release-020.json).
+see [publication evidence](evidence/github-release-021.json).
 
-Source: https://github.com/BenjaminD2023/QuickLAN. Version 0.2.0 packages include
+Source: https://github.com/BenjaminD2023/QuickLAN. Version 0.2.1 packages include
 the production networking helper; 0.1.0 engineering draft binaries remain
 historical and cannot connect. Use a prerelease channel until ordinary-user,
 physical-device and signing acceptance is complete. Public upload of unsigned
 previews does not imply a signed public beta or production readiness.
+
+The 0.2.1 release also verifies explicit firewall transitions and restores the
+CI machine’s original firewall settings; see [firewall controls](FIREWALL.md).
 
 ## Build and verify
 
@@ -42,7 +45,7 @@ From a reviewed clean commit, with the pinned source already prepared:
 
 ```
 cargo vendor --manifest-path engine/Cargo.toml --locked .cache/engine-vendor > .cache/engine-vendor-config.toml
-python3 scripts/package-source.py --output artifacts/QuickLAN-0.2.0-corresponding-source.tar.gz --check-build
+python3 scripts/package-source.py --output artifacts/QuickLAN-0.2.1-corresponding-source.tar.gz --check-build
 ```
 
 The script exports tracked source at HEAD, the exact patched EasyTier tree,
@@ -55,7 +58,7 @@ The source archive and original license notices must accompany engine binaries.
 
 Download artifacts only from the passing reviewed commit. Keep:
 
-- `QuickLAN_0.2.0_aarch64.dmg`, `QuickLAN_0.2.0_x64.dmg` and `QuickLAN_0.2.0_x64-setup.exe`.
+- `QuickLAN_0.2.1_aarch64.dmg`, `QuickLAN_0.2.1_x64.dmg` and `QuickLAN_0.2.1_x64-setup.exe`.
 - Matching corresponding source, notices, SBOMs, verification records and per-target BUILD metadata.
 - SHA256SUMS covering the actual release assets.
 

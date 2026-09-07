@@ -1,0 +1,83 @@
+{
+  "id": 383809533,
+  "tag_name": "v0.2.1-preview.1",
+  "target_commitish": "eaf7c02aa825d9d9ccf507af7ff73a05bc2907c5",
+  "name": "QuickLAN 0.2.1 \u2014 Firewall controls",
+  "draft": false,
+  "prerelease": true,
+  "published_at": "2026-09-07T04:29:32Z",
+  "html_url": "https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.1-preview.1",
+  "assets": [
+    {
+      "name": "BUILD-macos-arm64.json",
+      "size": 15287,
+      "digest": "sha256:fce59a4429a08fe768799e87a73ade200179aa5ea54557fae46a46521e80e6fe",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/BUILD-macos-arm64.json"
+    },
+    {
+      "name": "BUILD-macos-x64.json",
+      "size": 15289,
+      "digest": "sha256:eb2dd2edf64618c07a23ba00cafa87d84e1e56ee7a85c7c88e202e7b836d714d",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/BUILD-macos-x64.json"
+    },
+    {
+      "name": "BUILD-windows-x64.json",
+      "size": 1514,
+      "digest": "sha256:663270fbddd7fc27c29fb2a2ece1d9210f0e41fc6e3f96f7a9c28c956579c961",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/BUILD-windows-x64.json"
+    },
+    {
+      "name": "QuickLAN-0.2.1-corresponding-source.tar.gz",
+      "size": 90248607,
+      "digest": "sha256:bfbba31c6a7874abd0d9403ff208717d03d89b11daafe507ee517b307004842d",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/QuickLAN-0.2.1-corresponding-source.tar.gz"
+    },
+    {
+      "name": "QuickLAN-0.2.1-notices.zip",
+      "size": 509629,
+      "digest": "sha256:705407763c6c4bdb3d5b59129af201de726284219580eb4acfa391c777a9a1cb",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/QuickLAN-0.2.1-notices.zip"
+    },
+    {
+      "name": "QuickLAN-0.2.1-verification.zip",
+      "size": 19098,
+      "digest": "sha256:d0274394866c1adfe2fe8aba9017fe9d08714709f457683532eb8444f2ff6210",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/QuickLAN-0.2.1-verification.zip"
+    },
+    {
+      "name": "QuickLAN_0.2.1_aarch64.dmg",
+      "size": 10629607,
+      "digest": "sha256:09a41b13d8544413591503b58093639698a8e5508bf71527dc1f39dc69629134",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/QuickLAN_0.2.1_aarch64.dmg"
+    },
+    {
+      "name": "QuickLAN_0.2.1_x64-setup.exe",
+      "size": 8248233,
+      "digest": "sha256:1f69e89a4d795e106ea206a60d538d5c1c94bbdf3da823ab4b653af083277d16",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/QuickLAN_0.2.1_x64-setup.exe"
+    },
+    {
+      "name": "QuickLAN_0.2.1_x64.dmg",
+      "size": 11323927,
+      "digest": "sha256:d364283f65805b48c3ccfa45553b236afaf0a786b5df5b76183bbc420e434edf",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/QuickLAN_0.2.1_x64.dmg"
+    },
+    {
+      "name": "SHA256SUMS",
+      "size": 842,
+      "digest": "sha256:13559fd87bdeafb192937369afe253ac135129c0b5291f3667a13cdc52bc092f",
+      "state": "uploaded",
+      "browser_download_url": "https://github.com/BenjaminD2023/QuickLAN/releases/download/v0.2.1-preview.1/SHA256SUMS"
+    }
+  ],
+  "verification": "All ten public asset sizes and SHA-256 digests match local release files. Public SHA256SUMS downloaded without authentication and matches byte-for-byte."
+}

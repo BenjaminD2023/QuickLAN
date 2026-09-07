@@ -1,5 +1,7 @@
 # QuickLAN
 
+[Download 0.2.1 for Windows and Mac](https://github.com/BenjaminD2023/QuickLAN/releases/tag/v0.2.1-preview.1).
+
 Private virtual networks with friends. Create a network, share an invitation, and connect to a game or application by virtual IP. QuickLAN uses Tauri, React and Rust with a separately packaged, modified EasyTier 2.6.4 engine. It requires no account, paid API or project-operated server. QuickLAN is independent of EasyTier.
 
 **0.2.1 native preview:** real networking is implemented. Native CI creates and removes actual adapters on Windows x64, Apple Silicon and Intel Mac. Isolated Linux stacks exchange real TCP and UDP through QuickLAN virtual IPs. Physical Windows/Mac device pairs, arbitrary internet NAT traversal, ordinary-user permission dialogs and minimum OS versions remain unverified. This is not a production-ready or signed public beta.
