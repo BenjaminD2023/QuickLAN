@@ -1,23 +1,29 @@
-QuickLAN 0.2.1 — native networking preview
+QuickLAN 0.2.2 — native networking preview
 Copyright 2026 QuickLAN contributors.
 Desktop, domain, IPC and runtime source: Apache-2.0; see LICENSE.
 Separate quicklan-engine program: GPL-3.0-only with the additional Wintun
 linking permission in licenses/QuickLAN-Wintun-linking-exception.txt; see
 engine/LICENSE. Wintun itself retains its separate license.
+Android application and combined APK: GPL-3.0-only; see android/LICENSE.
+Unlike the desktop, Android links the engine in-process through JNI. Original
+Apache-2.0 components retain their notices within this combined distribution.
 
 QuickLAN is independent of and not affiliated with EasyTier.
 EasyTier v2.6.4, commit 8428a89d2dabc94c97d370ec607c6ca142473626:
 https://github.com/EasyTier/EasyTier
 GNU Lesser General Public License v3; original license is preserved in
 licenses/EasyTier-LGPL-3.0.txt and licenses/GPL-3.0.txt.
-The separate engine links a modified EasyTier library. Changes are identified
-in upstream/quicklan.patch. Exact source, dependency sources, lockfiles and
-build instructions accompany each binary release in the corresponding-source
-archive. See licenses/SOURCE_AVAILABILITY.md.
+The separate desktop engine and combined Android application link a modified
+EasyTier library. Changes are identified in upstream/quicklan.patch. Exact
+source, dependency sources, lockfiles and build instructions must accompany
+each binary release. See licenses/SOURCE_AVAILABILITY.md.
 
 The desktop uses Tauri (MIT/Apache-2.0), React (MIT), lucide (ISC), keyring
 (MIT/Apache-2.0) and their dependencies. See licenses/DEPENDENCY_LICENSES.txt,
 licenses/ENGINE_DEPENDENCY_LICENSES.txt and the matching SBOMs.
+Android additionally uses AndroidX, Kotlin, the Gradle wrapper and JNI. See
+licenses/ANDROID_DEPENDENCY_LICENSES.txt, ANDROID_PLATFORM_NOTICES.txt and
+docs/evidence/android-dependencies.cdx.json. Android includes no Wintun binary.
 
 Windows includes the official Wintun 0.14.1 x64 binary under its redistribution
 license, preserved in licenses/Wintun-Binary-LICENSE.txt. This is separate from

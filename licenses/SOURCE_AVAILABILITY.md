@@ -3,14 +3,17 @@
 QuickLAN's desktop/domain/IPC/runtime are Apache-2.0. The separate networking
 engine is GPL-3.0-only with the specific Wintun linking permission in
 `QuickLAN-Wintun-linking-exception.txt`, and links modified EasyTier 2.6.4 under its original
-LGPL-3.0 license. `engine/LICENSE`, `GPL-3.0.txt` and `EasyTier-LGPL-3.0.txt`
-retain the complete texts. `upstream/quicklan.patch` identifies modifications.
+LGPL-3.0 license. The combined Android application is GPL-3.0-only (`android/LICENSE`)
+because it links the engine in-process. `engine/LICENSE`, `GPL-3.0.txt` and
+`EasyTier-LGPL-3.0.txt` retain the complete texts. `upstream/quicklan.patch`
+identifies modifications.
 
-Each native networking release supplies `QuickLAN-0.2.1-corresponding-source.tar.gz`:
+Each native networking release supplies a corresponding-source archive:
 QuickLAN source at the release commit, exact modified EasyTier source, Cargo
-lockfiles, vendored engine dependency source, build scripts and license notices.
-The archive README describes building the engine offline with Rust 1.96 and a
-protobuf compiler. No account or payment is required to obtain the archive.
+lockfiles, vendored engine and Android Rust dependency source, build scripts and
+license notices. The archive README describes building the desktop engine offline
+and the Android APK with JDK/SDK/NDK prerequisites. No account or payment is
+required to obtain the archive.
 The desktop's embedded helper hash must be regenerated with `stage-engine.py`
 and the desktop rebuilt if the helper is modified. QuickLAN does not require a
 publisher secret to run a user's rebuilt engine; platform elevation still applies.

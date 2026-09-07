@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QuickLAN</string>
+    <string name="vpn_special_use">QuickLAN 仅在网络连接期间保持 VPN 会话，用于与网络成员通信。断开、退出或撤销权限时会话停止，不支持始终开启 VPN。</string>
+    <string name="notification_channel">网络连接</string>
+    <string name="notification_title">QuickLAN</string>
+    <string name="notification_text">组网正在运行</string>
+    <string name="notification_disconnect">断开连接</string>
+    <string name="webview_update_title">请更新 Android 系统 WebView</string>
+    <string name="webview_update_body">QuickLAN 的安全应用界面需要最新的 Android 系统 WebView。请更新 WebView 提供程序后重新打开 QuickLAN。目前未启动 VPN 连接。</string>
+    <string name="webview_settings">WebView 设置</string>
+    <string name="close_app">关闭</string>
+</resources>

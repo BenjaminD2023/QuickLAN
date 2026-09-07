@@ -1,6 +1,7 @@
 # Architecture and decisions
 
 ```
+Desktop:
 Unprivileged React/Tauri window
   -> allowlisted, typed Tauri commands
   -> Rust App<OsStore>: validation, invitations, state, diagnostics
@@ -9,6 +10,13 @@ Unprivileged React/Tauri window
         -> kernel-authenticated Unix socket / Windows named pipe
         -> separate elevated quicklan-engine (GPL-3.0-only)
            -> patched EasyTier 2.6.4 library -> utun/TUN/Wintun
+
+Android:
+Trusted WebView (appassets.androidplatform.net)
+  -> bounded WebMessageListener JSON commands
+  -> JNI quicklan-android (GPL-3.0-only combined APK)
+     -> EncryptedSharedPreferences + AES-256-GCM files
+     -> in-process EasyTier + VpnService tun0 (never a separate elevated helper)
 ```
 
 The desktop and networking engine are separate processes and license boundaries. The stock EasyTier management TCP service is never started. Credentials use bounded framed IPC, not arguments or config files. Both ends authenticate peer process IDs through kernel APIs. The Mac launcher stages a hash-verified root-owned copy; Windows holds replacement-denying handles to the executable, driver and their directory ancestry. See [NATIVE_ENGINE.md](NATIVE_ENGINE.md).
@@ -21,6 +29,6 @@ The frontend refreshes current native state every three seconds. Engine state co
 
 The patched data plane admits only the agreed private IPv4 /24 and local destination/source direction. Unrelated route advertisements, IPv6 and broadcasts are rejected. Connecting does not change DNS, default routes, subnet proxy, exit node or firewall profiles. The separate explicit Preferences firewall command can toggle the built-in OS firewall with administrator authorization; it never runs on connect or quit. Conflicting existing routes are checked before creating an adapter. A later unrelated VPN route change remains an unverified overlap scenario; users should disconnect before changing VPN configurations.
 
-Manual mode has no implicit public endpoint, STUN, external-IP probe or DNS fallback. Explicit shared nodes are configurable and require consent in assisted/direct-only profiles. Their names are descriptive, not authenticated operator keys. There is no hosted control plane, automatic connection, telemetry, updater or tray mode. Closing the window disconnects.
+Manual mode has no implicit public endpoint, STUN, external-IP probe or DNS fallback. Explicit shared nodes are configurable and require consent in assisted/direct-only profiles. Their names are descriptive, not authenticated operator keys. There is no hosted control plane, automatic connection, telemetry, updater or tray mode. Closing the desktop window disconnects. Android keeps the VPN in a foreground service until Disconnect, Quit, the notification action, or system VPN revocation.
 
 Raw upstream logs are discarded because upstream can log secrets. Diagnostics are a 100-entry in-memory ring and a fixed field allowlist; secrets, payloads, labels and addresses are excluded. Owned secret buffers are zeroized, but parser, clipboard and OS copies can remain. No memory protection guarantee or independent audit is claimed.

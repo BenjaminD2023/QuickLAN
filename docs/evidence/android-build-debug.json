@@ -1,0 +1,13 @@
+{
+  "apk": "artifacts/android/QuickLAN-0.2.2-android-debug.apk",
+  "sha256": "fc59bf35c123385074760873ab627af5e9b0da0303b9e23bfed96cb48cc46089",
+  "abis": [
+    "arm64-v8a",
+    "x86_64"
+  ],
+  "variant": "debug",
+  "ndk": "27.2.12479018",
+  "min_sdk": 26,
+  "target_sdk": 35,
+  "signing": "local debug key"
+}

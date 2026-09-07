@@ -110,3 +110,107 @@ export function Sidebar({
     </aside>
   );
 }
+export function NetworkSwitcher({
+  networks,
+  selected,
+  onSelect,
+  onCreate,
+  onJoin,
+}: {
+  networks: SavedNetwork[];
+  selected?: string;
+  onSelect: (id: string) => void;
+  onCreate: () => void;
+  onJoin: () => void;
+}) {
+  const t = useText();
+  return (
+    <div className="network-switcher">
+      <div className="network-switcher-actions">
+        <button type="button" onClick={onCreate}>
+          <Plus />
+          {t("create")}
+        </button>
+        <button type="button" onClick={onJoin}>
+          <UserRoundPlus />
+          {t("join")}
+        </button>
+      </div>
+      {networks.length > 0 && (
+        <nav aria-label={t("networks")} className="network-switcher-list">
+          {networks.map((n) => (
+            <button
+              key={n.id}
+              type="button"
+              className={`saved-network ${selected === n.id ? "active" : ""}`}
+              aria-pressed={selected === n.id}
+              title={n.label}
+              onClick={() => onSelect(n.id)}
+            >
+              <span className="network-dot" />
+              <span>{n.label}</span>
+            </button>
+          ))}
+        </nav>
+      )}
+    </div>
+  );
+}
+export function BottomNav({
+  page,
+  onPage,
+}: {
+  page: Page;
+  onPage: (p: Page) => void;
+}) {
+  const t = useText();
+  return (
+    <nav className="bottom-nav" aria-label={t("networks")}>
+      <button
+        type="button"
+        className={page === "networks" ? "selected" : ""}
+        aria-current={page === "networks" ? "page" : undefined}
+        onClick={() => onPage("networks")}
+      >
+        <Network />
+        {t("networks")}
+      </button>
+      <button
+        type="button"
+        className={page === "diagnostics" ? "selected" : ""}
+        aria-current={page === "diagnostics" ? "page" : undefined}
+        onClick={() => onPage("diagnostics")}
+      >
+        <Activity />
+        {t("diagnostics")}
+      </button>
+      <button
+        type="button"
+        className={page === "help" ? "selected" : ""}
+        aria-current={page === "help" ? "page" : undefined}
+        onClick={() => onPage("help")}
+      >
+        <BookOpen />
+        {t("helpNav")}
+      </button>
+      <button
+        type="button"
+        className={page === "preferences" ? "selected" : ""}
+        aria-current={page === "preferences" ? "page" : undefined}
+        onClick={() => onPage("preferences")}
+      >
+        <Settings />
+        {t("preferences")}
+      </button>
+      <button
+        type="button"
+        className={page === "about" ? "selected" : ""}
+        aria-current={page === "about" ? "page" : undefined}
+        onClick={() => onPage("about")}
+      >
+        <Info />
+        {t("about")}
+      </button>
+    </nav>
+  );
+}

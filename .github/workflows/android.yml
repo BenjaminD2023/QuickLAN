@@ -1,0 +1,44 @@
+name: Android APK
+on:
+  pull_request:
+  push:
+    branches: [main, feature/native-networking]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.22.3
+      - name: Install native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+          rustup target add aarch64-linux-android x86_64-linux-android
+          sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'ndk;27.2.12479018'
+      - run: npm ci
+      - run: npm run check
+      - name: Build bundled Android APK
+        run: npm run android:build
+      - name: Verify APK signature and native page alignment
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose artifacts/android/QuickLAN-*-android-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 artifacts/android/QuickLAN-*-android-debug.apk
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: QuickLAN-android-debug
+          path: artifacts/android/
+          if-no-files-found: error
+      # This compiles/packages both ABIs. It is not physical-device VPN evidence.

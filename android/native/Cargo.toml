@@ -1,0 +1,27 @@
+[package]
+name = "quicklan-android"
+version = "0.2.2"
+edition = "2024"
+rust-version = "1.96"
+license = "GPL-3.0-only"
+description = "QuickLAN Android JNI domain backend and EasyTier mobile runtime"
+
+[workspace]
+
+[lib]
+name = "quicklan_android"
+crate-type = ["cdylib"]
+
+[dependencies]
+easytier = { path = "../../.cache/quicklan-easytier/easytier", default-features = false, features = ["tun", "aes-gcm", "quicklan"] }
+quicklan-core = { path = "../../crates/quicklan-core" }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.145"
+zeroize = "=1.8.2"
+jni = { version = "=0.21.1", default-features = false }
+
+[profile.release]
+strip = true
+lto = "thin"
+codegen-units = 8

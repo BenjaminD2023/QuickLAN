@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export a clean release commit plus the exact buildable engine dependency source."""
+"""Export a clean release commit plus buildable desktop/Android engine source."""
 import argparse
 import gzip
 import hashlib
@@ -61,7 +61,8 @@ with tempfile.TemporaryDirectory(prefix='quicklan-source-') as temporary:
 
 Release commit: `{commit}`. Modified EasyTier source is already present under
 `.cache/quicklan-easytier`. Changes are identified in `upstream/quicklan.patch`.
-All locked engine dependency sources are in `vendor`, with original notices.
+All locked desktop and Android engine dependency sources are in `vendor`, with
+original notices. Android frontend lockfiles and Gradle build inputs are included.
 
 Install Rust 1.96.0, a C/C++ platform toolchain and a protobuf compiler first.
 From this archive's root, build without a network connection:
@@ -82,11 +83,30 @@ network engine. Staging updates the desktop's expected helper digest on rebuild.
 No project signing key is required. macOS builds use an ad-hoc integrity signature;
 ordinary OS networking elevation still applies. Do not disable OS protections.
 
+Android prerequisites: JDK 17, Android SDK platform/build-tools 35, NDK
+27.2.12479018, and Rust targets aarch64-linux-android and x86_64-linux-android.
+Set ANDROID_HOME and JAVA_HOME, then run:
+
+```
+npm ci
+python3 scripts/build-android.py --skip-prepare
+```
+
+The script uses the bundled patched source and vendored Rust dependencies.
+Gradle, Android SDK and npm dependencies may still require internet access.
+Output: artifacts/android/QuickLAN-{version}-android-debug.apk, locally
+debug-signed and installable without a project signing key. Release APKs are
+unsigned until the distributor signs them. A differently signed APK cannot
+update an installed copy; uninstalling that copy deletes its local credentials.
+The Android APK combines the engine in-process and is GPL-3.0-only as a whole.
+
 Engine: GPL-3.0-only. Modified EasyTier: LGPL-3.0. Original independent desktop,
 domain, IPC and runtime: Apache-2.0. See THIRD_PARTY_NOTICES and licenses/.
 ''')
     # Resolution must succeed entirely from exported files with the release lock.
     run(['cargo', 'metadata', '--manifest-path', 'engine/Cargo.toml', '--locked', '--offline', '--format-version', '1'],
+        cwd=export, stdout=subprocess.DEVNULL)
+    run(['cargo', 'metadata', '--manifest-path', 'android/native/Cargo.toml', '--locked', '--offline', '--format-version', '1'],
         cwd=export, stdout=subprocess.DEVNULL)
     if a.check_build:
         run(['cargo', 'build', '--manifest-path', 'engine/Cargo.toml', '--locked', '--offline', '--release',

@@ -450,6 +450,13 @@ export function SettingsDialog({
             <option value="direct_only">{t("directOnly")}</option>
           </select>
         </label>
+        <LocalEndpointPicker
+          onSelect={(endpoint) => {
+            setPolicy("manual");
+            setNodes([{ endpoint, operator: network.label }]);
+            setConsent(false);
+          }}
+        />
         {nodes.map((node, i) => (
           <fieldset className="node-fields" key={i}>
             <label>

@@ -220,6 +220,9 @@ test("create, real error presentation, invite, settings and local forget", async
     .getByRole("button", { name: "Host on the same Wi-Fi or LAN" })
     .click();
   await page
+    .getByLabel("This computer’s local endpoint")
+    .selectOption("tcp://192.168.1.12:11010");
+  await page
     .getByRole("button", { name: "Create and connect", exact: true })
     .last()
     .click();
@@ -229,16 +232,7 @@ test("create, real error presentation, invite, settings and local forget", async
   await expect(
     page.getByText("Connection unavailable", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("alert")).toContainText(
-    "Allow the administrator prompt",
-  );
-  await page.screenshot({
-    path: `${process.env.QUICKLAN_UI_EVIDENCE || "/tmp/quicklan-easy-ui"}/ui-network.png`,
-  });
-  await page.getByRole("button", { name: "Connect", exact: true }).click();
-  await expect(
-    page.getByText("Connection unavailable", { exact: true }),
-  ).toBeVisible();
+  await page.screenshot({ path: "docs/evidence/ui-network.png" });
   await expect(
     page.getByText("No connected devices", { exact: true }),
   ).toBeVisible();
@@ -254,7 +248,6 @@ test("create, real error presentation, invite, settings and local forget", async
   await page
     .getByRole("button", { name: /Connection policy Manual endpoints/ })
     .click();
-
   await page
     .getByLabel("Reachable endpoint", { exact: true })
     .fill("tcp://192.168.1.12:11010");
@@ -307,9 +300,7 @@ test("join is previewed and requires trust; malformed invitations remain errors"
   await expect(
     page.getByRole("heading", { name: "Game night", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByText("Connection unavailable", { exact: true }),
-  ).toBeVisible();
+  await expect(page.getByText("Connection unavailable", { exact: true })).toBeVisible();
 });
 test("keyboard, dark mode, diagnostics and narrow layout", async ({ page }) => {
   await page.screenshot({

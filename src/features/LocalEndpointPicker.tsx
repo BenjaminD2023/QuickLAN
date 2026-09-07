@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { request } from "../lib/bridge";
+import { isAndroid, request } from "../lib/bridge";
 import { useText } from "../lib/i18n";
 
 interface LocalEndpoint {
@@ -67,7 +67,9 @@ export function LocalEndpointPicker({
           {t("localUnavailable")}
         </p>
       )}
-      <p className="field-hint">{t("localEndpointHint")}</p>
+      <p className="field-hint">
+        {t(isAndroid() ? "localEndpointHintAndroid" : "localEndpointHint")}
+      </p>
     </div>
   );
 }

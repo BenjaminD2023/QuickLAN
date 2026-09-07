@@ -1,4 +1,5 @@
 import { createContext, useContext } from "react";
+import { isAndroid } from "./bridge";
 export const en = {
   hostLocally: "Host on the same Wi-Fi or LAN",
   localAddress: "This computer’s local endpoint",
@@ -7,10 +8,16 @@ export const en = {
     "No local address could be read. Enter a reachable endpoint in connection settings.",
   localEndpointHint:
     "For friends on the same router, choose your Wi-Fi or Ethernet address. Keep this computer connected while friends join. VPN/container addresses may also appear; remote friends need a reachable endpoint in connection settings.",
+  localEndpointHintAndroid:
+    "For friends on the same router, choose your Wi-Fi or Ethernet address. Keep this device connected while friends join. VPN/container addresses may also appear; remote friends need a reachable endpoint in connection settings.",
+  helpNav: "Help",
+  androidStack: "Android WebView · React · TypeScript · Rust · lucide",
   nativeFooter: "QuickLAN · One active network per device",
   helperReady: "Networking engine available",
   helperReadyBody:
     "Connect from your saved network. The operating system will ask for permission to create its virtual adapter.",
+  helperReadyBodyAndroid:
+    "Connect from your saved network. Android will ask for VPN permission to create the virtual adapter. After you leave the app, the VPN continues under a notification until you disconnect or quit.",
   peerName: "Device name",
   peerPath: "Connection path",
   directConsent:
@@ -41,6 +48,9 @@ export const en = {
   firewallTitle: "System firewall",
   firewallScope:
     "Controls all Windows Defender Firewall profiles or the macOS application firewall. Third-party firewalls and macOS packet-filter rules are outside this control.",
+  firewallUnsupported: "System firewall control is not available on Android",
+  firewallUnsupportedBody:
+    "Android does not allow an unprivileged app to enable or disable the OS firewall. QuickLAN will not pretend to change it. Review firewall or Private DNS options in system settings if needed, and check that the host app may accept connections.",
   firewallOn: "Enabled",
   firewallOff: "Disabled",
   firewallEnable: "Enable firewall",
@@ -161,6 +171,9 @@ export const en = {
   dark: "Dark",
   language: "Language",
   behavior: "Window behavior",
+  behaviorAndroid: "App behavior",
+  closeBehaviorAndroid:
+    "Leaving QuickLAN keeps the VPN running under a notification until you disconnect or quit. The app does not connect automatically after a process restart.",
   closeBehavior:
     "Closing the window disconnects. No background networking or automatic startup connection is enabled.",
   privacy: "Privacy",
@@ -178,8 +191,12 @@ export const en = {
   aboutTitle: "Small networks. Open source.",
   aboutBody:
     "QuickLAN is an independent desktop application built around EasyTier. It is not affiliated with the EasyTier project.",
+  aboutBodyAndroid:
+    "QuickLAN is an independent application built around EasyTier. It is not affiliated with the EasyTier project.",
   wrapperLicense:
     "QuickLAN desktop: Apache-2.0. The separate networking engine: GPL-3.0-only.",
+  wrapperLicenseAndroid:
+    "This Android app is a GPL-3.0 combined work of the QuickLAN interface and networking engine. The desktop GUI is Apache-2.0 with a separately licensed GPL-3.0 engine.",
   coreLicense:
     "EasyTier core: LGPL-3.0. Its original license and attribution are preserved.",
   aboutGap:
@@ -197,6 +214,8 @@ export const en = {
     "Use the game’s direct-connect option with that IP and the port documented by the game.",
   gameFour:
     "Check the application’s firewall permissions. Preferences also provides explicit system firewall controls with administrator authorization.",
+  gameFourAndroid:
+    "Check the host application’s network permission. Android cannot toggle the system firewall without root, so QuickLAN does not offer that control.",
   gameGap:
     "If the virtual IP changes after reconnecting, copy the new address and restart any application bound to the old address.",
   troubleshooting: "If a connection fails",
@@ -215,6 +234,9 @@ export const en = {
   confirmForget: "Forget locally",
   confirmReplace: "Create replacement",
   browserTitle: "Desktop runtime required",
+  androidRuntimeTitle: "QuickLAN Android runtime required",
+  androidRuntimeBody:
+    "This browser view displays the interface. Secure storage and networking commands are available only in the QuickLAN Android app.",
   browserBody:
     "This browser view displays the interface. Secure storage and networking commands are available only in the native QuickLAN app.",
   storageTitle: "Secure storage unavailable",
@@ -239,9 +261,15 @@ const zh: Record<TextKey, string> = {
   localUnavailable: "无法读取局域网地址，请在连接设置中输入可达端点。",
   localEndpointHint:
     "同一路由器下的朋友可使用 Wi-Fi 或以太网地址。朋友加入时请保持本机连接。列表也可能包含 VPN 或容器地址；远程朋友需要在连接设置中配置可达端点。",
+  localEndpointHintAndroid:
+    "同一路由器下的朋友可使用 Wi-Fi 或以太网地址。朋友加入时请保持本机连接。列表也可能包含 VPN 或容器地址；远程朋友需要在连接设置中配置可达端点。",
+  helpNav: "帮助",
+  androidStack: "Android WebView · React · TypeScript · Rust · lucide",
   nativeFooter: "QuickLAN · 每台设备同时连接一个网络",
   helperReady: "组网引擎可用",
   helperReadyBody: "从已保存网络发起连接。操作系统将请求创建虚拟网卡的权限。",
+  helperReadyBodyAndroid:
+    "从已保存网络发起连接。Android 会请求 VPN 权限以创建虚拟网卡。离开应用后，VPN 会以通知形式继续运行，直到你断开或退出。",
   peerName: "设备名称",
   peerPath: "连接路径",
   directConsent:
@@ -265,6 +293,9 @@ const zh: Record<TextKey, string> = {
   firewallTitle: "系统防火墙",
   firewallScope:
     "控制 Windows Defender 防火墙的所有配置文件或 macOS 应用程序防火墙。不控制第三方防火墙或 macOS 数据包过滤规则。",
+  firewallUnsupported: "Android 无法控制系统防火墙",
+  firewallUnsupportedBody:
+    "未经 root 的 Android 应用不能开关系统防火墙。QuickLAN 不会假装已更改。如需查看防火墙或私人 DNS，请使用系统设置，并确认主机应用允许接受连接。",
   firewallOn: "已启用",
   firewallOff: "已停用",
   firewallEnable: "启用防火墙",
@@ -371,7 +402,10 @@ const zh: Record<TextKey, string> = {
   dark: "深色",
   language: "语言",
   behavior: "窗口行为",
+  behaviorAndroid: "应用行为",
   closeBehavior: "关闭窗口即断开连接。本版本不启用后台组网或启动自动连接。",
+  closeBehaviorAndroid:
+    "离开 QuickLAN 后，VPN 会以通知形式继续运行，直到你断开或退出。进程重启后不会自动连接。",
   privacy: "隐私",
   privacyBody:
     "无需账号；无分析统计、自动更新检查或远程崩溃上传。诊断保留在本机。",
@@ -386,7 +420,11 @@ const zh: Record<TextKey, string> = {
   aboutTitle: "小型网络，开放源码。",
   aboutBody:
     "QuickLAN 是基于 EasyTier 的独立桌面应用，与 EasyTier 项目没有隶属关系。",
+  aboutBodyAndroid:
+    "QuickLAN 是基于 EasyTier 的独立应用，与 EasyTier 项目没有隶属关系。",
   wrapperLicense: "QuickLAN 桌面：Apache-2.0；独立组网引擎：GPL-3.0-only。",
+  wrapperLicenseAndroid:
+    "此 Android 应用是 QuickLAN 界面与组网引擎的 GPL-3.0 合并作品。桌面图形界面为 Apache-2.0，组网引擎另行以 GPL-3.0 许可。",
   coreLicense: "EasyTier 核心：LGPL-3.0，保留原始许可证及署名。",
   aboutGap: "组网引擎缺失或验证失败，请重新安装完整的对应安装包。",
   aboutEvidence:
@@ -398,6 +436,8 @@ const zh: Record<TextKey, string> = {
   gameThree: "在游戏直连界面输入该 IP 和游戏文档注明的端口。",
   gameFour:
     "检查应用的防火墙权限。偏好设置中也提供需要管理员授权的系统防火墙控制。",
+  gameFourAndroid:
+    "请检查主机应用的网络权限。未经 root，Android 不能开关系统防火墙，因此 QuickLAN 不提供该控制。",
   gameGap:
     "若重新连接后虚拟 IP 发生变化，请复制新地址，并重启绑定旧地址的应用。",
   troubleshooting: "连接失败时",
@@ -417,6 +457,9 @@ const zh: Record<TextKey, string> = {
   browserTitle: "需要桌面运行环境",
   browserBody:
     "浏览器仅显示界面。安全存储和组网命令只在原生 QuickLAN 应用中可用。",
+  androidRuntimeTitle: "需要 QuickLAN Android 运行环境",
+  androidRuntimeBody:
+    "浏览器仅显示界面。安全存储和组网命令只在 QuickLAN Android 应用中可用。",
   storageTitle: "安全存储不可用",
   retry: "重试",
   createAndConnect: "创建并连接",
@@ -425,9 +468,10 @@ const zh: Record<TextKey, string> = {
     "同一 Wi-Fi 的朋友可使用下方按钮。异地朋友需要在连接设置中添加共享节点。此版本尚未提供自动互联网组网服务。",
   setupNeeded: "完成连接设置",
   setupConnection: "设置连接",
-  connectionFailed: "无法启动连接",
-  waitingForFriends: "本机已就绪。分享邀请，让朋友加入并连接。",
-  automaticSubnet: "自动选择可用地址范围",
+  connectionFailed: "无法开始连接",
+  waitingForFriends:
+    "本机已就绪。请发送邀请，让朋友加入并连接。",
+  automaticSubnet: "自动 — 选择可用网段",
 };
 export const LocaleContext = createContext<"en" | "zh-CN">("en");
 export function useText() {
@@ -442,7 +486,7 @@ const errors: Record<string, string> = {
   invalid_label: "Use 1–64 characters without control characters.",
   invalid_subnet: "Use a private IPv4 /24 network such as 10.73.42.0/24.",
   route_conflict:
-    "This address range is already used by a LAN, another VPN, or a saved QuickLAN network. Create a new network to choose a free range, then share its new invitation with your friends.",
+    "This address range is already used by a LAN, another VPN, or a saved QuickLAN network. Create a new network to choose a free range, then share its new invitation.",
   invalid_endpoint:
     "Use tcp://IP:port or udp://IP:port, without a path or credentials. Manual mode requires an IP address.",
   unsupported_policy: en.directOnlyGap,
@@ -468,8 +512,34 @@ const errors: Record<string, string> = {
   unsupported_core_output:
     "The networking engine returned an incompatible response. Reinstall the matching QuickLAN release.",
 };
+const androidErrorsEn: Record<string, string> = {
+  permission_denied:
+    "VPN permission was refused. QuickLAN cannot create a virtual adapter without it.",
+  request_timeout:
+    "The request timed out. If Android asked for VPN permission, allow it and try Connect again.",
+  firewall_unsupported: en.firewallUnsupportedBody,
+  helper_unavailable: en.androidRuntimeBody,
+  desktop_required: en.androidRuntimeBody,
+};
+const androidErrorsZh: Record<string, string> = {
+  permission_denied: "已拒绝 VPN 权限。没有虚拟网卡时 QuickLAN 无法连接。",
+  request_timeout:
+    "请求超时。如果 Android 正在请求 VPN 权限，请允许后再点连接。",
+  firewall_unsupported: zh.firewallUnsupportedBody,
+  helper_unavailable: zh.androidRuntimeBody,
+  desktop_required: zh.androidRuntimeBody,
+};
 export function errorText(value: unknown) {
-  return typeof value === "string" && value in errors
+  if (typeof value !== "string")
+    return "The operation could not be completed. Try again or review Diagnostics.";
+  if (isAndroid()) {
+    const androidErrors =
+      document.documentElement.lang === "zh-CN"
+        ? androidErrorsZh
+        : androidErrorsEn;
+    if (value in androidErrors) return androidErrors[value];
+  }
+  return value in errors
     ? errors[value]
     : "The operation could not be completed. Try again or review Diagnostics.";
 }
