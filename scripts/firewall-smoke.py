@@ -11,7 +11,11 @@ if os.environ.get('CI') != 'true' or sys.platform not in ('darwin', 'win32'):
 
 
 def run(args):
-    return subprocess.run(args, check=True, capture_output=True, text=True).stdout.strip()
+    completed = subprocess.run(args, capture_output=True, text=True)
+    if completed.returncode:
+        print(completed.stderr, file=sys.stderr)
+        completed.check_returncode()
+    return completed.stdout.strip()
 
 
 def ps(script):
@@ -41,10 +45,14 @@ finally:
             ps(f"Set-NetFirewallProfile -PolicyStore PersistentStore -Profile {p['Name']} -Enabled {value}")
         restored = json.loads(ps('Get-NetFirewallProfile -PolicyStore PersistentStore | Select-Object Name,Enabled | ConvertTo-Json -Compress'))
     else:
-        mac('--setglobalstate', 'off' if '(State = 0)' in original['global'] else 'on')
+        # Changing block-all mode can enable Application Firewall. Restore that
+        # mode first, then make disabling the final operation for an off baseline.
+        mac('--setglobalstate', 'on')
         mac('--setblockall', 'on' if 'enabled' in original['blockall'].lower() else 'off')
+        if '(State = 0)' in original['global']:
+            mac('--setglobalstate', 'off')
         restored = {'global': mac('--getglobalstate'), 'blockall': mac('--getblockall')}
-    assert original == restored, 'Original firewall settings were not restored'
+    assert original == restored, f'Firewall restoration mismatch: {original!r} -> {restored!r}'
 if result is None:
     raise SystemExit('Firewall acceptance failed')
 result.update({'original_settings_restored':True, 'original_settings':original,
