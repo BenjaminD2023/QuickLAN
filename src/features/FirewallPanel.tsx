@@ -152,7 +152,7 @@ export function FirewallPanel() {
             }}
           >
             <Notice>{t("firewallWarning")}</Notice>
-            <label className="checkbox-row">
+            <label className="checkbox">
               <input
                 type="checkbox"
                 checked={accepted}

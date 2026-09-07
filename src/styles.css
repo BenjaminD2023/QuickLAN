@@ -1142,7 +1142,7 @@ code {
 .service-probe {
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--line);
 }
 .service-probe label {
   display: grid;
@@ -1156,7 +1156,7 @@ code {
 .firewall-panel {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--line);
 }
 .firewall-panel p {
   max-width: 70ch;
