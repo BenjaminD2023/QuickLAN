@@ -140,15 +140,26 @@ mod tests {
         let listener = LocalListener::bind().unwrap();
         let endpoint = listener.endpoint();
         let pid = std::process::id();
+        let (accepted, wait_for_accept) = std::sync::mpsc::channel();
         let client = std::thread::spawn(move || {
             let mut stream = connect(&endpoint, pid).unwrap();
+            // Keep the peer alive through PID authentication, even when a busy
+            // runner schedules the listener after the original 100 ms delay.
+            wait_for_accept
+                .recv_timeout(Duration::from_secs(5))
+                .unwrap();
             std::thread::sleep(Duration::from_millis(100));
             stream.write_all(b"frame").unwrap();
+            let mut ack = [0; 1];
+            stream.read_exact(&mut ack).unwrap();
+            assert_eq!(&ack, b"!");
         });
         let mut server = listener.accept(pid, Duration::from_secs(2)).unwrap();
+        accepted.send(()).unwrap();
         let mut bytes = [0; 5];
         server.read_exact(&mut bytes).unwrap();
         assert_eq!(&bytes, b"frame");
+        server.write_all(b"!").unwrap();
         client.join().unwrap();
     }
     #[test]
