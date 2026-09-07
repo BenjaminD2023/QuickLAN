@@ -251,7 +251,7 @@ export const en = {
   waitingForFriends:
     "Your computer is ready. Share an invitation and ask your friend to join and connect.",
   automaticSubnet: "Automatic — choose an available range",
-};
+} as const;
 export type TextKey = keyof typeof en;
 const zh: Record<TextKey, string> = {
   ...en,
