@@ -429,6 +429,13 @@ export function SettingsDialog({
           );
         }}
       >
+        <LocalEndpointPicker
+          onSelect={(endpoint) => {
+            setPolicy("manual");
+            setNodes([{ endpoint, operator: network.label }]);
+            setConsent(false);
+          }}
+        />
         <label>
           {t("policy")}
           <select

@@ -507,6 +507,10 @@ const errors: Record<string, string> = {
   permission_denied:
     "Allow the administrator prompt to create the virtual network adapter, then try Connect again.",
   unauthorized: "The helper request was not authorized.",
+  incompatible_core:
+    "The networking engine is missing or does not match this app. Reinstall QuickLAN from its GitHub release and try again.",
+  unsupported_core_output:
+    "The networking engine returned an incompatible response. Reinstall the matching QuickLAN release.",
 };
 const androidErrorsEn: Record<string, string> = {
   permission_denied:

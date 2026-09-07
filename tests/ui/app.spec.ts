@@ -23,13 +23,10 @@ async function installTestAdapter(page: Page) {
     ];
     let pending: Record<string, unknown> | null = null;
     const helper = {
-      installed: false,
-      connection_enabled: false,
-      code: "helper_unavailable",
-      release_gaps: [
-        "Authenticated core management and signed OS helper installation are not implemented.",
-        "Stock core retains implicit TCP STUN servers.",
-      ],
+      installed: true,
+      connection_enabled: true,
+      code: null,
+      release_gaps: [],
     };
     const w = window as unknown as {
       __QUICKLAN_TEST_INVOKE: (
@@ -293,7 +290,9 @@ test("join is previewed and requires trust; malformed invitations remain errors"
   await expect(
     page.getByRole("button", { name: "Join and connect", exact: true }),
   ).toBeDisabled();
-  await page.screenshot({ path: "docs/evidence/ui-join.png" });
+  await page.screenshot({
+    path: `${process.env.QUICKLAN_UI_EVIDENCE || "/tmp/quicklan-easy-ui"}/ui-join.png`,
+  });
   await page.getByRole("checkbox").check();
   await page
     .getByRole("button", { name: "Join and connect", exact: true })
@@ -304,12 +303,16 @@ test("join is previewed and requires trust; malformed invitations remain errors"
   await expect(page.getByText("Connection unavailable", { exact: true })).toBeVisible();
 });
 test("keyboard, dark mode, diagnostics and narrow layout", async ({ page }) => {
-  await page.screenshot({ path: "docs/evidence/ui-empty.png" });
+  await page.screenshot({
+    path: `${process.env.QUICKLAN_UI_EVIDENCE || "/tmp/quicklan-easy-ui"}/ui-empty.png`,
+  });
   await page
     .getByRole("button", { name: "Create a network", exact: true })
     .click();
   await expect(page.getByLabel("Network label", { exact: true })).toBeFocused();
-  await page.screenshot({ path: "docs/evidence/ui-create.png" });
+  await page.screenshot({
+    path: `${process.env.QUICKLAN_UI_EVIDENCE || "/tmp/quicklan-easy-ui"}/ui-create.png`,
+  });
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await page.getByRole("button", { name: "Preferences", exact: true }).click();
@@ -318,13 +321,17 @@ test("keyboard, dark mode, diagnostics and narrow layout", async ({ page }) => {
     .getByRole("button", { name: "Save preferences", exact: true })
     .click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.screenshot({ path: "docs/evidence/ui-dark.png" });
+  await page.screenshot({
+    path: `${process.env.QUICKLAN_UI_EVIDENCE || "/tmp/quicklan-easy-ui"}/ui-dark.png`,
+  });
   await page.getByRole("button", { name: "Diagnostics", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Copy sanitized report", exact: true }),
   ).toBeEnabled();
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.screenshot({ path: "docs/evidence/ui-narrow.png" });
+  await page.screenshot({
+    path: `${process.env.QUICKLAN_UI_EVIDENCE || "/tmp/quicklan-easy-ui"}/ui-narrow.png`,
+  });
   const overflows = await page.evaluate(
     () => document.documentElement.scrollWidth > innerWidth,
   );
